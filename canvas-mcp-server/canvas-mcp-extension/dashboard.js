@@ -256,13 +256,23 @@ function renderAssignments() {
     const status = getAssignmentStatus(assignment);
     const dueText = formatDueDate(assignment.dueDate);
     const badges = getAssignmentBadges(assignment);
+    const canvasUrl = assignment.htmlUrl || assignment.html_url || '';
 
     return `
       <div class="assignment-item">
         <div class="assignment-status ${status}"></div>
         <div class="assignment-info">
           <div class="assignment-course">${escapeHtml(assignment.courseName || 'Unknown Course')}</div>
-          <div class="assignment-name">${escapeHtml(assignment.name)}</div>
+          <div class="assignment-name-row">
+            <div class="assignment-name">${escapeHtml(assignment.name)}</div>
+            ${canvasUrl ? `<a href="${escapeHtml(canvasUrl)}" target="_blank" rel="noopener noreferrer" class="canvas-link" title="Open in Canvas">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>` : ''}
+          </div>
           <div class="assignment-meta">
             ${dueText ? `<div class="assignment-due ${status === 'overdue' ? 'overdue' : status === 'upcoming' ? 'soon' : ''}">${dueText}</div>` : '<div class="assignment-due">No due date</div>'}
             ${assignment.pointsPossible ? `<div class="assignment-meta-item">${assignment.pointsPossible} pts</div>` : ''}
@@ -732,14 +742,15 @@ function formatStructuredInsights(insights) {
 
     const tasksCount = day.tasks.length;
     const dayId = `day-${dayIdx}`;
+    const defaultBg = dayIdx === 0 || dayIdx === 1 ? '#FAFAFA' : 'white';
 
     return `
       <div style="background: white; border-radius: 8px; border: 1px solid #E5E7EB; overflow: hidden; margin-bottom: 12px;">
         <button
-          onclick="toggleDayPlan('${dayId}')"
-          style="width: 100%; padding: 14px 16px; background: ${dayIdx === 0 || dayIdx === 1 ? '#FAFAFA' : 'white'}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;"
-          onmouseover="this.style.background='#F9FAFB'"
-          onmouseout="this.style.background='${dayIdx === 0 || dayIdx === 1 ? '#FAFAFA' : 'white'}'"
+          class="day-plan-toggle"
+          data-day-id="${dayId}"
+          data-default-bg="${defaultBg}"
+          style="width: 100%; padding: 14px 16px; background: ${defaultBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;"
         >
           <div style="display: flex; align-items: center; gap: 12px;">
             <div style="width: 10px; height: 10px; border-radius: 50%; background: ${workloadColors[day.workload]}; flex-shrink: 0;"></div>
@@ -753,12 +764,12 @@ function formatStructuredInsights(insights) {
               <div style="font-size: 12px; font-weight: 600; color: #374151;">${tasksCount} session${tasksCount !== 1 ? 's' : ''}</div>
               <div style="font-size: 11px; color: #9CA3AF; text-transform: capitalize;">${day.workload} load</div>
             </div>
-            <svg id="${dayId}-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="transition: transform 0.2s; transform: ${dayIdx < 2 ? 'rotate(180deg)' : 'rotate(0deg)'};">
+            <svg class="day-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="transition: transform 0.2s; transform: ${dayIdx < 2 ? 'rotate(180deg)' : 'rotate(0deg)'};">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
         </button>
-        <div id="${dayId}" style="display: ${dayIdx < 2 ? 'block' : 'none'}; padding: 16px; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
+        <div id="${dayId}" class="day-content" style="display: ${dayIdx < 2 ? 'block' : 'none'}; padding: 16px; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
           ${tasksCount > 0 ? tasksHtml : '<p style="color: #9CA3AF; text-align: center; padding: 20px 0; font-size: 13px;">No sessions scheduled - rest day!</p>'}
         </div>
       </div>
@@ -773,6 +784,34 @@ function formatStructuredInsights(insights) {
       </div>
     `;
   }).join('');
+
+  // Setup event listeners after content is rendered
+  setTimeout(() => {
+    document.querySelectorAll('.day-plan-toggle').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const dayId = this.dataset.dayId;
+        const defaultBg = this.dataset.defaultBg;
+        const dayContent = document.getElementById(dayId);
+        const icon = this.querySelector('.day-icon');
+
+        if (dayContent.style.display === 'none') {
+          dayContent.style.display = 'block';
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          dayContent.style.display = 'none';
+          icon.style.transform = 'rotate(0deg)';
+        }
+      });
+
+      // Hover effects
+      btn.addEventListener('mouseenter', function() {
+        this.style.background = '#F9FAFB';
+      });
+      btn.addEventListener('mouseleave', function() {
+        this.style.background = this.dataset.defaultBg;
+      });
+    });
+  }, 0);
 
   return `
     <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
@@ -831,20 +870,6 @@ function formatStructuredInsights(insights) {
     <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
       ${studyTipsHtml}
     </div>
-
-    <script>
-      function toggleDayPlan(dayId) {
-        const dayContent = document.getElementById(dayId);
-        const icon = document.getElementById(dayId + '-icon');
-        if (dayContent.style.display === 'none') {
-          dayContent.style.display = 'block';
-          icon.style.transform = 'rotate(180deg)';
-        } else {
-          dayContent.style.display = 'none';
-          icon.style.transform = 'rotate(0deg)';
-        }
-      }
-    </script>
   `;
 }
 

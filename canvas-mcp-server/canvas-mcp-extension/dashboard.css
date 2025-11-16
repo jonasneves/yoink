@@ -505,11 +505,34 @@ body {
   font-weight: 500;
 }
 
+.assignment-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
 .assignment-name {
   font-size: 15px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 4px;
+  flex: 1;
+}
+
+.canvas-link {
+  display: inline-flex;
+  align-items: center;
+  color: #00539B;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.canvas-link:hover {
+  opacity: 1;
+  background: #E2E6ED;
+  transform: translateX(2px);
 }
 
 .assignment-meta {
