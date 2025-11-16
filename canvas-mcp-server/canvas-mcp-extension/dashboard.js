@@ -669,6 +669,36 @@ function formatStructuredInsights(insights) {
     low: '🟢 Low'
   };
 
+  const recommendationsHtml = insights.workload_assessment.recommendations.map(rec => {
+    return `
+      <div style="margin: 8px 0; font-size: 14px; display: flex; align-items: start; gap: 8px;">
+        <span style="margin-top: 2px;">•</span>
+        <span>${escapeHtml(rec)}</span>
+      </div>
+    `;
+  }).join('');
+
+  const priorityTasksHtml = insights.priority_tasks.map(task => {
+    return `
+      <div style="padding: 16px; background: white; border: 1px solid #E5E7EB; border-left: 4px solid ${urgencyColors[task.urgency]}; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+          <strong style="color: #111827; font-size: 14px; flex: 1;">${escapeHtml(task.task)}</strong>
+          <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${urgencyLabels[task.urgency]}</span>
+        </div>
+        <p style="margin: 0; color: #6B7280; font-size: 13px; line-height: 1.5;">${escapeHtml(task.reason)}</p>
+      </div>
+    `;
+  }).join('');
+
+  const studyTipsHtml = insights.study_tips.map(tip => {
+    return `
+      <div style="margin: 10px 0; font-size: 14px; color: #374151; display: flex; align-items: start; gap: 10px;">
+        <span style="color: #00539B; font-size: 18px; margin-top: -2px;">✓</span>
+        <span style="flex: 1;">${escapeHtml(tip)}</span>
+      </div>
+    `;
+  }).join('');
+
   return `
     <h3 style="margin-bottom: 16px;">📊 AI-Powered Insights</h3>
 
@@ -679,38 +709,20 @@ function formatStructuredInsights(insights) {
         </svg>
         Workload Assessment
       </h4>
-      <p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6; opacity: 0.95;">${insights.workload_assessment.overall}</p>
+      <p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6; opacity: 0.95;">${escapeHtml(insights.workload_assessment.overall)}</p>
       <div style="background: rgba(255, 255, 255, 0.15); padding: 12px; border-radius: 8px; backdrop-filter: blur(10px);">
-        ${insights.workload_assessment.recommendations.map(rec => `
-          <div style="margin: 8px 0; font-size: 14px; display: flex; align-items: start; gap: 8px;">
-            <span style="margin-top: 2px;">•</span>
-            <span>${rec}</span>
-          </div>
-        `).join('')}
+        ${recommendationsHtml}
       </div>
     </div>
 
     <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827;">🎯 Priority Tasks</h4>
     <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-      ${insights.priority_tasks.map(task => `
-        <div style="padding: 16px; background: white; border: 1px solid #E5E7EB; border-left: 4px solid ${urgencyColors[task.urgency]}; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <strong style="color: #111827; font-size: 14px; flex: 1;">${task.task}</strong>
-            <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${urgencyLabels[task.urgency]}</span>
-          </div>
-          <p style="margin: 0; color: #6B7280; font-size: 13px; line-height: 1.5;">${task.reason}</p>
-        </div>
-      `).join('')}
+      ${priorityTasksHtml}
     </div>
 
     <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827;">💡 Study Tips</h4>
     <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
-      ${insights.study_tips.map(tip => `
-        <div style="margin: 10px 0; font-size: 14px; color: #374151; display: flex; align-items: start; gap: 10px;">
-          <span style="color: #00539B; font-size: 18px; margin-top: -2px;">✓</span>
-          <span style="flex: 1;">${tip}</span>
-        </div>
-      `).join('')}
+      ${studyTipsHtml}
     </div>
   `;
 }
