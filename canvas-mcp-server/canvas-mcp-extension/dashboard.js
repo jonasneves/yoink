@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initializeDashboard() {
   await loadCanvasData();
   renderDashboard();
+  await updateInsightsButtonText();
+}
+
+// Update insights button text based on API key
+async function updateInsightsButtonText() {
+  const result = await chrome.storage.local.get(['claudeApiKey']);
+  const btnText = document.getElementById('generateInsightsBtnText');
+
+  if (result.claudeApiKey) {
+    btnText.textContent = 'Generate AI Insights';
+  } else {
+    btnText.textContent = 'Show Question Suggestions';
+  }
 }
 
 // Event Listeners
@@ -164,13 +177,48 @@ function renderSummaryCards() {
 
   const completed = assignments.filter(a =>
     a.submission?.submitted || a.submission?.workflowState === 'graded'
-  ).length;
+  }).length;
 
-  // Update DOM
-  document.getElementById('totalAssignments').textContent = total;
-  document.getElementById('upcomingAssignments').textContent = upcoming;
-  document.getElementById('overdueAssignments').textContent = overdue;
-  document.getElementById('completedAssignments').textContent = completed;
+  // Update DOM with animation
+  animateValue('totalAssignments', 0, total, 800);
+  animateValue('upcomingAssignments', 0, upcoming, 800);
+  animateValue('overdueAssignments', 0, overdue, 800);
+  animateValue('completedAssignments', 0, completed, 800);
+
+  // Make cards clickable
+  setupSummaryCardClicks();
+}
+
+// Animate number counting
+function animateValue(id, start, end, duration) {
+  const element = document.getElementById(id);
+  const range = end - start;
+  const increment = range / (duration / 16);
+  let current = start;
+
+  const timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    element.textContent = Math.round(current);
+  }, 16);
+}
+
+// Setup click handlers for summary cards
+function setupSummaryCardClicks() {
+  const summaryCards = document.querySelectorAll('.summary-card');
+
+  summaryCards[0].onclick = () => setFilter('all'); // Total
+  summaryCards[1].onclick = () => setFilter('upcoming'); // Upcoming
+  summaryCards[2].onclick = () => setFilter('overdue'); // Overdue
+  summaryCards[3].onclick = () => setFilter('completed'); // Completed
+
+  // Add cursor pointer style
+  summaryCards.forEach(card => {
+    card.style.cursor = 'pointer';
+  });
 }
 
 // Render assignments
@@ -414,37 +462,76 @@ function setupAutoRefresh(enabled) {
 
 // AI Insights
 async function generateAIInsights() {
+  const btn = document.getElementById('generateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
-  // Prepare summary data
-  const assignmentsData = prepareAssignmentsForAI();
+  // Check if API key is set
+  const result = await chrome.storage.local.get(['claudeApiKey']);
 
-  // Show insights guidance
+  if (!result.claudeApiKey) {
+    // Show MCP guidance if no API key
+    const assignmentsData = prepareAssignmentsForAI();
+    insightsContent.innerHTML = `
+      <div class="insights-loaded">
+        <h3>Ask Claude for AI-Powered Insights</h3>
+        <p style="margin-bottom: 16px; color: #6B7280;">Claude Desktop already has access to all your Canvas data via MCP. Open Claude and try asking:</p>
+
+        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
+          <strong style="color: #00539B;">💡 Priority Recommendations</strong>
+          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"What assignments should I focus on first based on due dates and importance?"</p>
+        </div>
+
+        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
+          <strong style="color: #00539B;">📊 Workload Analysis</strong>
+          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"Analyze my current workload and help me create a study schedule"</p>
+        </div>
+
+        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 16px;">
+          <strong style="color: #00539B;">🎯 Study Strategy</strong>
+          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"What's the best strategy to catch up on my ${assignmentsData.overdue.length} overdue assignments?"</p>
+        </div>
+
+        <p style="font-size: 13px; color: #9CA3AF;">
+          <strong>Tip:</strong> Claude can see all ${assignmentsData.totalAssignments} assignments across your ${assignmentsData.courses.length} courses, including submission status, due dates, and points. Ask follow-up questions for personalized advice!
+        </p>
+
+        <div style="margin-top: 16px; padding: 12px; background: #FCF7E5; border-radius: 8px; border-left: 4px solid #E89923;">
+          <p style="margin: 0; font-size: 13px; color: #374151;">💡 <strong>Want dashboard insights?</strong> Add your Claude API key in settings to get AI-powered insights right here!</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Generate insights with Claude API
+  btn.disabled = true;
   insightsContent.innerHTML = `
-    <div class="insights-loaded">
-      <h3>Ask Claude for AI-Powered Insights</h3>
-      <p style="margin-bottom: 16px; color: #6B7280;">Claude Desktop already has access to all your Canvas data via MCP. Open Claude and try asking:</p>
-
-      <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-        <strong style="color: #00539B;">💡 Priority Recommendations</strong>
-        <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"What assignments should I focus on first based on due dates and importance?"</p>
-      </div>
-
-      <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-        <strong style="color: #00539B;">📊 Workload Analysis</strong>
-        <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"Analyze my current workload and help me create a study schedule"</p>
-      </div>
-
-      <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 16px;">
-        <strong style="color: #00539B;">🎯 Study Strategy</strong>
-        <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"What's the best strategy to catch up on my ${assignmentsData.overdue.length} overdue assignments?"</p>
-      </div>
-
-      <p style="font-size: 13px; color: #9CA3AF;">
-        <strong>Tip:</strong> Claude can see all ${assignmentsData.totalAssignments} assignments across your ${assignmentsData.courses.length} courses, including submission status, due dates, and points. Ask follow-up questions for personalized advice!
-      </p>
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Analyzing your assignments with Claude AI...</p>
     </div>
   `;
+
+  try {
+    const assignmentsData = prepareAssignmentsForAI();
+    const insights = await callClaudeWithStructuredOutput(result.claudeApiKey, assignmentsData);
+
+    insightsContent.innerHTML = `
+      <div class="insights-loaded fade-in">
+        ${formatStructuredInsights(insights)}
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error generating insights:', error);
+    insightsContent.innerHTML = `
+      <div class="insights-error">
+        <strong>Failed to generate insights:</strong> ${escapeHtml(error.message)}
+        <p style="margin-top: 8px; font-size: 12px;">Check your API key in settings or use Claude Desktop via MCP instead.</p>
+      </div>
+    `;
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function prepareAssignmentsForAI() {
@@ -479,5 +566,152 @@ function prepareAssignmentsForAI() {
       a.submission?.submitted || a.submission?.workflowState === 'graded'
     ).length
   };
+}
+
+// Call Claude API with structured outputs
+async function callClaudeWithStructuredOutput(apiKey, assignmentsData) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 2000,
+      messages: [{
+        role: 'user',
+        content: `Analyze this student's Canvas assignments and provide actionable insights.
+
+Data:
+- Total: ${assignmentsData.totalAssignments} assignments
+- Courses: ${assignmentsData.courses.join(', ')}
+- Due this week: ${assignmentsData.upcoming.length}
+- Overdue: ${assignmentsData.overdue.length}
+- Completed: ${assignmentsData.completed}
+
+Upcoming (next 7 days):
+${assignmentsData.upcoming.slice(0, 5).map(a => `- ${a.name} (${a.course}) - ${new Date(a.dueDate).toLocaleDateString()}, ${a.points}pts`).join('\n')}
+
+Overdue:
+${assignmentsData.overdue.slice(0, 5).map(a => `- ${a.name} (${a.course}) - was due ${new Date(a.dueDate).toLocaleDateString()}, ${a.points}pts`).join('\n')}
+
+Provide concise, actionable advice.`
+      }],
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'assignment_insights',
+          strict: true,
+          schema: {
+            type: 'object',
+            properties: {
+              priority_tasks: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    task: { type: 'string' },
+                    reason: { type: 'string' },
+                    urgency: { type: 'string', enum: ['high', 'medium', 'low'] }
+                  },
+                  required: ['task', 'reason', 'urgency'],
+                  additionalProperties: false
+                }
+              },
+              workload_assessment: {
+                type: 'object',
+                properties: {
+                  overall: { type: 'string' },
+                  recommendations: {
+                    type: 'array',
+                    items: { type: 'string' }
+                  }
+                },
+                required: ['overall', 'recommendations'],
+                additionalProperties: false
+              },
+              study_tips: {
+                type: 'array',
+                items: { type: 'string' }
+              }
+            },
+            required: ['priority_tasks', 'workload_assessment', 'study_tips'],
+            additionalProperties: false
+          }
+        }
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return JSON.parse(data.content[0].text);
+}
+
+// Format structured insights for display
+function formatStructuredInsights(insights) {
+  const urgencyColors = {
+    high: '#C84E00',
+    medium: '#E89923',
+    low: '#339898'
+  };
+
+  const urgencyLabels = {
+    high: '🔴 High',
+    medium: '🟡 Medium',
+    low: '🟢 Low'
+  };
+
+  return `
+    <h3 style="margin-bottom: 16px;">📊 AI-Powered Insights</h3>
+
+    <div style="background: linear-gradient(135deg, #00539B 0%, #005587 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 83, 155, 0.2);">
+      <h4 style="margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Workload Assessment
+      </h4>
+      <p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6; opacity: 0.95;">${insights.workload_assessment.overall}</p>
+      <div style="background: rgba(255, 255, 255, 0.15); padding: 12px; border-radius: 8px; backdrop-filter: blur(10px);">
+        ${insights.workload_assessment.recommendations.map(rec => `
+          <div style="margin: 8px 0; font-size: 14px; display: flex; align-items: start; gap: 8px;">
+            <span style="margin-top: 2px;">•</span>
+            <span>${rec}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827;">🎯 Priority Tasks</h4>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+      ${insights.priority_tasks.map(task => `
+        <div style="padding: 16px; background: white; border: 1px solid #E5E7EB; border-left: 4px solid ${urgencyColors[task.urgency]}; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <strong style="color: #111827; font-size: 14px; flex: 1;">${task.task}</strong>
+            <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${urgencyLabels[task.urgency]}</span>
+          </div>
+          <p style="margin: 0; color: #6B7280; font-size: 13px; line-height: 1.5;">${task.reason}</p>
+        </div>
+      `).join('')}
+    </div>
+
+    <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827;">💡 Study Tips</h4>
+    <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
+      ${insights.study_tips.map(tip => `
+        <div style="margin: 10px 0; font-size: 14px; color: #374151; display: flex; align-items: start; gap: 10px;">
+          <span style="color: #00539B; font-size: 18px; margin-top: -2px;">✓</span>
+          <span style="flex: 1;">${tip}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
