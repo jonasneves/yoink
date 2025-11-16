@@ -491,41 +491,17 @@
     .setup-header {
       padding: 12px;
       background: #FAFAFA;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       font-size: 13px;
       font-weight: 500;
       color: #374151;
     }
 
-    .setup-header:hover {
-      background: #F3F4F6;
-    }
-
-    .chevron {
-      transition: transform 0.2s ease;
-      color: #9CA3AF;
-      font-size: 12px;
-    }
-
-    .chevron.open {
-      transform: rotate(90deg);
-    }
-
     .setup-content {
-      display: none;
       padding: 16px;
       font-size: 12px;
       color: #6B7280;
       line-height: 1.6;
       background: #fff;
-    }
-
-    .setup-content.open {
-      display: block;
     }
 
     .setup-content ol {
@@ -734,11 +710,10 @@
     </div>
 
     <div class="setup-card">
-      <div class="setup-header" id="claudeConfigToggle">
+      <div class="setup-header">
         <span>Setup Instructions</span>
-        <span class="chevron">▶</span>
       </div>
-      <div class="setup-content" id="claudeConfigContent">
+      <div class="setup-content open">
         <ol>
           <li>Open Claude Desktop → Settings → Extensions</li>
           <li>Click "Install Unpacked Extension"</li>
