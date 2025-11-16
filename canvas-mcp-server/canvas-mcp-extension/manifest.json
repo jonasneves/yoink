@@ -30,7 +30,7 @@
     "default_title": "Canvas MCP Server"
   },
   "side_panel": {
-    "default_path": "popup.html"
+    "default_path": "sidepanel.html"
   },
   "icons": {
     "16": "icon.png",
