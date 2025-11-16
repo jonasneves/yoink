@@ -580,104 +580,59 @@ async function callClaudeWithStructuredOutput(apiKey, assignmentsData) {
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{
         role: 'user',
-        content: `Analyze this student's Canvas assignments and create a Weekly Battle Plan with specific scheduling recommendations.
+        content: `Analyze this student's Canvas assignments and create a Weekly Battle Plan.
 
-Data:
-- Total: ${assignmentsData.totalAssignments} assignments
+Current Status:
+- Total Assignments: ${assignmentsData.totalAssignments}
 - Courses: ${assignmentsData.courses.join(', ')}
 - Due this week: ${assignmentsData.upcoming.length}
 - Overdue: ${assignmentsData.overdue.length}
 - Completed: ${assignmentsData.completed}
 
-Upcoming (next 7 days):
-${assignmentsData.upcoming.slice(0, 5).map(a => `- ${a.name} (${a.course}) - ${new Date(a.dueDate).toLocaleDateString()}, ${a.points}pts`).join('\n')}
+Upcoming Assignments (next 7 days):
+${assignmentsData.upcoming.slice(0, 8).map(a => `- ${a.name} (${a.course}) - Due: ${new Date(a.dueDate).toLocaleDateString()}, ${a.points} points`).join('\n')}
 
-Overdue:
-${assignmentsData.overdue.slice(0, 5).map(a => `- ${a.name} (${a.course}) - was due ${new Date(a.dueDate).toLocaleDateString()}, ${a.points}pts`).join('\n')}
+Overdue Assignments:
+${assignmentsData.overdue.slice(0, 5).map(a => `- ${a.name} (${a.course}) - Was due: ${new Date(a.dueDate).toLocaleDateString()}, ${a.points} points`).join('\n')}
 
-Create a weekly battle plan with:
-- Priority tasks with estimated hours and urgency levels (critical/high/medium/low)
-- Workload assessment with total hours needed and intensity level
-- Day-by-day schedule for the next 7 days with specific time blocks
-- Each day should have: focus area, workload level, and scheduled tasks with time blocks
-- Strategic study tips
-
-Be realistic with time estimates. Consider assignment complexity and point values.`
-      }],
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'assignment_insights',
-          schema: {
-            type: 'object',
-            properties: {
-              priority_tasks: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    task: { type: 'string' },
-                    reason: { type: 'string' },
-                    urgency: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
-                    estimated_hours: { type: 'number' }
-                  },
-                  required: ['task', 'reason', 'urgency', 'estimated_hours'],
-                  additionalProperties: false
-                }
-              },
-              workload_assessment: {
-                type: 'object',
-                properties: {
-                  overall: { type: 'string' },
-                  total_hours_needed: { type: 'number' },
-                  intensity_level: { type: 'string', enum: ['extreme', 'high', 'moderate', 'manageable'] },
-                  recommendations: {
-                    type: 'array',
-                    items: { type: 'string' }
-                  }
-                },
-                required: ['overall', 'total_hours_needed', 'intensity_level', 'recommendations'],
-                additionalProperties: false
-              },
-              weekly_plan: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    day: { type: 'string' },
-                    focus: { type: 'string' },
-                    workload: { type: 'string', enum: ['extreme', 'high', 'medium', 'low'] },
-                    tasks: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          assignment: { type: 'string' },
-                          time_block: { type: 'string' },
-                          notes: { type: 'string' }
-                        },
-                        required: ['assignment', 'time_block', 'notes'],
-                        additionalProperties: false
-                      }
-                    }
-                  },
-                  required: ['day', 'focus', 'workload', 'tasks'],
-                  additionalProperties: false
-                }
-              },
-              study_tips: {
-                type: 'array',
-                items: { type: 'string' }
-              }
-            },
-            required: ['priority_tasks', 'workload_assessment', 'weekly_plan', 'study_tips'],
-            additionalProperties: false
-          }
+Create a weekly battle plan as a JSON object with this EXACT structure:
+{
+  "priority_tasks": [
+    {
+      "task": "assignment name and action",
+      "reason": "why this is a priority",
+      "urgency": "critical|high|medium|low",
+      "estimated_hours": 2.5
+    }
+  ],
+  "workload_assessment": {
+    "overall": "one sentence summary of the week's workload",
+    "total_hours_needed": 25,
+    "intensity_level": "extreme|high|moderate|manageable",
+    "recommendations": ["tip 1", "tip 2", "tip 3"]
+  },
+  "weekly_plan": [
+    {
+      "day": "Monday, Nov 18",
+      "focus": "main goal for the day",
+      "workload": "extreme|high|medium|low",
+      "tasks": [
+        {
+          "assignment": "assignment name",
+          "time_block": "9:00 AM - 12:00 PM",
+          "notes": "specific guidance for this work session"
         }
-      }
+      ]
+    }
+  ],
+  "study_tips": ["tip 1", "tip 2", "tip 3", "tip 4"]
+}
+
+Return ONLY the JSON object, no other text. Be realistic with time estimates. Create a 7-day plan starting from today.`
+      }]
     })
   });
 
@@ -687,7 +642,15 @@ Be realistic with time estimates. Consider assignment complexity and point value
   }
 
   const data = await response.json();
-  return JSON.parse(data.content[0].text);
+  const textContent = data.content[0].text;
+
+  // Extract JSON from the response (Claude might wrap it in markdown code blocks)
+  const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error('No valid JSON found in response');
+  }
+
+  return JSON.parse(jsonMatch[0]);
 }
 
 // Format structured insights for display
