@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas MCP + AI Dashboard - Duke Student Pitch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #012169 0%, #00539B 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .slides-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 10;
+        }
+
+        .slide.prev {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        /* Slide 1: Title */
+        .slide-title {
+            text-align: center;
+        }
+
+        .slide-title h1 {
+            font-size: 72px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff 0%, #E2E6ED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide-title .subtitle {
+            font-size: 32px;
+            color: #E2E6ED;
+            margin-bottom: 40px;
+        }
+
+        .slide-title .tagline {
+            font-size: 24px;
+            color: #B0C4DE;
+            font-weight: 300;
+        }
+
+        /* Slide 2: Problem */
+        .problem-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+        }
+
+        .problem-text h2 {
+            font-size: 56px;
+            margin-bottom: 30px;
+        }
+
+        .problem-list {
+            list-style: none;
+            font-size: 24px;
+            line-height: 1.8;
+        }
+
+        .problem-list li {
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .problem-list li::before {
+            content: "😰";
+            position: absolute;
+            left: 0;
+            font-size: 28px;
+        }
+
+        /* Slide 3: Solution */
+        .solution-container {
+            text-align: center;
+            max-width: 1400px;
+        }
+
+        .solution-container h2 {
+            font-size: 56px;
+            margin-bottom: 50px;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .solution-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .solution-card h3 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .solution-card p {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #E2E6ED;
+        }
+
+        /* Slide 4: Weekly Battle Plan Demo */
+        .demo-container {
+            max-width: 1400px;
+            text-align: center;
+        }
+
+        .demo-container h2 {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .demo-subtitle {
+            font-size: 24px;
+            color: #B0C4DE;
+            margin-bottom: 50px;
+        }
+
+        .battle-plan-preview {
+            background: white;
+            color: #111827;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .day-block {
+            background: linear-gradient(135deg, #012169 0%, #00539B 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .day-block h4 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        /* Slide 5: Benefits */
+        .benefits-container {
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .benefits-container h2 {
+            font-size: 56px;
+            margin-bottom: 50px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .benefit-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .benefit-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        .benefit-card p {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #E2E6ED;
+        }
+
+        /* Slide 6: Call to Action */
+        .cta-container {
+            text-align: center;
+            max-width: 1000px;
+        }
+
+        .cta-container h2 {
+            font-size: 64px;
+            margin-bottom: 40px;
+        }
+
+        .cta-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .cta-step {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .step-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .cta-step h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .cta-step p {
+            font-size: 18px;
+            color: #E2E6ED;
+        }
+
+        .cta-contact {
+            margin-top: 50px;
+            font-size: 28px;
+            color: #FFD700;
+        }
+
+        /* Navigation */
+        .nav-controls {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 100;
+        }
+
+        /* SVG Illustrations */
+        .illustration {
+            max-width: 500px;
+            height: auto;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">6</span>
+    </div>
+
+    <div class="slides-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active slide-title">
+            <h1 class="floating">Canvas MCP + AI Dashboard</h1>
+            <div class="subtitle">Your AI-Powered Academic Command Center</div>
+            <svg class="illustration" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Brain with circuit paths -->
+                <circle cx="200" cy="150" r="80" fill="#00539B" opacity="0.3"/>
+                <circle cx="200" cy="150" r="70" fill="#012169" opacity="0.5"/>
+                <path d="M 200 80 Q 240 100 250 140 Q 260 180 230 200 Q 200 220 170 200 Q 140 180 150 140 Q 160 100 200 80"
+                      fill="none" stroke="#FFD700" stroke-width="3" opacity="0.8"/>
+                <!-- Circuit nodes -->
+                <circle cx="200" cy="80" r="8" fill="#FFD700"/>
+                <circle cx="250" cy="140" r="8" fill="#FFD700"/>
+                <circle cx="230" cy="200" r="8" fill="#FFD700"/>
+                <circle cx="170" cy="200" r="8" fill="#FFD700"/>
+                <circle cx="150" cy="140" r="8" fill="#FFD700"/>
+                <!-- Connection lines -->
+                <line x1="200" y1="80" x2="200" y2="30" stroke="#E2E6ED" stroke-width="2" opacity="0.6"/>
+                <line x1="250" y1="140" x2="300" y2="140" stroke="#E2E6ED" stroke-width="2" opacity="0.6"/>
+                <line x1="230" y1="200" x2="250" y2="250" stroke="#E2E6ED" stroke-width="2" opacity="0.6"/>
+                <line x1="170" y1="200" x2="150" y2="250" stroke="#E2E6ED" stroke-width="2" opacity="0.6"/>
+                <line x1="150" y1="140" x2="100" y2="140" stroke="#E2E6ED" stroke-width="2" opacity="0.6"/>
+            </svg>
+            <div class="tagline">Built by Duke Students, for Duke Students</div>
+        </div>
+
+        <!-- Slide 2: Problem -->
+        <div class="slide">
+            <div class="problem-container">
+                <div class="problem-text">
+                    <h2>The Problem</h2>
+                    <ul class="problem-list">
+                        <li>10+ tabs open just to check assignments</li>
+                        <li>Canvas notifications = overwhelming</li>
+                        <li>No clear view of upcoming workload</li>
+                        <li>Panic mode before every deadline</li>
+                    </ul>
+                </div>
+                <div>
+                    <svg class="illustration" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Stressed student with laptop -->
+                        <!-- Laptop base -->
+                        <rect x="100" y="250" width="200" height="120" rx="10" fill="#E2E6ED" opacity="0.9"/>
+                        <rect x="110" y="260" width="180" height="100" rx="5" fill="#012169"/>
+                        <!-- Screen lines (assignments) -->
+                        <line x1="130" y1="280" x2="270" y2="280" stroke="#FFD700" stroke-width="3"/>
+                        <line x1="130" y1="300" x2="270" y2="300" stroke="#FFD700" stroke-width="3"/>
+                        <line x1="130" y1="320" x2="270" y2="320" stroke="#FFD700" stroke-width="3"/>
+                        <line x1="130" y1="340" x2="270" y2="340" stroke="#FFD700" stroke-width="3"/>
+                        <!-- Exclamation marks (stress indicators) -->
+                        <text x="320" y="200" font-size="40" fill="#FF4444" opacity="0.8">!</text>
+                        <text x="350" y="150" font-size="40" fill="#FF4444" opacity="0.8">!</text>
+                        <text x="60" y="180" font-size="40" fill="#FF4444" opacity="0.8">!</text>
+                        <!-- Chaos waves -->
+                        <path d="M 50 100 Q 100 80 150 100 T 250 100 T 350 100"
+                              fill="none" stroke="#FF4444" stroke-width="2" opacity="0.5" class="pulsing"/>
+                        <path d="M 50 130 Q 100 110 150 130 T 250 130 T 350 130"
+                              fill="none" stroke="#FF4444" stroke-width="2" opacity="0.5" class="pulsing"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Solution -->
+        <div class="slide">
+            <div class="solution-container">
+                <h2>The Solution</h2>
+                <svg class="illustration" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 30px;">
+                    <!-- Canvas Logo representation -->
+                    <rect x="50" y="50" width="120" height="100" rx="10" fill="#00539B"/>
+                    <text x="110" y="110" font-size="24" fill="white" text-anchor="middle">Canvas</text>
+                    <!-- Arrow -->
+                    <path d="M 190 100 L 250 100" stroke="#FFD700" stroke-width="4"/>
+                    <polygon points="250,100 240,95 240,105" fill="#FFD700"/>
+                    <!-- MCP Bridge -->
+                    <rect x="270" y="70" width="100" height="60" rx="8" fill="#012169"/>
+                    <text x="320" y="105" font-size="18" fill="#FFD700" text-anchor="middle" font-weight="bold">MCP</text>
+                    <!-- Arrow -->
+                    <path d="M 390 100 L 450 100" stroke="#FFD700" stroke-width="4"/>
+                    <polygon points="450,100 440,95 440,105" fill="#FFD700"/>
+                    <!-- Claude AI -->
+                    <circle cx="520" cy="100" r="60" fill="#00539B"/>
+                    <text x="520" y="95" font-size="20" fill="white" text-anchor="middle">Claude</text>
+                    <text x="520" y="115" font-size="16" fill="#FFD700" text-anchor="middle">AI</text>
+                </svg>
+                <div class="solution-grid">
+                    <div class="solution-card">
+                        <h3>🔌 Canvas MCP Server</h3>
+                        <p>Direct connection between Canvas LMS and Claude Desktop. Your assignments, courses, and deadlines available through natural conversation.</p>
+                    </div>
+                    <div class="solution-card">
+                        <h3>🎯 AI Dashboard</h3>
+                        <p>Beautiful Chrome extension showing all your Canvas data in one place. AI-powered insights and weekly battle plans included.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Weekly Battle Plan Demo -->
+        <div class="slide">
+            <div class="demo-container">
+                <h2>Weekly Battle Plan</h2>
+                <div class="demo-subtitle">AI generates your personalized study schedule</div>
+                <div class="battle-plan-preview">
+                    <div class="day-block">
+                        <h4>📅 Monday - Foundation Day</h4>
+                        <div class="task-item">⏰ 9:00 AM - 11:00 AM: MENG 570 Business Sim Strategy (2h)</div>
+                        <div class="task-item">⏰ 2:00 PM - 4:00 PM: Read research papers for Design Project</div>
+                    </div>
+                    <div class="day-block">
+                        <h4>📅 Tuesday - Deep Work</h4>
+                        <div class="task-item">⏰ 10:00 AM - 1:00 PM: Draft Business Sim Report (3h)</div>
+                        <div class="task-item">⏰ 3:00 PM - 5:00 PM: Work on Design Project wireframes</div>
+                    </div>
+                    <div class="day-block">
+                        <h4>📅 Wednesday - Finish Strong</h4>
+                        <div class="task-item">⏰ 9:00 AM - 12:00 PM: Final Business Sim Report review</div>
+                        <div class="task-item">⏰ 1:00 PM - Submit MENG 570 Report 🎯</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Benefits -->
+        <div class="slide">
+            <div class="benefits-container">
+                <h2>Why It Works</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">⚡</div>
+                        <h3>Save Time</h3>
+                        <p>Stop juggling tabs. Everything in one dashboard.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🧠</div>
+                        <h3>AI Insights</h3>
+                        <p>Claude analyzes your workload and creates smart schedules.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">😌</div>
+                        <h3>Reduce Stress</h3>
+                        <p>Clear plan = less anxiety about deadlines.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🎯</div>
+                        <h3>Stay Focused</h3>
+                        <p>Prioritized tasks keep you on track.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">🚀</div>
+                        <h3>Duke-Specific</h3>
+                        <p>Built for Duke courses and Canvas integration.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">💬</div>
+                        <h3>Natural Language</h3>
+                        <p>Ask Claude about your assignments like a friend.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Call to Action -->
+        <div class="slide">
+            <div class="cta-container">
+                <h2>Get Started Today</h2>
+                <div class="cta-steps">
+                    <div class="cta-step">
+                        <div class="step-number">1</div>
+                        <h3>Install MCP</h3>
+                        <p>Set up the Canvas MCP server in Claude Desktop</p>
+                    </div>
+                    <div class="cta-step">
+                        <div class="step-number">2</div>
+                        <h3>Add Dashboard</h3>
+                        <p>Install the Chrome extension for visual insights</p>
+                    </div>
+                    <div class="cta-step">
+                        <div class="step-number">3</div>
+                        <h3>Battle On!</h3>
+                        <p>Let AI organize your academic life</p>
+                    </div>
+                </div>
+                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="max-width: 400px; margin: 30px auto;">
+                    <!-- Victory flag -->
+                    <rect x="180" y="50" width="6" height="130" fill="#FFD700"/>
+                    <path d="M 186 50 L 250 70 L 186 90 Z" fill="#012169" opacity="0.9"/>
+                    <circle cx="220" cy="70" r="8" fill="#FFD700"/>
+                    <!-- Checkmark in flag -->
+                    <path d="M 210 65 L 218 75 L 235 55" stroke="#FFD700" stroke-width="3" fill="none"/>
+                </svg>
+                <div class="cta-contact">Questions? Let's talk after!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn">← Previous</button>
+        <button class="nav-btn" id="nextBtn">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slideCounter = document.getElementById('currentSlide');
+        const totalSlidesEl = document.getElementById('totalSlides');
+
+        totalSlidesEl.textContent = totalSlides;
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index < currentSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+            slideCounter.textContent = currentSlide + 1;
+
+            // Update button states
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        updateSlides();
+    </script>
+</body>
+</html>
