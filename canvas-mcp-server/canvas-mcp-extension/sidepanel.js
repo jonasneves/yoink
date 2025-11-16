@@ -166,9 +166,9 @@ function renderAssignments() {
         <div class="assignment-title">${escapeHtml(assignment.name || 'Untitled Assignment')}</div>
         <div class="assignment-meta">
           <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
-          <span class="${dueDateClass}">Due: ${dueDateText}</span>
           ${statusText ? `<span>${statusText}</span>` : ''}
         </div>
+        <div class="assignment-due-date ${dueDateClass}">Due: ${dueDateText}</div>
       </div>
     `;
   }).join('');
