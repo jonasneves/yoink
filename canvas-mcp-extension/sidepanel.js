@@ -957,11 +957,34 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn') || document.getElementById('regenerateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
+  // First, refresh Canvas data to ensure we have the latest assignments
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+  }
+  insightsContent.innerHTML = `
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Refreshing Canvas data...</p>
+    </div>
+  `;
+
+  try {
+    await refreshCanvasData();
+  } catch (error) {
+    console.error('Error refreshing Canvas data:', error);
+    // Continue anyway with cached data
+  }
+
   // Check if API key is set
   const result = await chrome.storage.local.get(['claudeApiKey']);
 
   if (!result.claudeApiKey) {
     // Show MCP guidance if no API key
+    if (btn) {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
     const assignmentsData = prepareAssignmentsForAI();
     const mcpGuidance = `
       <div class="insights-loaded">
@@ -1004,8 +1027,7 @@ async function generateAIInsights() {
     return;
   }
 
-  // Generate insights with Claude API
-  if (btn) btn.disabled = true;
+  // Generate insights with Claude API (data already refreshed above)
   insightsContent.innerHTML = `
     <div class="insights-loading">
       <div class="spinner"></div>
@@ -1068,7 +1090,10 @@ async function generateAIInsights() {
       insightsTimestamp: Date.now()
     });
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn) {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
   }
 }
 

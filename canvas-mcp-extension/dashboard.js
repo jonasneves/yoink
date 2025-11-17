@@ -235,11 +235,30 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
+  // First, refresh Canvas data to ensure we have the latest assignments
+  btn.disabled = true;
+  btn.classList.add('loading');
+  insightsContent.innerHTML = `
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Refreshing Canvas data...</p>
+    </div>
+  `;
+
+  try {
+    await refreshCanvasData();
+  } catch (error) {
+    console.error('Error refreshing Canvas data:', error);
+    // Continue anyway with cached data
+  }
+
   // Check if API key is set
   const result = await chrome.storage.local.get(['claudeApiKey']);
 
   if (!result.claudeApiKey) {
     // Show MCP guidance if no API key
+    btn.classList.remove('loading');
+    btn.disabled = false;
     const assignmentsData = prepareAssignmentsForAI();
     const mcpGuidance = `
       <div class="insights-loaded">
@@ -278,8 +297,7 @@ async function generateAIInsights() {
     return;
   }
 
-  // Generate insights with Claude API
-  btn.disabled = true;
+  // Generate insights with Claude API (data already refreshed above)
   insightsContent.innerHTML = `
     <div class="insights-loading">
       <div class="spinner"></div>
@@ -324,6 +342,7 @@ async function generateAIInsights() {
     // Don't save error state to storage - let user retry
     // updateInsightsTimestamp(null); // Hide timestamp for errors
   } finally {
+    btn.classList.remove('loading');
     btn.disabled = false;
   }
 }
