@@ -116,6 +116,9 @@ function renderAssignments() {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
+  console.log('[renderAssignments] Current filter:', currentFilter);
+  console.log('[renderAssignments] Total assignments:', allAssignments.length);
+
   if (allAssignments.length === 0) {
     assignmentsList.innerHTML = `
       <div class="empty-state">
@@ -137,24 +140,29 @@ function renderAssignments() {
 
   if (currentFilter === 'all') {
     // Show all assignments, including those without due dates
-    filteredAssignments = allAssignments;
+    filteredAssignments = [...allAssignments];
+    console.log('[renderAssignments] Showing ALL assignments:', filteredAssignments.length);
   } else {
     // For other filters, only show assignments with due dates
     filteredAssignments = allAssignments.filter(a => a.dueDate);
+    console.log('[renderAssignments] Assignments with due dates:', filteredAssignments.length);
 
     if (currentFilter === 'overdue') {
       filteredAssignments = filteredAssignments.filter(a => {
         return new Date(a.dueDate) < now && !a.submitted;
       });
+      console.log('[renderAssignments] Overdue assignments:', filteredAssignments.length);
     } else if (currentFilter === 'due-today') {
       filteredAssignments = filteredAssignments.filter(a => {
         const dueDate = new Date(a.dueDate);
         return dueDate >= todayStart && dueDate < todayEnd && !a.submitted;
       });
+      console.log('[renderAssignments] Due today assignments:', filteredAssignments.length);
     } else if (currentFilter === 'upcoming') {
       filteredAssignments = filteredAssignments.filter(a => {
         return new Date(a.dueDate) >= todayEnd && !a.submitted;
       });
+      console.log('[renderAssignments] Upcoming assignments:', filteredAssignments.length);
     }
   }
 
@@ -406,15 +414,18 @@ document.getElementById('refreshAssignments').addEventListener('click', () => {
 document.querySelectorAll('.summary-card').forEach(card => {
   card.addEventListener('click', () => {
     const filter = card.getAttribute('data-filter');
+    console.log('[Card Click] Clicked filter:', filter, 'Current filter:', currentFilter);
 
     // Toggle filter - if clicking the same card, reset to 'all'
     if (currentFilter === filter) {
       currentFilter = 'all';
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
+      console.log('[Card Click] Toggled off, now showing: all');
     } else {
       currentFilter = filter;
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
+      console.log('[Card Click] Switched to filter:', currentFilter);
     }
 
     // Re-render with new filter
