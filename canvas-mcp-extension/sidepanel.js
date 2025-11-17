@@ -1210,8 +1210,8 @@ function formatStructuredInsights(insights) {
 
   return `
     <div style="margin-bottom: 20px; padding: 16px; background: linear-gradient(135deg, ${intensityColors[insights.workload_assessment.intensity_level]}15, ${intensityColors[insights.workload_assessment.intensity_level]}05); border: 1px solid ${intensityColors[insights.workload_assessment.intensity_level]}30; border-radius: 8px;">
-      <h3 style="margin: 0 0 8px 0; color: #111827; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-        ${createLucideIcon('activity', 18, '#111827')}
+      <h3 style="margin: 0 0 8px 0; color: #00539B; font-size: 15px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+        ${createLucideIcon('activity', 18, '#00539B')}
         Workload Assessment
       </h3>
       <p style="margin: 0 0 12px 0; color: #374151; font-size: 13px;">${escapeHtml(insights.workload_assessment.overall)}</p>
@@ -1232,16 +1232,16 @@ function formatStructuredInsights(insights) {
     </div>
 
     <div style="margin-bottom: 20px;">
-      <h3 style="margin: 0 0 12px 0; color: #111827; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-        ${createLucideIcon('target', 18, '#111827')}
+      <h3 style="margin: 0 0 12px 0; color: #C84E00; font-size: 15px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+        ${createLucideIcon('target', 18, '#C84E00')}
         Priority Tasks
       </h3>
       ${priorityTasksHtml}
     </div>
 
     <div style="padding: 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px;">
-      <h3 style="margin: 0 0 12px 0; color: #111827; font-size: 15px; display: flex; align-items: center; gap: 8px;">
-        ${createLucideIcon('lightbulb', 18, '#111827')}
+      <h3 style="margin: 0 0 12px 0; color: #339898; font-size: 15px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+        ${createLucideIcon('lightbulb', 18, '#339898')}
         Study Tips
       </h3>
       ${studyTipsHtml}

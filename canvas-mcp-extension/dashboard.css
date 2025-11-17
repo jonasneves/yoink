@@ -15,13 +15,23 @@ body {
 
 /* Header */
 .header {
-  background: white;
+  background: linear-gradient(to right, #dc2626, #339898);
   border-bottom: 1px solid #E5E7EB;
-  padding: 24px 32px;
+  padding: 32px 40px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(220, 38, 38, 0.3), rgba(51, 152, 152, 0.3));
 }
 
 .header-content {
@@ -30,52 +40,57 @@ body {
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
-  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .header-left {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .header-title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 4px;
-  background: linear-gradient(135deg, #012169 0%, #00539B 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: white;
+  margin-bottom: 6px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .header-subtitle {
-  font-size: 14px;
-  color: #6B7280;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
 }
 
 .header-right {
   display: flex;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .btn-icon {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #E5E7EB;
-  background: white;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6B7280;
+  color: white;
   transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
 }
 
 .btn-icon:hover {
-  background: #F9FAFB;
-  color: #111827;
-  border-color: #D1D5DB;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
 }
 
 .btn-icon:active {
