@@ -387,12 +387,6 @@ function showStatusMessage(elementId, message, type) {
   }
 }
 
-// Open Dashboard
-document.getElementById('openDashboard').addEventListener('click', (e) => {
-  e.preventDefault();
-  chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
-});
-
 // Settings Modal
 const settingsModal = document.getElementById('settingsModal');
 const settingsBtn = document.getElementById('settingsBtn');
