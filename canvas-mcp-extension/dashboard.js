@@ -253,7 +253,7 @@ async function generateAIInsights() {
           font-weight: 500;
           cursor: pointer;
           transition: background 0.2s;
-        " onmouseover="this.style.background='#004080'" onmouseout="this.style.background='#00539B'">
+        ">
           Open Settings
         </button>
         <p style="margin-top: 20px; font-size: 14px; color: #9CA3AF;">
@@ -263,13 +263,20 @@ async function generateAIInsights() {
     `;
     insightsContent.innerHTML = settingsPrompt;
 
-    // Add click listener to open extension sidepanel with settings
-    document.getElementById('openSettingsBtn').addEventListener('click', async () => {
+    // Add event listeners to the button
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    openSettingsBtn.addEventListener('click', async () => {
       // Store a flag to open settings modal when sidepanel opens
       await chrome.storage.local.set({ openSettingsOnLoad: true });
       // Get current window to open sidepanel
       const currentWindow = await chrome.windows.getCurrent();
       await chrome.sidePanel.open({ windowId: currentWindow.id });
+    });
+    openSettingsBtn.addEventListener('mouseover', () => {
+      openSettingsBtn.style.background = '#004080';
+    });
+    openSettingsBtn.addEventListener('mouseout', () => {
+      openSettingsBtn.style.background = '#00539B';
     });
 
     return;

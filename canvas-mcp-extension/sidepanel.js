@@ -990,7 +990,7 @@ async function generateAIInsights() {
           font-weight: 500;
           cursor: pointer;
           transition: background 0.2s;
-        " onmouseover="this.style.background='#004080'" onmouseout="this.style.background='#00539B'">
+        ">
           Open Settings
         </button>
         <p style="margin-top: 16px; font-size: 12px; color: #9CA3AF;">
@@ -1000,13 +1000,23 @@ async function generateAIInsights() {
     `;
     insightsContent.innerHTML = settingsPrompt;
 
-    // Add click listener to open settings modal
-    document.getElementById('openSettingsBtn').addEventListener('click', () => {
+    // Add event listeners to the button
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    openSettingsBtn.addEventListener('click', () => {
       const settingsModal = document.getElementById('settingsModal');
       settingsModal.classList.add('show');
     });
+    openSettingsBtn.addEventListener('mouseover', () => {
+      openSettingsBtn.style.background = '#004080';
+    });
+    openSettingsBtn.addEventListener('mouseout', () => {
+      openSettingsBtn.style.background = '#00539B';
+    });
 
-    document.getElementById('insightsTimestamp').style.display = 'none';
+    const timestampEl = document.getElementById('insightsTimestamp');
+    if (timestampEl) {
+      timestampEl.style.display = 'none';
+    }
 
     return;
   }
