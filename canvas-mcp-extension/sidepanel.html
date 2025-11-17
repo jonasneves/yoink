@@ -1000,13 +1000,6 @@
 
   <!-- MCP Server Tab (Status Only) -->
   <div class="tab-content" id="settings">
-    <div style="margin-bottom: 16px;">
-      <button class="primary" id="refreshDataBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
-        <span>Refresh Canvas Data</span>
-      </button>
-    </div>
-
     <div class="status-section">
       <div class="section-label">Status</div>
       <div class="status-grid">
@@ -1023,6 +1016,11 @@
           <span class="status-value" id="lastUpdate">Never</span>
         </div>
       </div>
+
+      <button class="secondary small" id="refreshDataBtn" style="width: 100%; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+        <span>Refresh Data</span>
+      </button>
     </div>
 
     <div class="setup-card">
