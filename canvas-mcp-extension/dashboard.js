@@ -22,10 +22,7 @@ async function initializeDashboard() {
 
   // Auto-refresh if no data is loaded
   if (canvasData.allAssignments.length === 0) {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('loading');
     await refreshCanvasData();
-    btn.classList.remove('loading');
   }
 
   renderDashboard();
@@ -217,6 +214,9 @@ async function loadSavedInsights() {
         </div>
       `;
 
+      // Setup event listeners AFTER HTML is inserted into DOM
+      setupDayToggleListeners();
+
       // Update timestamp if available
       if (result.dashboardInsightsTimestamp) {
         updateInsightsTimestamp(result.dashboardInsightsTimestamp);
@@ -232,11 +232,30 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
+  // First, refresh Canvas data to ensure we have the latest assignments
+  btn.disabled = true;
+  btn.classList.add('loading');
+  insightsContent.innerHTML = `
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Refreshing Canvas data...</p>
+    </div>
+  `;
+
+  try {
+    await refreshCanvasData();
+  } catch (error) {
+    console.error('Error refreshing Canvas data:', error);
+    // Continue anyway with cached data
+  }
+
   // Check if API key is set
   const result = await chrome.storage.local.get(['claudeApiKey']);
 
   if (!result.claudeApiKey) {
     // Show MCP guidance if no API key
+    btn.classList.remove('loading');
+    btn.disabled = false;
     const assignmentsData = prepareAssignmentsForAI();
     const mcpGuidance = `
       <div class="insights-loaded">
@@ -275,8 +294,7 @@ async function generateAIInsights() {
     return;
   }
 
-  // Generate insights with Claude API
-  btn.disabled = true;
+  // Generate insights with Claude API (data already refreshed above)
   insightsContent.innerHTML = `
     <div class="insights-loading">
       <div class="spinner"></div>
@@ -294,6 +312,9 @@ async function generateAIInsights() {
         ${formattedInsights}
       </div>
     `;
+
+    // Setup event listeners AFTER HTML is inserted into DOM
+    setupDayToggleListeners();
 
     // Save insights and timestamp to storage (dashboard-specific)
     const timestamp = Date.now();
@@ -318,6 +339,7 @@ async function generateAIInsights() {
     // Don't save error state to storage - let user retry
     // updateInsightsTimestamp(null); // Hide timestamp for errors
   } finally {
+    btn.classList.remove('loading');
     btn.disabled = false;
   }
 }
@@ -398,6 +420,34 @@ function getLucideIconPaths(iconName) {
   return icons[iconName] || '';
 }
 
+// Setup day toggle event listeners (must be called AFTER HTML is in DOM)
+function setupDayToggleListeners() {
+  document.querySelectorAll('.day-plan-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const dayId = this.dataset.dayId;
+      const defaultBg = this.dataset.defaultBg;
+      const dayContent = document.getElementById(dayId);
+      const icon = this.querySelector('.day-icon');
+
+      if (dayContent.style.display === 'none') {
+        dayContent.style.display = 'block';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        dayContent.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+      }
+    });
+
+    // Hover effects
+    btn.addEventListener('mouseenter', function() {
+      this.style.background = '#F9FAFB';
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.background = this.dataset.defaultBg;
+    });
+  });
+}
+
 // Format structured insights for display (Dashboard focuses ONLY on weekly schedule)
 function formatStructuredInsights(insights) {
   // Phase 3: Removed hardcoded color maps - using mappers instead
@@ -461,34 +511,6 @@ function formatStructuredInsights(insights) {
       </div>
     `;
   }).join('');
-
-  // Setup event listeners after content is rendered
-  setTimeout(() => {
-    document.querySelectorAll('.day-plan-toggle').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const dayId = this.dataset.dayId;
-        const defaultBg = this.dataset.defaultBg;
-        const dayContent = document.getElementById(dayId);
-        const icon = this.querySelector('.day-icon');
-
-        if (dayContent.style.display === 'none') {
-          dayContent.style.display = 'block';
-          icon.style.transform = 'rotate(180deg)';
-        } else {
-          dayContent.style.display = 'none';
-          icon.style.transform = 'rotate(0deg)';
-        }
-      });
-
-      // Hover effects
-      btn.addEventListener('mouseenter', function() {
-        this.style.background = '#F9FAFB';
-      });
-      btn.addEventListener('mouseleave', function() {
-        this.style.background = this.dataset.defaultBg;
-      });
-    });
-  }, 0);
 
   // Dashboard only shows the daily schedule - other insights are in the sidepanel
   return `
