@@ -309,7 +309,9 @@ body {
   padding: 28px 32px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .section-header-icon {
@@ -406,7 +408,7 @@ body {
 /* AI Insights */
 .insights-content {
   min-height: 200px;
-  padding: 32px;
+  padding: 0;
   background: white;
 }
 
@@ -435,8 +437,8 @@ body {
 
 .insights-loaded {
   background: #F9FAFB;
-  border-radius: 8px;
-  padding: 24px;
+  border-radius: 0;
+  padding: 32px;
   line-height: 1.8;
 }
 
@@ -876,8 +878,14 @@ body {
     font-size: 13px;
   }
 
-  .insights-content {
+  .insights-loaded {
     padding: 20px;
+  }
+
+  #dashboardInsightsTimestamp {
+    font-size: 11px;
+    width: 100%;
+    margin-top: 8px;
   }
 
   .summary-section {

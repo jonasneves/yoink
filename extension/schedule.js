@@ -171,10 +171,11 @@ function updateInsightsTimestamp(timestamp) {
   if (!timestampEl) {
     timestampEl = document.createElement('div');
     timestampEl.id = 'dashboardInsightsTimestamp';
-    timestampEl.style.cssText = 'text-align: center; font-size: 12px; color: #6B7280; margin-top: 12px;';
-    const insightsSection = document.getElementById('insightsSection');
-    const insightsContent = document.getElementById('insightsContent');
-    insightsSection.insertBefore(timestampEl, insightsContent);
+    timestampEl.style.cssText = 'font-size: 12px; color: #9CA3AF; font-weight: 500; display: flex; align-items: center; gap: 6px;';
+    const headerCard = document.querySelector('.section-header-card');
+    if (headerCard) {
+      headerCard.appendChild(timestampEl);
+    }
   }
 
   if (timestamp) {
@@ -195,8 +196,14 @@ function updateInsightsTimestamp(timestamp) {
       timeAgo = 'just now';
     }
 
-    timestampEl.innerHTML = `Last generated: ${timeAgo}`;
-    timestampEl.style.display = 'block';
+    timestampEl.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>Updated ${timeAgo}</span>
+    `;
+    timestampEl.style.display = 'flex';
   } else {
     timestampEl.style.display = 'none';
   }
@@ -519,11 +526,7 @@ function formatStructuredInsights(insights) {
 
   // Dashboard only shows the daily schedule - other insights are in the sidepanel
   return `
-    <h3 style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 20px;">
-      ${createLucideIcon('calendar', 28, '#00539B')}
-      This Week's Schedule
-    </h3>
-    <div style="margin-bottom: 32px;">
+    <div>
       ${weeklyPlanHtml}
     </div>
   `;
