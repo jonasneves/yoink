@@ -850,11 +850,17 @@ function updateInsightsTimestamp(timestamp) {
   }
 
   return `<div style="text-align: center; padding: 16px 0 0 0; border-top: 1px solid #E5E7EB;">
-    <div style="font-size: 11px; color: #9CA3AF; margin-bottom: 8px;">Last generated ${timeAgo}</div>
-    <button class="btn-primary" id="regenerateInsightsBtn" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-      <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
-      <span>Regenerate</span>
-    </button>
+    <div style="font-size: 11px; color: #9CA3AF; margin-bottom: 10px;">Last generated ${timeAgo}</div>
+    <div style="display: flex; gap: 8px; justify-content: center;">
+      <button class="btn-primary" id="regenerateInsightsBtn" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+        <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+        <span>Regenerate</span>
+      </button>
+      <button class="btn-secondary" id="viewScheduleBtn" style="padding: 8px 16px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #E5E7EB;">
+        <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+        <span>View Schedule</span>
+      </button>
+    </div>
   </div>`;
 }
 
@@ -872,13 +878,20 @@ async function loadSavedInsights() {
         </div>
       `;
 
-      // Attach event listener to regenerate button if it exists
+      // Attach event listeners to buttons if they exist
       const regenerateBtn = document.getElementById('regenerateInsightsBtn');
       if (regenerateBtn) {
         regenerateBtn.addEventListener('click', generateAIInsights);
       }
 
-      // Initialize Lucide icons for the regenerate button
+      const viewScheduleBtn = document.getElementById('viewScheduleBtn');
+      if (viewScheduleBtn) {
+        viewScheduleBtn.addEventListener('click', () => {
+          chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
+        });
+      }
+
+      // Initialize Lucide icons for the buttons
       if (typeof initializeLucide === 'function') {
         initializeLucide();
       }
@@ -1014,13 +1027,20 @@ async function generateAIInsights() {
       </div>
     `;
 
-    // Attach event listener to regenerate button
+    // Attach event listeners to buttons
     const regenerateBtn = document.getElementById('regenerateInsightsBtn');
     if (regenerateBtn) {
       regenerateBtn.addEventListener('click', generateAIInsights);
     }
 
-    // Initialize Lucide icons for the regenerate button
+    const viewScheduleBtn = document.getElementById('viewScheduleBtn');
+    if (viewScheduleBtn) {
+      viewScheduleBtn.addEventListener('click', () => {
+        chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
+      });
+    }
+
+    // Initialize Lucide icons for the buttons
     if (typeof initializeLucide === 'function') {
       initializeLucide();
     }
