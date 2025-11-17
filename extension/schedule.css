@@ -47,6 +47,17 @@ body {
 .header-left {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-brand {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .header-right {
@@ -852,6 +863,10 @@ body {
 
   .header {
     padding: 16px 20px;
+  }
+
+  .header-brand {
+    font-size: 18px;
   }
 
   .main-content {
