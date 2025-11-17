@@ -36,7 +36,7 @@ Claude Desktop <-> Native Host <-> Chrome Extension <-> Canvas LMS
 
 **Direct download:**
 ```
-https://github.com/jonasneves/canvasflow/releases/download/nightly/canvasflow-native-host.zip
+https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip
 ```
 
 Or visit [GitHub Releases](https://github.com/jonasneves/canvasflow/releases) to browse all versions.

@@ -73,14 +73,14 @@ jobs:
 
             **Direct download link:**
             ```
-            https://github.com/jonasneves/canvasflow/releases/download/nightly/canvasflow-native-host.zip
+            https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip
             ```
 
             ### Installation
 
             **macOS/Linux:**
             ```bash
-            curl -L https://github.com/jonasneves/canvasflow/releases/download/nightly/canvasflow-native-host.zip -o canvasflow-native-host.zip
+            curl -L https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip -o canvasflow-native-host.zip
             unzip canvasflow-native-host.zip
             cd canvasflow-native-host
             chmod +x install.sh

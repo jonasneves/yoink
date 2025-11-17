@@ -56,9 +56,9 @@ To create a development build without a tag:
 
 Use these links in documentation:
 
-**Nightly build (latest from main):**
+**Latest build (from main):**
 ```
-https://github.com/jonasneves/canvasflow/releases/download/nightly/canvasflow-native-host.zip
+https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip
 ```
 
 **Specific version:**
@@ -84,7 +84,7 @@ Update the extension's MCP Server tab message to include:
 To connect Claude Desktop to your Canvas data:
 
 1. Download the native host:
-   https://github.com/jonasneves/canvasflow/releases/download/nightly/canvasflow-native-host.zip
+   https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip
 
 2. Extract and run the installer:
    - macOS/Linux: ./install.sh

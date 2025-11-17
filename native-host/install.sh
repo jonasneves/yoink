@@ -96,14 +96,72 @@ fi
 echo ""
 echo "Installation complete!"
 echo ""
-echo "Next steps:"
-echo "1. Note your CanvasFlow extension ID from chrome://extensions/"
-echo "2. Edit the manifest file and replace EXTENSION_ID with your actual extension ID"
-echo "3. Restart Chrome"
+echo "================================="
+echo "CHROME EXTENSION ID CONFIGURATION"
+echo "================================="
 echo ""
-echo "Manifest location:"
-if [ "${PLATFORM}" = "macos" ]; then
-    echo "  ${HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.canvasflow.host.json"
+echo "To complete setup, you need your CanvasFlow extension ID:"
+echo ""
+echo "  1. Open Chrome and go to: chrome://extensions/"
+echo "  2. Enable 'Developer mode' (top right)"
+echo "  3. Find 'CanvasFlow' in the list"
+echo "  4. Copy the ID (looks like: abcdefghijklmnopqrstuvwxyz123456)"
+echo ""
+
+# Prompt for extension ID
+read -p "Enter your CanvasFlow extension ID (or press Enter to skip): " EXTENSION_ID
+
+if [ -n "${EXTENSION_ID}" ]; then
+    # Update the manifest file with the actual extension ID
+    if [ "${PLATFORM}" = "macos" ]; then
+        MANIFEST_PATH="${HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.canvasflow.host.json"
+    else
+        MANIFEST_PATH="${HOME}/.config/google-chrome/NativeMessagingHosts/com.canvasflow.host.json"
+    fi
+
+    # Replace EXTENSION_ID placeholder with actual ID
+    if [ -f "${MANIFEST_PATH}" ]; then
+        sed -i.bak "s/EXTENSION_ID/${EXTENSION_ID}/g" "${MANIFEST_PATH}"
+        rm "${MANIFEST_PATH}.bak"
+        echo ""
+        echo "✓ Extension ID configured successfully!"
+    fi
 else
-    echo "  ${HOME}/.config/google-chrome/NativeMessagingHosts/com.canvasflow.host.json"
+    echo ""
+    echo "⚠ Skipped extension ID configuration."
+    echo ""
+    echo "To configure later, edit this file:"
+    if [ "${PLATFORM}" = "macos" ]; then
+        echo "  ${HOME}/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.canvasflow.host.json"
+    else
+        echo "  ${HOME}/.config/google-chrome/NativeMessagingHosts/com.canvasflow.host.json"
+    fi
+    echo ""
+    echo "Replace 'EXTENSION_ID' with your actual extension ID."
 fi
+
+echo ""
+echo "================================="
+echo "CLAUDE DESKTOP SETUP"
+echo "================================="
+echo ""
+echo "To use this with Claude Desktop, add to your Claude Desktop config:"
+echo ""
+echo "Location: ${HOME}/.config/claude/mcp.json"
+echo ""
+echo "Add this entry:"
+echo ""
+echo '{'
+echo '  "canvasflow": {'
+echo '    "command": "node",'
+echo "    \"args\": [\"${INSTALL_DIR}/host.js\"]"
+echo '  }'
+echo '}'
+echo ""
+echo "Then restart Claude Desktop and ask: 'What are my Canvas courses?'"
+echo ""
+echo "Final steps:"
+echo "1. Restart Chrome"
+echo "2. Click 'Refresh Canvas Data' in the CanvasFlow extension"
+echo "3. Restart Claude Desktop (if using MCP)"
+echo ""
