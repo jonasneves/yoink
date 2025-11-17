@@ -272,42 +272,62 @@ Note: `*://*.edu/*` is broader than ideal but necessary since Chrome match patte
 **Title**: CanvasFlow - AI-Powered Canvas LMS Assistant
 
 **Description**:
-Transform your Canvas LMS experience with CanvasFlow, the intelligent sidepanel extension that helps you stay organized and focused.
+Transform your Canvas LMS experience with CanvasFlow, a modern Chrome extension that combines instant data access with advanced AI capabilities.
 
-**Key Features**:
+**What Makes CanvasFlow Different**:
+
+No Canvas API Required
+- Direct data extraction from Canvas pages - no authentication setup needed
+- Works immediately after installation
+- View assignments, due dates, and submission status instantly
+- Compatible with any Canvas instance (Instructure, university-hosted, etc.)
+
+Advanced AI Features
+- Powered by Claude AI with Extended Thinking for deeper analysis
+- Structured Outputs ensure consistent, reliable AI responses
+- Separate AI reasoning budget maximizes insight quality without inflating costs
+- Privacy-first: AI only activates when you explicitly request it
+
+**Core Features**:
 
 Assignment Dashboard
-- View all assignments at a glance in a convenient sidepanel
+- View all assignments in a convenient sidepanel
 - Filter by time range, course, and completion status
-- See due dates, points, and submission status instantly
 - Color-coded course indicators for quick identification
+- One-click refresh to sync with Canvas
 
-AI-Powered Insights
-- Generate intelligent analysis of your workload and priorities
-- Get actionable recommendations for tackling assignments
-- Identify urgent tasks and optimal study strategies
-- Powered by Claude AI with privacy-first design
+AI Insights Tab
+- Intelligent workload analysis with priority rankings
+- Actionable recommendations for tackling assignments
+- Automatic urgency scoring based on deadlines
+- Strategic advice for time management
 
 Weekly Schedule Generation
-- Automatically create optimized 7-day study plans
-- Time-blocked schedules based on your assignments and deadlines
+- AI-generated 7-day study plans
+- Time-blocked schedules optimized for your workload
 - Strategic recommendations for the week ahead
-- Focus on what matters most
+- Even task distribution based on assignment complexity
 
-Smart Features
-- Auto-refresh to keep data current
-- Customizable time ranges for assignment viewing
-- Secure local storage of preferences and data
-- Works with any Canvas LMS instance
+Browser-Based MCP Server (Optional)
+- Connect Claude Desktop to your Canvas data
+- No separate server installation required
+- Real-time Canvas data access from Claude Desktop
+- Secure local communication via native messaging
 
 **Setup**:
 1. Install the extension
-2. Visit any Canvas LMS site
-3. Click the CanvasFlow icon to open sidepanel
-4. (Optional) Add Claude API key for AI features
+2. Visit any Canvas LMS site (works with *.instructure.com, *.edu, etc.)
+3. Click the CanvasFlow icon to view assignments
+4. (Optional) Add Claude API key in settings for AI features
 
 **Privacy**:
-Your data stays with you. Assignment data is stored locally in your browser, and AI features only activate when you explicitly request them. No tracking, no analytics, no data selling.
+Your data stays with you. Assignment data is stored locally in your browser. AI features only activate when you explicitly request them. No tracking, no analytics, no data selling. See our privacy policy for details.
+
+**Technical Highlights**:
+- Chrome Manifest V3 compliant
+- Uses Claude's latest structured output capabilities
+- Adaptive token budgets for cost-effective AI usage
+- CSP-compliant security
 
 **Category**: Productivity
 
