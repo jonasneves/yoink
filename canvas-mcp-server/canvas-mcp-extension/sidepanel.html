@@ -99,11 +99,11 @@
       background: white;
       border: 1px solid #E5E7EB;
       border-radius: 12px;
-      padding: 20px 16px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       position: relative;
@@ -143,9 +143,9 @@
     }
 
     .summary-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -165,8 +165,8 @@
     }
 
     .summary-icon svg {
-      width: 24px;
-      height: 24px;
+      width: 16px;
+      height: 16px;
     }
 
     .summary-card.overdue .summary-icon svg {
@@ -189,7 +189,7 @@
     }
 
     .summary-value {
-      font-size: 32px;
+      font-size: 40px;
       font-weight: 700;
       color: #111827;
       line-height: 1;
@@ -252,13 +252,21 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
+      margin-bottom: 6px;
     }
 
-    .assignment-due {
+    .assignment-due-date {
+      font-size: 12px;
+      font-weight: 500;
+      padding-top: 6px;
+      border-top: 1px solid #F3F4F6;
+    }
+
+    .assignment-due-date.assignment-due {
       color: #DC2626;
     }
 
-    .assignment-due.soon {
+    .assignment-due-date.assignment-due.soon {
       color: #E89923;
     }
 
@@ -491,41 +499,17 @@
     .setup-header {
       padding: 12px;
       background: #FAFAFA;
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       font-size: 13px;
       font-weight: 500;
       color: #374151;
     }
 
-    .setup-header:hover {
-      background: #F3F4F6;
-    }
-
-    .chevron {
-      transition: transform 0.2s ease;
-      color: #9CA3AF;
-      font-size: 12px;
-    }
-
-    .chevron.open {
-      transform: rotate(90deg);
-    }
-
     .setup-content {
-      display: none;
       padding: 16px;
       font-size: 12px;
       color: #6B7280;
       line-height: 1.6;
       background: #fff;
-    }
-
-    .setup-content.open {
-      display: block;
     }
 
     .setup-content ol {
@@ -734,11 +718,10 @@
     </div>
 
     <div class="setup-card">
-      <div class="setup-header" id="claudeConfigToggle">
+      <div class="setup-header">
         <span>Setup Instructions</span>
-        <span class="chevron">▶</span>
       </div>
-      <div class="setup-content" id="claudeConfigContent">
+      <div class="setup-content open">
         <ol>
           <li>Open Claude Desktop → Settings → Extensions</li>
           <li>Click "Install Unpacked Extension"</li>

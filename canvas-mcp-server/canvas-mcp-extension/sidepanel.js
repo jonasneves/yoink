@@ -80,7 +80,12 @@ function renderAssignments() {
   if (allAssignments.length === 0) {
     assignmentsList.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
         <div class="empty-state-text">No assignments found</div>
         <div style="font-size: 12px; margin-top: 8px;">Click "Refresh Canvas Data" in MCP Server tab</div>
       </div>
@@ -118,7 +123,12 @@ function renderAssignments() {
                       currentFilter === 'due-today' ? 'due today' : 'upcoming';
     assignmentsList.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">✅</div>
+        <div class="empty-state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
         <div class="empty-state-text">No ${filterText} assignments</div>
       </div>
     `;
@@ -156,9 +166,9 @@ function renderAssignments() {
         <div class="assignment-title">${escapeHtml(assignment.name || 'Untitled Assignment')}</div>
         <div class="assignment-meta">
           <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
-          <span class="${dueDateClass}">Due: ${dueDateText}</span>
           ${statusText ? `<span>${statusText}</span>` : ''}
         </div>
+        <div class="assignment-due-date ${dueDateClass}">Due: ${dueDateText}</div>
       </div>
     `;
   }).join('');
@@ -175,11 +185,8 @@ async function loadAssignments() {
       chrome.runtime.sendMessage({ type: 'GET_CANVAS_DATA' }, resolve);
     });
 
-    console.log('Canvas data response:', response);
-
     if (response && response.success) {
       allAssignments = response.data.allAssignments || [];
-      console.log('Loaded assignments:', allAssignments.length);
 
       // Calculate summary counts
       const now = new Date();
@@ -195,8 +202,6 @@ async function loadAssignments() {
       }).length;
       const upcomingCount = assignmentsWithDates.filter(a => new Date(a.dueDate) >= todayEnd).length;
 
-      console.log('Counts - Overdue:', overdueCount, 'Due Today:', dueTodayCount, 'Upcoming:', upcomingCount);
-
       // Update summary cards
       document.getElementById('overdueCount').textContent = overdueCount;
       document.getElementById('dueTodayCount').textContent = dueTodayCount;
@@ -208,9 +213,15 @@ async function loadAssignments() {
     } else {
       assignmentsList.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">⚠️</div>
+          <div class="empty-state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
           <div class="empty-state-text">Failed to load assignments</div>
-          <div style="font-size: 12px; margin-top: 8px;">Try refreshing Canvas data in Settings</div>
+          <div style="font-size: 12px; margin-top: 8px;">Try refreshing Canvas data in MCP Server tab</div>
         </div>
       `;
     }
@@ -218,7 +229,13 @@ async function loadAssignments() {
     console.error('Error loading assignments:', error);
     assignmentsList.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">⚠️</div>
+        <div class="empty-state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
         <div class="empty-state-text">Error loading assignments</div>
         <div style="font-size: 12px; margin-top: 8px;">${escapeHtml(error.message)}</div>
       </div>
@@ -347,16 +364,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'local' && changes.canvasUrl) {
     updateCanvasUrl();
   }
-});
-
-// Setup instructions toggle
-const claudeConfigToggle = document.getElementById('claudeConfigToggle');
-const claudeConfigContent = document.getElementById('claudeConfigContent');
-const setupChevron = claudeConfigToggle.querySelector('.chevron');
-
-claudeConfigToggle.addEventListener('click', () => {
-  const isOpen = claudeConfigContent.classList.toggle('open');
-  setupChevron.classList.toggle('open', isOpen);
 });
 
 // Canvas URL validation
