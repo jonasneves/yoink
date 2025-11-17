@@ -90,6 +90,17 @@
       display: block;
     }
 
+    /* Override for grades toggle button (should be gray, not white) */
+    #toggleGradesBtn svg {
+      stroke: #6B7280;
+      color: #6B7280;
+    }
+
+    #toggleGradesBtn:hover svg {
+      stroke: #374151;
+      color: #374151;
+    }
+
     .title {
       font-size: 20px;
       font-weight: 700;
@@ -292,7 +303,9 @@
       cursor: pointer;
       text-decoration: none;
       color: inherit;
-      display: block;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
     }
 
     .assignment-card:hover {
@@ -308,6 +321,11 @@
     .assignment-card.completed {
       border-left-color: #059669;
       opacity: 0.7;
+    }
+
+    .assignment-info {
+      flex: 1;
+      min-width: 0;
     }
 
     .assignment-title {
@@ -344,6 +362,53 @@
 
     .assignment-due-date.upcoming {
       color: #00539B;
+    }
+
+    .assignment-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .assignment-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .assignment-badge.submitted {
+      background: #DCFCE7;
+      color: #059669;
+    }
+
+    .assignment-badge.late {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+
+    .assignment-badge.completed {
+      background: #DBEAFE;
+      color: #0284C7;
+    }
+
+    .assignment-badge.missing {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+
+    .assignment-grade {
+      font-size: 11px;
+      font-weight: 600;
+      color: #059669;
+      padding: 3px 8px;
+      background: #F0FDF4;
+      border-radius: 12px;
+      border: 1px solid #BBF7D0;
     }
 
     .empty-state {
@@ -905,6 +970,9 @@
           <i id="assignmentsSectionIcon" data-lucide="clock" style="width: 18px; height: 18px;"></i>
           <span id="assignmentsSectionText">Due Today</span>
         </span>
+        <button id="toggleGradesBtn" class="btn-icon" title="Toggle grade visibility" style="padding: 6px; background: transparent; border: 1px solid #E5E7EB; border-radius: 6px;">
+          <i id="gradesEyeIcon" data-lucide="eye-off" style="width: 16px; height: 16px; color: #6B7280;"></i>
+        </button>
       </div>
       <div id="assignmentsList">
         <div class="loading">
@@ -917,11 +985,19 @@
 
   <!-- AI Dashboard Tab -->
   <div class="tab-content" id="ai-dashboard">
-    <div style="margin-bottom: 16px;">
-      <button class="btn-primary" id="generateInsightsBtn" style="width: 100%; padding: 14px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div style="margin-bottom: 12px; display: flex; gap: 8px;">
+      <button class="btn-primary" id="generateInsightsBtn" style="flex: 1; padding: 14px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
         <i data-lucide="zap" style="width: 18px; height: 18px;"></i>
         <span id="generateInsightsBtnText">Loading...</span>
       </button>
+      <button class="btn-secondary" id="openDashboardBtn" style="padding: 14px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;" title="Open full dashboard in new tab">
+        <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+        <span>Full Dashboard</span>
+      </button>
+    </div>
+
+    <div id="insightsTimestamp" style="display: none; font-size: 11px; color: #6B7280; text-align: center; margin-bottom: 12px;">
+      Last generated: <span id="insightsTimestampText">-</span>
     </div>
 
     <div id="insightsContent">
@@ -1002,6 +1078,27 @@
           <p style="font-size: 11px; color: #6B7280; margin-top: 6px;">
             Optional: For direct API access in AI Dashboard. Get your key from <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B;">console.anthropic.com</a>
           </p>
+        </div>
+
+        <div class="canvas-url" style="margin-top: 16px;">
+          <label class="canvas-url-label">Assignment Time Range</label>
+          <p style="font-size: 12px; color: #6B7280; margin: 6px 0 12px 0;">
+            Limit which assignments are shown based on their due dates
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="font-size: 12px; color: #374151; display: block; margin-bottom: 6px;">Weeks Before</label>
+              <input type="number" id="assignmentWeeksBefore" min="1" max="52" value="2" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px;">
+            </div>
+            <div>
+              <label style="font-size: 12px; color: #374151; display: block; margin-bottom: 6px;">Weeks After</label>
+              <input type="number" id="assignmentWeeksAfter" min="1" max="52" value="2" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px;">
+            </div>
+          </div>
+          <button id="saveTimeRange" style="width: 100%; margin-top: 12px; padding: 8px 16px; background: #00539B; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;">
+            Save Time Range
+          </button>
+          <div class="status-message" id="timeRangeStatus"></div>
         </div>
 
         <div class="canvas-url" style="margin-top: 16px;">

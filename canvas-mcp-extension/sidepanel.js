@@ -2,6 +2,8 @@
 let allAssignments = [];
 let currentFilter = 'all';
 let autoRefreshInterval = null;
+let assignmentTimeRange = { weeksBefore: 2, weeksAfter: 2 }; // Default 2 weeks before and after
+let showGrades = false; // Default to hidden
 
 // Tab switching
 const tabButtons = document.querySelectorAll('.tab-button');
@@ -117,8 +119,13 @@ function renderAssignments() {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
+  // Calculate time range boundaries
+  const timeRangeStart = new Date(now.getTime() - assignmentTimeRange.weeksBefore * 7 * 24 * 60 * 60 * 1000);
+  const timeRangeEnd = new Date(now.getTime() + assignmentTimeRange.weeksAfter * 7 * 24 * 60 * 60 * 1000);
+
   console.log('[renderAssignments] Current filter:', currentFilter);
   console.log('[renderAssignments] Total assignments:', allAssignments.length);
+  console.log('[renderAssignments] Time range:', timeRangeStart, 'to', timeRangeEnd);
 
   if (allAssignments.length === 0) {
     assignmentsList.innerHTML = `
@@ -136,32 +143,41 @@ function renderAssignments() {
     return;
   }
 
+  // Apply time range filter first (to all assignments with due dates)
+  let timeFilteredAssignments = allAssignments.filter(a => {
+    if (!a.dueDate) return false; // Exclude assignments without due dates from time filter
+    const dueDate = new Date(a.dueDate);
+    return dueDate >= timeRangeStart && dueDate <= timeRangeEnd;
+  });
+
+  console.log('[renderAssignments] After time filter:', timeFilteredAssignments.length);
+
   // Filter assignments based on currentFilter
   let filteredAssignments;
 
   if (currentFilter === 'all') {
-    // Show all assignments, including those without due dates
-    filteredAssignments = [...allAssignments];
-    console.log('[renderAssignments] Showing ALL assignments:', filteredAssignments.length);
+    // Show all assignments within time range, plus those without due dates
+    filteredAssignments = [...timeFilteredAssignments, ...allAssignments.filter(a => !a.dueDate)];
+    console.log('[renderAssignments] Showing ALL assignments (in range + no due date):', filteredAssignments.length);
   } else {
-    // For other filters, only show assignments with due dates
-    filteredAssignments = allAssignments.filter(a => a.dueDate);
-    console.log('[renderAssignments] Assignments with due dates:', filteredAssignments.length);
+    // For other filters, only use time-filtered assignments
+    filteredAssignments = timeFilteredAssignments;
+    console.log('[renderAssignments] Assignments with due dates in range:', filteredAssignments.length);
 
     if (currentFilter === 'overdue') {
       filteredAssignments = filteredAssignments.filter(a => {
-        return new Date(a.dueDate) < now && !a.submitted;
+        return new Date(a.dueDate) < now && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Overdue assignments:', filteredAssignments.length);
     } else if (currentFilter === 'due-today') {
       filteredAssignments = filteredAssignments.filter(a => {
         const dueDate = new Date(a.dueDate);
-        return dueDate >= todayStart && dueDate < todayEnd && !a.submitted;
+        return dueDate >= todayStart && dueDate < todayEnd && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Due today assignments:', filteredAssignments.length);
     } else if (currentFilter === 'upcoming') {
       filteredAssignments = filteredAssignments.filter(a => {
-        return new Date(a.dueDate) >= todayEnd && !a.submitted;
+        return new Date(a.dueDate) >= todayEnd && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Upcoming assignments:', filteredAssignments.length);
     }
@@ -237,7 +253,7 @@ function renderAssignments() {
 
   // Render assignments
   assignmentsList.innerHTML = filteredAssignments.map(assignment => {
-    const isCompleted = assignment.submitted;
+    const isCompleted = assignment.submission?.submitted;
     const hasDueDate = !!assignment.dueDate;
 
     let isOverdue = false;
@@ -269,23 +285,69 @@ function renderAssignments() {
     else if (isDueToday) dueDateClass += ' due-today';
     else if (isUpcoming) dueDateClass += ' upcoming';
 
-    let statusText = '';
-    if (isCompleted) statusText = '✓ Submitted';
-    // Due today and overdue status indicated by color, no label needed
-
     const assignmentUrl = assignment.url || '#';
+    const badges = getAssignmentBadges(assignment);
+    const gradeDisplay = getGradeDisplay(assignment);
 
     return `
       <a href="${escapeHtml(assignmentUrl)}" target="_blank" class="${cardClass}">
-        <div class="assignment-title">${escapeHtml(assignment.name || 'Untitled Assignment')}</div>
-        <div class="assignment-meta">
-          <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
-          ${statusText ? `<span>${statusText}</span>` : ''}
+        <div class="assignment-info">
+          <div class="assignment-title">${escapeHtml(assignment.name || 'Untitled Assignment')}</div>
+          <div class="assignment-meta">
+            <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
+            ${assignment.pointsPossible ? `<span>${assignment.pointsPossible} pts</span>` : ''}
+          </div>
+          <div class="${dueDateClass}">Due: ${dueDateText}</div>
         </div>
-        <div class="${dueDateClass}">Due: ${dueDateText}</div>
+        ${badges || gradeDisplay ? `<div class="assignment-badges">${badges}${gradeDisplay}</div>` : ''}
       </a>
     `;
   }).join('');
+}
+
+// Get assignment badges similar to dashboard
+function getAssignmentBadges(assignment) {
+  const badges = [];
+
+  if (assignment.submission?.submitted) {
+    // Show submitted badge first
+    badges.push('<span class="assignment-badge submitted">Submitted</span>');
+
+    // Add late badge if submission was late
+    if (assignment.submission.late) {
+      badges.push('<span class="assignment-badge late">Late</span>');
+    }
+  }
+
+  if (assignment.submission?.workflowState === 'graded') {
+    badges.push('<span class="assignment-badge completed">Graded</span>');
+  }
+
+  if (assignment.submission?.missing && !assignment.submission?.submitted) {
+    badges.push('<span class="assignment-badge missing">Missing</span>');
+  }
+
+  return badges.join('');
+}
+
+// Get grade display if enabled
+function getGradeDisplay(assignment) {
+  if (!showGrades) return '';
+
+  const submission = assignment.submission;
+  if (!submission || submission.workflowState !== 'graded') return '';
+
+  const score = submission.score;
+  const pointsPossible = assignment.pointsPossible;
+
+  if (score !== undefined && score !== null && pointsPossible) {
+    const percentage = ((score / pointsPossible) * 100).toFixed(1);
+    return `<span class="assignment-grade">${score}/${pointsPossible} (${percentage}%)</span>`;
+  } else if (score !== undefined && score !== null) {
+    return `<span class="assignment-grade">${score} pts</span>`;
+  }
+
+  return '';
 }
 
 // Load and display assignments
@@ -307,7 +369,16 @@ async function loadAssignments() {
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-      const assignmentsWithDates = allAssignments.filter(a => a.dueDate && !a.submitted);
+      // Calculate time range boundaries
+      const timeRangeStart = new Date(now.getTime() - assignmentTimeRange.weeksBefore * 7 * 24 * 60 * 60 * 1000);
+      const timeRangeEnd = new Date(now.getTime() + assignmentTimeRange.weeksAfter * 7 * 24 * 60 * 60 * 1000);
+
+      // Filter to assignments within time range
+      const assignmentsWithDates = allAssignments.filter(a => {
+        if (!a.dueDate || a.submitted) return false;
+        const dueDate = new Date(a.dueDate);
+        return dueDate >= timeRangeStart && dueDate <= timeRangeEnd;
+      });
 
       const overdueCount = assignmentsWithDates.filter(a => new Date(a.dueDate) < now).length;
       const dueTodayCount = assignmentsWithDates.filter(a => {
@@ -396,11 +467,15 @@ const closeSettingsModal = document.getElementById('closeSettingsModal');
 settingsBtn.addEventListener('click', async () => {
   settingsModal.classList.add('show');
 
-  // Load current API key
-  const result = await chrome.storage.local.get(['claudeApiKey']);
+  // Load current settings
+  const result = await chrome.storage.local.get(['claudeApiKey', 'assignmentWeeksBefore', 'assignmentWeeksAfter']);
   if (result.claudeApiKey) {
     document.getElementById('claudeApiKey').value = result.claudeApiKey;
   }
+
+  // Load time range settings
+  document.getElementById('assignmentWeeksBefore').value = result.assignmentWeeksBefore || 2;
+  document.getElementById('assignmentWeeksAfter').value = result.assignmentWeeksAfter || 2;
 });
 
 closeSettingsModal.addEventListener('click', () => {
@@ -642,9 +717,69 @@ async function saveAutoRefreshSetting(enabled) {
   }
 }
 
+// Toggle grades button event listener
+document.getElementById('toggleGradesBtn').addEventListener('click', async () => {
+  showGrades = !showGrades;
+
+  try {
+    await chrome.storage.local.set({ showGrades });
+    updateGradesIcon();
+    renderAssignments(); // Re-render to show/hide grades
+  } catch (error) {
+    console.error('Error saving show grades setting:', error);
+  }
+});
+
+// Update grades icon based on state
+function updateGradesIcon() {
+  const icon = document.getElementById('gradesEyeIcon');
+  if (!icon) return;
+
+  const iconName = showGrades ? 'eye' : 'eye-off';
+  icon.setAttribute('data-lucide', iconName);
+
+  // Re-initialize this specific icon
+  if (typeof initializeLucide === 'function') {
+    initializeLucide();
+  }
+}
+
 // Auto-refresh toggle event listener
 document.getElementById('autoRefreshToggle').addEventListener('change', (e) => {
   saveAutoRefreshSetting(e.target.checked);
+});
+
+// Save time range settings
+document.getElementById('saveTimeRange').addEventListener('click', async () => {
+  const weeksBefore = parseInt(document.getElementById('assignmentWeeksBefore').value);
+  const weeksAfter = parseInt(document.getElementById('assignmentWeeksAfter').value);
+
+  if (isNaN(weeksBefore) || weeksBefore < 1 || weeksBefore > 52) {
+    showStatusMessage('timeRangeStatus', 'Weeks before must be between 1 and 52', 'error');
+    return;
+  }
+
+  if (isNaN(weeksAfter) || weeksAfter < 1 || weeksAfter > 52) {
+    showStatusMessage('timeRangeStatus', 'Weeks after must be between 1 and 52', 'error');
+    return;
+  }
+
+  try {
+    await chrome.storage.local.set({
+      assignmentWeeksBefore: weeksBefore,
+      assignmentWeeksAfter: weeksAfter
+    });
+
+    // Update global state
+    assignmentTimeRange = { weeksBefore, weeksAfter };
+
+    showStatusMessage('timeRangeStatus', '✓ Saved', 'success');
+
+    // Re-render assignments with new time range
+    renderAssignments();
+  } catch (error) {
+    showStatusMessage('timeRangeStatus', '✗ Save failed', 'error');
+  }
 });
 
 // API Key toggle visibility
@@ -675,6 +810,84 @@ document.getElementById('claudeApiKey').addEventListener('change', async (e) => 
   }
 });
 
+// Load time range settings
+async function loadTimeRangeSettings() {
+  try {
+    const result = await chrome.storage.local.get(['assignmentWeeksBefore', 'assignmentWeeksAfter']);
+    assignmentTimeRange = {
+      weeksBefore: result.assignmentWeeksBefore || 2,
+      weeksAfter: result.assignmentWeeksAfter || 2
+    };
+    console.log('Loaded time range settings:', assignmentTimeRange);
+  } catch (error) {
+    console.error('Error loading time range settings:', error);
+  }
+}
+
+// Load grade visibility setting
+async function loadGradeVisibilitySetting() {
+  try {
+    const result = await chrome.storage.local.get(['showGrades']);
+    showGrades = result.showGrades || false;
+    console.log('Loaded grade visibility setting:', showGrades);
+    updateGradesIcon(); // Update icon on load
+  } catch (error) {
+    console.error('Error loading grade visibility setting:', error);
+  }
+}
+
+// Update insights timestamp display
+function updateInsightsTimestamp(timestamp) {
+  const timestampEl = document.getElementById('insightsTimestamp');
+  const timestampText = document.getElementById('insightsTimestampText');
+
+  if (timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    let timeAgo;
+    if (days > 0) {
+      timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+      timeAgo = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+      timeAgo = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+      timeAgo = 'just now';
+    }
+
+    timestampText.textContent = timeAgo;
+    timestampEl.style.display = 'block';
+  } else {
+    timestampEl.style.display = 'none';
+  }
+}
+
+// Load saved insights from storage
+async function loadSavedInsights() {
+  try {
+    const result = await chrome.storage.local.get(['savedInsights', 'insightsTimestamp']);
+    if (result.savedInsights) {
+      const insightsContent = document.getElementById('insightsContent');
+      insightsContent.innerHTML = `
+        <div class="insights-loaded">
+          ${result.savedInsights}
+        </div>
+      `;
+
+      // Update timestamp if available
+      if (result.insightsTimestamp) {
+        updateInsightsTimestamp(result.insightsTimestamp);
+      }
+    }
+  } catch (error) {
+    console.error('Error loading saved insights:', error);
+  }
+}
+
 // Initial load
 async function initialize() {
   await updateCanvasUrl();
@@ -695,11 +908,20 @@ async function initialize() {
     }
   }
 
+  // Load time range settings
+  await loadTimeRangeSettings();
+
+  // Load grade visibility setting
+  await loadGradeVisibilitySetting();
+
   // Load auto-refresh setting
   await loadAutoRefreshSetting();
 
   // Update AI insights button text
   await updateInsightsButtonText();
+
+  // Load saved insights
+  await loadSavedInsights();
 
   // Trigger initial refresh on extension open
   await refreshCanvasData();
@@ -727,7 +949,7 @@ async function generateAIInsights() {
   if (!result.claudeApiKey) {
     // Show MCP guidance if no API key
     const assignmentsData = prepareAssignmentsForAI();
-    insightsContent.innerHTML = `
+    const mcpGuidance = `
       <div class="insights-loaded">
         <h3 style="margin-bottom: 12px;">Ask Claude for AI-Powered Insights</h3>
         <p style="margin-bottom: 16px; color: #6B7280; font-size: 14px;">Claude Desktop already has access to all your Canvas data via MCP. Open Claude and try asking:</p>
@@ -756,6 +978,15 @@ async function generateAIInsights() {
         </div>
       </div>
     `;
+    insightsContent.innerHTML = mcpGuidance;
+
+    // Save MCP guidance (so it persists)
+    await chrome.storage.local.set({
+      savedInsights: mcpGuidance,
+      insightsTimestamp: Date.now()
+    });
+    document.getElementById('insightsTimestamp').style.display = 'none';
+
     return;
   }
 
@@ -772,19 +1003,39 @@ async function generateAIInsights() {
     const assignmentsData = prepareAssignmentsForAI();
     const insights = await callClaudeWithStructuredOutput(result.claudeApiKey, assignmentsData);
 
+    const formattedInsights = formatStructuredInsights(insights);
     insightsContent.innerHTML = `
       <div class="insights-loaded fade-in">
-        ${formatStructuredInsights(insights)}
+        ${formattedInsights}
       </div>
     `;
+
+    // Save insights and timestamp to storage
+    const timestamp = Date.now();
+    await chrome.storage.local.set({
+      savedInsights: formattedInsights,
+      insightsTimestamp: timestamp
+    });
+
+    // Update timestamp display
+    updateInsightsTimestamp(timestamp);
+
   } catch (error) {
     console.error('Error generating insights:', error);
-    insightsContent.innerHTML = `
+    const errorHtml = `
       <div class="insights-error">
         <strong>Failed to generate insights:</strong> ${escapeHtml(error.message)}
         <p style="margin-top: 8px; font-size: 12px;">Check your API key in settings or use Claude Desktop via MCP instead.</p>
       </div>
     `;
+    insightsContent.innerHTML = errorHtml;
+
+    // Save error state
+    await chrome.storage.local.set({
+      savedInsights: errorHtml,
+      insightsTimestamp: Date.now()
+    });
+    document.getElementById('insightsTimestamp').style.display = 'none';
   } finally {
     btn.disabled = false;
   }
@@ -977,6 +1228,11 @@ function escapeHtml(text) {
 
 // Generate Insights Button
 document.getElementById('generateInsightsBtn').addEventListener('click', generateAIInsights);
+
+// Open Dashboard Button
+document.getElementById('openDashboardBtn').addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
+});
 
 // Setup instructions toggle
 const setupToggle = document.getElementById('setupToggle');
