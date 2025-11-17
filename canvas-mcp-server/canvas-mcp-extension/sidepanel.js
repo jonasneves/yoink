@@ -178,7 +178,8 @@ function renderAssignments() {
   assignmentsList.innerHTML = filteredAssignments.map(assignment => {
     const dueDate = new Date(assignment.dueDate);
     const isOverdue = dueDate < now;
-    const isDueSoon = !isOverdue && (dueDate - now) < 24 * 60 * 60 * 1000;
+    const isDueToday = !isOverdue && dueDate >= todayStart && dueDate < todayEnd;
+    const isUpcoming = dueDate >= todayEnd;
     const isCompleted = assignment.submitted;
 
     let cardClass = 'assignment-card';
@@ -192,13 +193,16 @@ function renderAssignments() {
       minute: '2-digit'
     });
 
-    let dueDateClass = 'assignment-due';
-    if (isDueSoon) dueDateClass += ' soon';
+    // Color-code due date based on category
+    let dueDateClass = 'assignment-due-date';
+    if (isOverdue) dueDateClass += ' overdue';
+    else if (isDueToday) dueDateClass += ' due-today';
+    else if (isUpcoming) dueDateClass += ' upcoming';
 
     let statusText = '';
     if (isCompleted) statusText = '✓ Submitted';
     else if (isOverdue) statusText = '⚠ Overdue';
-    else if (isDueSoon) statusText = '⏰ Due soon';
+    else if (isDueToday) statusText = '⏰ Due today';
 
     const assignmentUrl = assignment.url || '#';
 
@@ -209,7 +213,7 @@ function renderAssignments() {
           <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
           ${statusText ? `<span>${statusText}</span>` : ''}
         </div>
-        <div class="assignment-due-date ${dueDateClass}">Due: ${dueDateText}</div>
+        <div class="${dueDateClass}">Due: ${dueDateText}</div>
       </a>
     `;
   }).join('');
