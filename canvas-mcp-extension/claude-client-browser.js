@@ -58,7 +58,18 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
  * @returns {string} Formatted prompt
  */
 function buildPrompt(assignmentsData, promptType) {
+  // Get today's date in a clear format
+  const today = new Date();
+  const todayFormatted = today.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   const basePrompt = `Analyze this student's Canvas assignments and create a ${promptType === 'dashboard' ? '7-day Weekly Battle Plan' : 'Weekly Battle Plan'}.
+
+TODAY'S DATE: ${todayFormatted}
 
 Current Status:
 - Total Assignments: ${assignmentsData.totalAssignments}
@@ -83,7 +94,9 @@ SCORING GUIDANCE:
 - start_hour: Use 24-hour format (0-23), e.g., 9 for 9 AM, 14 for 2 PM
 - duration_hours: Decimal hours, e.g., 1.5 for 90 minutes, 2.5 for 2 hours 30 minutes
 
-Create a realistic 7-day plan starting from today. Be practical with time estimates and daily schedules.`;
+Create a realistic 7-day plan starting from TODAY (${todayFormatted}).
+The first day should be ${todayFormatted.split(',')[0]} (today).
+Be practical with time estimates and daily schedules.`;
   } else {
     return basePrompt + `
 
