@@ -1,6 +1,6 @@
 // Global state
 let allAssignments = [];
-let currentFilter = 'due-today';
+let currentFilter = 'all';
 let autoRefreshInterval = null;
 
 // Tab switching
@@ -272,7 +272,6 @@ async function loadAssignments() {
       document.getElementById('overdueCount').textContent = overdueCount;
       document.getElementById('dueTodayCount').textContent = dueTodayCount;
       document.getElementById('upcomingCount').textContent = upcomingCount;
-      document.getElementById('allCount').textContent = allAssignments.length;
 
       // Set initial active state on due-today card
       document.querySelectorAll('.summary-card').forEach(card => {

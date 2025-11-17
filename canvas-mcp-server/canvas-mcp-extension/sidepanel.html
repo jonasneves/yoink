@@ -58,20 +58,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #6B7280;
       transition: all 0.15s ease;
     }
 
     .btn-icon:hover {
       background: #F3F4F6;
-      color: #374151;
     }
 
     .btn-icon svg {
       width: 18px;
       height: 18px;
-      stroke: currentColor;
-      fill: none;
+      stroke: #6B7280 !important;
+      fill: none !important;
+    }
+
+    .btn-icon:hover svg {
+      stroke: #374151 !important;
     }
 
     .title {
@@ -706,10 +708,6 @@
       <div class="summary-card upcoming" data-filter="upcoming">
         <div class="summary-value" id="upcomingCount">-</div>
         <div class="summary-label">Upcoming</div>
-      </div>
-      <div class="summary-card" data-filter="all" style="border-color: #6B7280;">
-        <div class="summary-value" id="allCount" style="color: #374151;">-</div>
-        <div class="summary-label">All</div>
       </div>
     </div>
 
