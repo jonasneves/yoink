@@ -61,16 +61,13 @@ function setupEventListeners() {
     openSettingsModal();
   });
 
-  // Settings modal
+  // Settings modal close handlers
   document.getElementById('closeSettingsBtn').addEventListener('click', closeSettingsModal);
   document.getElementById('cancelSettingsBtn').addEventListener('click', closeSettingsModal);
-  document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+  document.getElementById('saveSettingsBtn').addEventListener('click', closeSettingsModal);
 
   // Click outside modal to close
   document.querySelector('.modal-overlay').addEventListener('click', closeSettingsModal);
-
-  // Toggle API key visibility
-  document.getElementById('toggleApiKeyBtn').addEventListener('click', toggleApiKeyVisibility);
 
   // Generate insights button
   document.getElementById('generateInsightsBtn').addEventListener('click', generateAIInsights);
@@ -427,54 +424,11 @@ function escapeHtml(text) {
 function openSettingsModal() {
   const modal = document.getElementById('settingsModal');
   modal.classList.add('open');
-
-  // Load current settings
-  chrome.storage.local.get(['canvasUrl', 'autoRefresh', 'claudeApiKey'], (result) => {
-    document.getElementById('canvasUrlDisplay').value = result.canvasUrl || 'Not configured';
-    document.getElementById('autoRefresh').checked = result.autoRefresh || false;
-    document.getElementById('claudeApiKey').value = result.claudeApiKey || '';
-  });
 }
 
 function closeSettingsModal() {
   const modal = document.getElementById('settingsModal');
   modal.classList.remove('open');
-}
-
-function toggleApiKeyVisibility() {
-  const input = document.getElementById('claudeApiKey');
-  const eyeIcon = document.getElementById('eyeIcon');
-  const eyeOffIcon = document.getElementById('eyeOffIcon');
-
-  if (input.type === 'password') {
-    input.type = 'text';
-    eyeIcon.style.display = 'none';
-    eyeOffIcon.style.display = 'block';
-  } else {
-    input.type = 'password';
-    eyeIcon.style.display = 'block';
-    eyeOffIcon.style.display = 'none';
-  }
-}
-
-async function saveSettings() {
-  const autoRefresh = document.getElementById('autoRefresh').checked;
-  const claudeApiKey = document.getElementById('claudeApiKey').value.trim();
-
-  try {
-    await chrome.storage.local.set({
-      autoRefresh: autoRefresh,
-      claudeApiKey: claudeApiKey
-    });
-
-    closeSettingsModal();
-
-    // Update auto-refresh
-    setupAutoRefresh(autoRefresh);
-  } catch (error) {
-    console.error('Error saving settings:', error);
-    alert('Failed to save settings');
-  }
 }
 
 // Load time range settings
