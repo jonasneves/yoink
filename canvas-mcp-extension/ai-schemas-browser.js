@@ -79,12 +79,10 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
           },
           recommendations: {
             type: "array",
-            description: "Actionable recommendations for managing the workload",
+            description: "Actionable recommendations for managing the workload (provide 1-5 recommendations)",
             items: {
               type: "string"
-            },
-            minItems: 1,
-            maxItems: 5
+            }
           }
         },
         required: ["overall", "total_hours_needed", "intensity_score", "recommendations"],
@@ -92,12 +90,10 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
       },
       study_tips: {
         type: "array",
-        description: "General study tips relevant to current assignments",
+        description: "General study tips relevant to current assignments (provide 1-5 tips)",
         items: {
           type: "string"
-        },
-        minItems: 1,
-        maxItems: 5
+        }
       }
     },
     required: ["priority_tasks", "workload_assessment", "study_tips"],

@@ -74,12 +74,10 @@ export const SIDEPANEL_INSIGHTS_SCHEMA = {
           },
           recommendations: {
             type: "array",
-            description: "Actionable recommendations for managing the workload",
+            description: "Actionable recommendations for managing the workload (provide 1-5 recommendations)",
             items: {
               type: "string"
-            },
-            minItems: 1,
-            maxItems: 5
+            }
           }
         },
         required: ["overall", "total_hours_needed", "intensity_score", "recommendations"],
@@ -87,12 +85,10 @@ export const SIDEPANEL_INSIGHTS_SCHEMA = {
       },
       study_tips: {
         type: "array",
-        description: "General study tips relevant to current assignments",
+        description: "General study tips relevant to current assignments (provide 1-5 tips)",
         items: {
           type: "string"
-        },
-        minItems: 1,
-        maxItems: 5
+        }
       }
     },
     required: ["priority_tasks", "workload_assessment", "study_tips"],
@@ -154,12 +150,10 @@ export const DASHBOARD_SCHEDULE_SCHEMA = {
           },
           recommendations: {
             type: "array",
-            description: "Actionable recommendations for managing the workload",
+            description: "Actionable recommendations for managing the workload (provide 1-5 recommendations)",
             items: {
               type: "string"
-            },
-            minItems: 1,
-            maxItems: 5
+            }
           }
         },
         required: ["overall", "total_hours_needed", "intensity_score", "recommendations"],
@@ -167,7 +161,7 @@ export const DASHBOARD_SCHEDULE_SCHEMA = {
       },
       weekly_plan: {
         type: "array",
-        description: "7-day study schedule with daily breakdowns",
+        description: "7-day study schedule with daily breakdowns (provide exactly 7 days)",
         items: {
           type: "object",
           properties: {
@@ -213,18 +207,14 @@ export const DASHBOARD_SCHEDULE_SCHEMA = {
           },
           required: ["day", "focus", "workload_score", "tasks"],
           additionalProperties: false
-        },
-        minItems: 7,
-        maxItems: 7
+        }
       },
       study_tips: {
         type: "array",
-        description: "General study tips for the week",
+        description: "General study tips for the week (provide 1-5 tips)",
         items: {
           type: "string"
-        },
-        minItems: 1,
-        maxItems: 5
+        }
       }
     },
     required: ["priority_tasks", "workload_assessment", "weekly_plan", "study_tips"],
