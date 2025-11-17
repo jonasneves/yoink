@@ -369,104 +369,14 @@ function prepareAssignmentsForAI() {
   };
 }
 
-// Call Claude API with structured outputs
+// Phase 4: Use shared Claude client to reduce code duplication
 async function callClaudeWithStructuredOutput(apiKey, assignmentsData) {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 3000,
-      messages: [{
-        role: 'user',
-        content: `Analyze this student's Canvas assignments and create a Weekly Battle Plan.
-
-Current Status:
-- Total Assignments: ${assignmentsData.totalAssignments}
-- Courses: ${assignmentsData.courses.join(', ')}
-- Due this week: ${assignmentsData.upcoming.length}
-- Overdue: ${assignmentsData.overdue.length}
-- Completed: ${assignmentsData.completed}
-
-Upcoming Assignments (next 7 days):
-${assignmentsData.upcoming.slice(0, 8).map(a => `- ${a.name} (${a.course}) - Due: ${new Date(a.dueDate).toLocaleDateString()}, ${a.points} points`).join('\n')}
-
-Overdue Assignments:
-${assignmentsData.overdue.slice(0, 5).map(a => `- ${a.name} (${a.course}) - Was due: ${new Date(a.dueDate).toLocaleDateString()}, ${a.points} points`).join('\n')}
-
-Create a weekly battle plan as a JSON object with this EXACT structure:
-{
-  "priority_tasks": [
-    {
-      "task": "assignment name and action",
-      "reason": "why this is a priority",
-      "urgency": "critical|high|medium|low",
-      "estimated_hours": 2.5
-    }
-  ],
-  "workload_assessment": {
-    "overall": "one sentence summary of the week's workload",
-    "total_hours_needed": 25,
-    "intensity_level": "extreme|high|moderate|manageable",
-    "recommendations": ["tip 1", "tip 2", "tip 3"]
-  },
-  "weekly_plan": [
-    {
-      "day": "Monday, Nov 18",
-      "focus": "main goal for the day",
-      "workload": "extreme|high|medium|low",
-      "tasks": [
-        {
-          "assignment": "assignment name",
-          "time_block": "9:00 AM - 12:00 PM",
-          "notes": "specific guidance for this work session"
-        }
-      ]
-    }
-  ],
-  "study_tips": ["tip 1", "tip 2", "tip 3", "tip 4"]
-}
-
-Return ONLY the JSON object, no other text. Be realistic with time estimates. Create a 7-day plan starting from today.`
-      }]
-    })
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || `API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const textContent = data.content[0].text;
-
-  // Extract JSON from the response (Claude might wrap it in markdown code blocks)
-  let jsonText = textContent;
-
-  // Remove markdown code blocks if present
-  const codeBlockMatch = textContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-  if (codeBlockMatch) {
-    jsonText = codeBlockMatch[1];
-  }
-
-  // Find the outermost JSON object
-  const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error('No valid JSON found in response');
-  }
-
-  try {
-    return JSON.parse(jsonMatch[0]);
-  } catch (parseError) {
-    console.error('JSON parse error:', parseError);
-    console.error('Attempted to parse:', jsonMatch[0].substring(0, 500));
-    throw new Error(`Failed to parse AI response: ${parseError.message}`);
-  }
+  return await window.ClaudeClient.callClaude(
+    apiKey,
+    assignmentsData,
+    window.AISchemas.DASHBOARD_SCHEDULE_SCHEMA,
+    'dashboard'
+  );
 }
 
 // Helper function to create Lucide icon SVG
@@ -490,21 +400,19 @@ function getLucideIconPaths(iconName) {
 
 // Format structured insights for display (Dashboard focuses ONLY on weekly schedule)
 function formatStructuredInsights(insights) {
-  const workloadColors = {
-    extreme: '#EF4444',
-    high: '#F97316',
-    medium: '#FBBF24',
-    low: '#10B981'
-  };
+  // Phase 3: Removed hardcoded color maps - using mappers instead
 
   // Generate Weekly Plan HTML
   const weeklyPlanHtml = insights.weekly_plan.map((day, dayIdx) => {
     const tasksHtml = day.tasks.map(task => {
+      // Phase 3: Format time blocks from structured start_hour + duration_hours
+      const timeBlock = window.AIMappers.formatTimeBlock(task.start_hour, task.duration_hours);
+
       return `
         <div style="padding: 16px; background: white; border-left: 4px solid #00539B; border-radius: 6px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
             <strong style="color: #111827; font-size: 15px; flex: 1;">${escapeHtml(task.assignment)}</strong>
-            <span style="background: #E2E6ED; color: #00539B; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${escapeHtml(task.time_block)}</span>
+            <span style="background: #E2E6ED; color: #00539B; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
           </div>
           <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
             ${createLucideIcon('lightbulb', 14, '#6B7280')}
@@ -518,6 +426,10 @@ function formatStructuredInsights(insights) {
     const dayId = `day-${dayIdx}`;
     const defaultBg = dayIdx === 0 || dayIdx === 1 ? '#FAFAFA' : 'white';
 
+    // Phase 3: Map workload_score (0-3) to label and color
+    const workloadLabel = window.AIMappers.mapWorkloadToLabel(day.workload_score);
+    const workloadColor = window.AIMappers.mapWorkloadToColor(day.workload_score);
+
     return `
       <div style="background: white; border-radius: 10px; border: 1px solid #E5E7EB; overflow: hidden; margin-bottom: 16px;">
         <button
@@ -527,7 +439,7 @@ function formatStructuredInsights(insights) {
           style="width: 100%; padding: 18px 24px; background: ${defaultBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;"
         >
           <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 12px; height: 12px; border-radius: 50%; background: ${workloadColors[day.workload]}; flex-shrink: 0;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: ${workloadColor}; flex-shrink: 0;"></div>
             <div style="text-align: left;">
               <div style="font-weight: 700; color: #111827; font-size: 18px;">${escapeHtml(day.day)}</div>
               <div style="font-size: 15px; color: #6B7280; margin-top: 4px;">${escapeHtml(day.focus)}</div>
@@ -536,7 +448,7 @@ function formatStructuredInsights(insights) {
           <div style="display: flex; align-items: center; gap: 16px;">
             <div style="text-align: right;">
               <div style="font-size: 14px; font-weight: 600; color: #374151;">${tasksCount} session${tasksCount !== 1 ? 's' : ''}</div>
-              <div style="font-size: 13px; color: #9CA3AF; text-transform: capitalize; margin-top: 2px;">${day.workload} load</div>
+              <div style="font-size: 13px; color: #9CA3AF; text-transform: capitalize; margin-top: 2px;">${workloadLabel} load</div>
             </div>
             <svg class="day-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="transition: transform 0.2s; transform: ${dayIdx < 2 ? 'rotate(180deg)' : 'rotate(0deg)'};">
               <polyline points="6 9 12 15 18 9"></polyline>
