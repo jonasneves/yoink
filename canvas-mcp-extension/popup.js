@@ -57,11 +57,6 @@ function hideOutput() {
   output.classList.remove('show');
 }
 
-// Open Dashboard
-document.getElementById('openDashboard').addEventListener('click', () => {
-  chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
-});
-
 document.getElementById('testListCourses').addEventListener('click', async () => {
   showOutput('Testing connection...');
   const response = await sendMCPRequest('tools/call', {

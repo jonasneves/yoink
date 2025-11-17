@@ -26,7 +26,7 @@ const MCP_TOOLS = {
   },
   list_all_assignments: {
     name: "list_all_assignments",
-    description: "Get all assignments across all courses with submission status - ideal for dashboard views",
+    description: "Get all assignments across all courses with submission status",
     inputSchema: {
       type: "object",
       properties: {},
