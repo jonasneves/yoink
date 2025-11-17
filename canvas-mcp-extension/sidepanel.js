@@ -936,6 +936,18 @@ async function initialize() {
   // Load saved insights
   await loadSavedInsights();
 
+  // Check if we need to open settings (from dashboard)
+  const settingsFlag = await chrome.storage.local.get(['openSettingsOnLoad']);
+  if (settingsFlag.openSettingsOnLoad) {
+    // Clear the flag
+    await chrome.storage.local.remove('openSettingsOnLoad');
+    // Open settings modal
+    const settingsModal = document.getElementById('settingsModal');
+    if (settingsModal) {
+      settingsModal.classList.add('show');
+    }
+  }
+
   // Trigger initial refresh on extension open
   await refreshCanvasData();
 }
@@ -957,34 +969,11 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn') || document.getElementById('regenerateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
-  // First, refresh Canvas data to ensure we have the latest assignments
-  if (btn) {
-    btn.disabled = true;
-    btn.classList.add('loading');
-  }
-  insightsContent.innerHTML = `
-    <div class="insights-loading">
-      <div class="spinner"></div>
-      <p>Refreshing Canvas data...</p>
-    </div>
-  `;
-
-  try {
-    await refreshCanvasData();
-  } catch (error) {
-    console.error('Error refreshing Canvas data:', error);
-    // Continue anyway with cached data
-  }
-
-  // Check if API key is set
+  // Check if API key is set first
   const result = await chrome.storage.local.get(['claudeApiKey']);
 
   if (!result.claudeApiKey) {
-    // Show settings prompt if no API key
-    if (btn) {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
+    // Show settings prompt if no API key (no need to refresh data)
     const settingsPrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
         <h3 style="margin-bottom: 12px; color: #111827;">Claude API Key Required</h3>
@@ -1011,14 +1000,34 @@ async function generateAIInsights() {
     `;
     insightsContent.innerHTML = settingsPrompt;
 
-    // Add click listener to open settings
+    // Add click listener to open settings modal
     document.getElementById('openSettingsBtn').addEventListener('click', () => {
-      chrome.runtime.openOptionsPage();
+      const settingsModal = document.getElementById('settingsModal');
+      settingsModal.classList.add('show');
     });
 
     document.getElementById('insightsTimestamp').style.display = 'none';
 
     return;
+  }
+
+  // Refresh Canvas data to ensure we have the latest assignments
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+  }
+  insightsContent.innerHTML = `
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Refreshing Canvas data...</p>
+    </div>
+  `;
+
+  try {
+    await refreshCanvasData();
+  } catch (error) {
+    console.error('Error refreshing Canvas data:', error);
+    // Continue anyway with cached data
   }
 
   // Generate insights with Claude API (data already refreshed above)

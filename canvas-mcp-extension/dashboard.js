@@ -232,30 +232,11 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
-  // First, refresh Canvas data to ensure we have the latest assignments
-  btn.disabled = true;
-  btn.classList.add('loading');
-  insightsContent.innerHTML = `
-    <div class="insights-loading">
-      <div class="spinner"></div>
-      <p>Refreshing Canvas data...</p>
-    </div>
-  `;
-
-  try {
-    await refreshCanvasData();
-  } catch (error) {
-    console.error('Error refreshing Canvas data:', error);
-    // Continue anyway with cached data
-  }
-
-  // Check if API key is set
+  // Check if API key is set first
   const result = await chrome.storage.local.get(['claudeApiKey']);
 
   if (!result.claudeApiKey) {
-    // Show settings prompt if no API key
-    btn.classList.remove('loading');
-    btn.disabled = false;
+    // Show settings prompt if no API key (no need to refresh data)
     const settingsPrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 60px 20px;">
         <h3 style="margin-bottom: 16px; color: #111827; font-size: 24px;">Claude API Key Required</h3>
@@ -282,12 +263,33 @@ async function generateAIInsights() {
     `;
     insightsContent.innerHTML = settingsPrompt;
 
-    // Add click listener to open settings
-    document.getElementById('openSettingsBtn').addEventListener('click', () => {
-      chrome.runtime.openOptionsPage();
+    // Add click listener to open extension sidepanel with settings
+    document.getElementById('openSettingsBtn').addEventListener('click', async () => {
+      // Store a flag to open settings modal when sidepanel opens
+      await chrome.storage.local.set({ openSettingsOnLoad: true });
+      // Get current window to open sidepanel
+      const currentWindow = await chrome.windows.getCurrent();
+      await chrome.sidePanel.open({ windowId: currentWindow.id });
     });
 
     return;
+  }
+
+  // Refresh Canvas data to ensure we have the latest assignments
+  btn.disabled = true;
+  btn.classList.add('loading');
+  insightsContent.innerHTML = `
+    <div class="insights-loading">
+      <div class="spinner"></div>
+      <p>Refreshing Canvas data...</p>
+    </div>
+  `;
+
+  try {
+    await refreshCanvasData();
+  } catch (error) {
+    console.error('Error refreshing Canvas data:', error);
+    // Continue anyway with cached data
   }
 
   // Generate insights with Claude API (data already refreshed above)
