@@ -325,35 +325,6 @@ document.getElementById('openDashboard').addEventListener('click', (e) => {
   chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
 });
 
-// Test Connection
-document.getElementById('testListCourses').addEventListener('click', async () => {
-  const button = document.getElementById('testListCourses');
-  const originalText = button.textContent;
-  button.textContent = 'Testing...';
-  button.disabled = true;
-
-  const response = await sendMCPRequest('tools/call', {
-    name: 'list_courses',
-    arguments: {}
-  });
-
-  try {
-    const content = response?.result?.content || response?.content;
-
-    if (content && content[0] && content[0].text) {
-      const data = JSON.parse(content[0].text);
-      showStatusMessage('canvasUrlStatus', `✓ Connected - Found ${data.count} courses`, 'success');
-    } else {
-      showStatusMessage('canvasUrlStatus', '✗ Connection failed', 'error');
-    }
-  } catch (error) {
-    showStatusMessage('canvasUrlStatus', `✗ Error: ${error.message}`, 'error');
-  } finally {
-    button.textContent = originalText;
-    button.disabled = false;
-  }
-});
-
 // Refresh Data
 document.getElementById('refreshData').addEventListener('click', async () => {
   const button = document.getElementById('refreshData');
