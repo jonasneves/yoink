@@ -501,13 +501,13 @@ function formatStructuredInsights(insights) {
   const weeklyPlanHtml = insights.weekly_plan.map((day, dayIdx) => {
     const tasksHtml = day.tasks.map(task => {
       return `
-        <div style="padding: 12px; background: white; border-left: 3px solid #00539B; border-radius: 4px; margin-bottom: 8px;">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
-            <strong style="color: #111827; font-size: 13px; flex: 1;">${escapeHtml(task.assignment)}</strong>
-            <span style="background: #E2E6ED; color: #00539B; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; white-space: nowrap; margin-left: 8px;">${escapeHtml(task.time_block)}</span>
+        <div style="padding: 16px; background: white; border-left: 4px solid #00539B; border-radius: 6px; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <strong style="color: #111827; font-size: 15px; flex: 1;">${escapeHtml(task.assignment)}</strong>
+            <span style="background: #E2E6ED; color: #00539B; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${escapeHtml(task.time_block)}</span>
           </div>
-          <p style="margin: 0; color: #6B7280; font-size: 12px; font-style: italic; display: flex; align-items: start; gap: 6px;">
-            ${createLucideIcon('lightbulb', 12, '#6B7280')}
+          <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
+            ${createLucideIcon('lightbulb', 14, '#6B7280')}
             <span>${escapeHtml(task.notes)}</span>
           </p>
         </div>
@@ -519,32 +519,32 @@ function formatStructuredInsights(insights) {
     const defaultBg = dayIdx === 0 || dayIdx === 1 ? '#FAFAFA' : 'white';
 
     return `
-      <div style="background: white; border-radius: 8px; border: 1px solid #E5E7EB; overflow: hidden; margin-bottom: 12px;">
+      <div style="background: white; border-radius: 10px; border: 1px solid #E5E7EB; overflow: hidden; margin-bottom: 16px;">
         <button
           class="day-plan-toggle"
           data-day-id="${dayId}"
           data-default-bg="${defaultBg}"
-          style="width: 100%; padding: 14px 16px; background: ${defaultBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;"
+          style="width: 100%; padding: 18px 24px; background: ${defaultBg}; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;"
         >
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 10px; height: 10px; border-radius: 50%; background: ${workloadColors[day.workload]}; flex-shrink: 0;"></div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: ${workloadColors[day.workload]}; flex-shrink: 0;"></div>
             <div style="text-align: left;">
-              <div style="font-weight: 700; color: #111827; font-size: 15px;">${escapeHtml(day.day)}</div>
-              <div style="font-size: 13px; color: #6B7280; margin-top: 2px;">${escapeHtml(day.focus)}</div>
+              <div style="font-weight: 700; color: #111827; font-size: 18px;">${escapeHtml(day.day)}</div>
+              <div style="font-size: 15px; color: #6B7280; margin-top: 4px;">${escapeHtml(day.focus)}</div>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
             <div style="text-align: right;">
-              <div style="font-size: 12px; font-weight: 600; color: #374151;">${tasksCount} session${tasksCount !== 1 ? 's' : ''}</div>
-              <div style="font-size: 11px; color: #9CA3AF; text-transform: capitalize;">${day.workload} load</div>
+              <div style="font-size: 14px; font-weight: 600; color: #374151;">${tasksCount} session${tasksCount !== 1 ? 's' : ''}</div>
+              <div style="font-size: 13px; color: #9CA3AF; text-transform: capitalize; margin-top: 2px;">${day.workload} load</div>
             </div>
-            <svg class="day-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="transition: transform 0.2s; transform: ${dayIdx < 2 ? 'rotate(180deg)' : 'rotate(0deg)'};">
+            <svg class="day-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" style="transition: transform 0.2s; transform: ${dayIdx < 2 ? 'rotate(180deg)' : 'rotate(0deg)'};">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
         </button>
-        <div id="${dayId}" class="day-content" style="display: ${dayIdx < 2 ? 'block' : 'none'}; padding: 16px; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
-          ${tasksCount > 0 ? tasksHtml : '<p style="color: #9CA3AF; text-align: center; padding: 20px 0; font-size: 13px;">No sessions scheduled - rest day!</p>'}
+        <div id="${dayId}" class="day-content" style="display: ${dayIdx < 2 ? 'block' : 'none'}; padding: 24px; border-top: 1px solid #E5E7EB; background: #FAFAFA;">
+          ${tasksCount > 0 ? tasksHtml : '<p style="color: #9CA3AF; text-align: center; padding: 32px 0; font-size: 15px;">No sessions scheduled - rest day!</p>'}
         </div>
       </div>
     `;
@@ -580,11 +580,11 @@ function formatStructuredInsights(insights) {
 
   // Dashboard only shows the daily schedule - other insights are in the sidepanel
   return `
-    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-      ${createLucideIcon('calendar', 24, '#00539B')}
+    <h3 style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-size: 20px;">
+      ${createLucideIcon('calendar', 28, '#00539B')}
       This Week's Schedule
     </h3>
-    <div style="margin-bottom: 24px;">
+    <div style="margin-bottom: 32px;">
       ${weeklyPlanHtml}
     </div>
   `;
