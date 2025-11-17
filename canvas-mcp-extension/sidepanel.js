@@ -102,7 +102,8 @@ function updateSectionHeader() {
   const config = filterConfig[currentFilter] || filterConfig['all'];
 
   if (iconEl && textEl) {
-    iconEl.innerHTML = config.icon;
+    // Build complete SVG element with proper attributes
+    iconEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${config.icon}</svg>`;
     iconEl.style.color = config.color;
     textEl.textContent = config.text;
   }
