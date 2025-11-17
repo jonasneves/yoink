@@ -17,7 +17,7 @@ body {
 .header {
   background: linear-gradient(to right, #dc2626, #0577B1);
   border-bottom: 1px solid #E5E7EB;
-  padding: 32px 40px;
+  padding: 20px 40px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -45,23 +45,8 @@ body {
 }
 
 .header-left {
-  flex: 1;
   position: relative;
   z-index: 1;
-}
-
-.header-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 6px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.header-subtitle {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 500;
 }
 
 .header-right {
@@ -309,8 +294,54 @@ body {
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  padding: 32px;
+  overflow: hidden;
   margin-bottom: 32px;
+}
+
+.assignments-section {
+  padding: 32px;
+}
+
+/* Section Header Card (Gray Background) */
+.section-header-card {
+  background: #F9FAFB;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-header-icon {
+  width: 56px;
+  height: 56px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00539B;
+  border: 1px solid #E5E7EB;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.section-header-text {
+  flex: 1;
+}
+
+.section-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.section-card-subtitle {
+  font-size: 14px;
+  color: #6B7280;
+  font-weight: 500;
 }
 
 .section-header {
@@ -375,6 +406,8 @@ body {
 /* AI Insights */
 .insights-content {
   min-height: 200px;
+  padding: 32px;
+  background: white;
 }
 
 .insights-placeholder {
@@ -401,9 +434,9 @@ body {
 }
 
 .insights-loaded {
-  padding: 32px;
   background: #F9FAFB;
-  border-radius: 12px;
+  border-radius: 8px;
+  padding: 24px;
   line-height: 1.8;
 }
 
@@ -816,10 +849,34 @@ body {
   }
 
   .header {
-    padding: 20px;
+    padding: 16px 20px;
   }
 
   .main-content {
+    padding: 20px;
+  }
+
+  .section-header-card {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .section-header-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .section-card-title {
+    font-size: 20px;
+  }
+
+  .section-card-subtitle {
+    font-size: 13px;
+  }
+
+  .insights-content {
     padding: 20px;
   }
 
