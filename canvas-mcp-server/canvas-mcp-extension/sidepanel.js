@@ -166,16 +166,55 @@ function renderAssignments() {
     }
   }
 
-  // Sort by due date (closest first, assignments without due dates at the end)
-  filteredAssignments.sort((a, b) => {
-    if (!a.dueDate && !b.dueDate) return 0;
-    if (!a.dueDate) return 1; // No due date goes to end
-    if (!b.dueDate) return -1; // No due date goes to end
-    return new Date(a.dueDate) - new Date(b.dueDate);
-  });
+  // Sort differently based on filter
+  if (currentFilter === 'all') {
+    // For 'all' view: Smart sorting by priority
+    // Priority: 1) Due today (not submitted), 2) Upcoming this week, 3) Overdue, 4) Future, 5) Completed, 6) No due date
+    filteredAssignments.sort((a, b) => {
+      const aDate = a.dueDate ? new Date(a.dueDate) : null;
+      const bDate = b.dueDate ? new Date(b.dueDate) : null;
 
-  // Limit to 20 assignments
-  filteredAssignments = filteredAssignments.slice(0, 20);
+      // Helper to categorize assignments
+      const getPriority = (assignment, date) => {
+        if (!date) return 6; // No due date = lowest priority
+        if (assignment.submitted) return 5; // Completed
+
+        const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        if (date >= todayStart && date < todayEnd) return 1; // Due today
+        if (date >= todayEnd && date <= weekFromNow) return 2; // Upcoming this week
+        if (date < now) return 3; // Overdue
+        return 4; // Future
+      };
+
+      const aPriority = getPriority(a, aDate);
+      const bPriority = getPriority(b, bDate);
+
+      // Sort by priority first
+      if (aPriority !== bPriority) return aPriority - bPriority;
+
+      // Within same priority, sort by due date
+      if (!aDate && !bDate) return 0;
+      if (!aDate) return 1;
+      if (!bDate) return -1;
+      return aDate - bDate;
+    });
+
+    // Show more items in 'all' mode (50 instead of 20)
+    filteredAssignments = filteredAssignments.slice(0, 50);
+  } else {
+    // For filtered views: Sort by due date (closest first)
+    filteredAssignments.sort((a, b) => {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return new Date(a.dueDate) - new Date(b.dueDate);
+    });
+
+    // Limit to 20 assignments for filtered views
+    filteredAssignments = filteredAssignments.slice(0, 20);
+  }
+
+  console.log('[renderAssignments] Displaying', filteredAssignments.length, 'assignments');
 
   if (filteredAssignments.length === 0) {
     const filterText = currentFilter === 'all' ? 'with due dates' :
