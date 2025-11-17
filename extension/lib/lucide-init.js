@@ -1,9 +1,9 @@
 // Initialize Lucide icons
-function initializeLucide() {
+function initializeLucide(container = document) {
   if (typeof lucide === 'undefined') return;
 
   try {
-    const iconElements = document.querySelectorAll('[data-lucide]');
+    const iconElements = container.querySelectorAll('[data-lucide]:not([data-lucide-processed])');
 
     iconElements.forEach(el => {
       const iconName = el.getAttribute('data-lucide');
@@ -30,6 +30,9 @@ function initializeLucide() {
 
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
         el.innerHTML = svg;
+
+        // Mark as processed to avoid re-processing
+        el.setAttribute('data-lucide-processed', 'true');
       }
     });
   } catch (error) {

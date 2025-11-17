@@ -153,7 +153,7 @@ function renderAssignments() {
       </div>
     `;
     // Initialize Lucide icons only in the assignmentsList container
-    lucide.createIcons({ attrs: assignmentsList });
+    initializeLucide(assignmentsList);
     // Add event listener
     document.querySelector('.open-settings-btn')?.addEventListener('click', () => {
       document.getElementById('settingsBtn')?.click();
@@ -447,7 +447,7 @@ async function loadAssignments() {
         </div>
       `;
       // Initialize Lucide icons only in the assignmentsList container
-      lucide.createIcons({ attrs: assignmentsList });
+      initializeLucide(assignmentsList);
       // Add event listener
       document.querySelector('.open-settings-btn-2')?.addEventListener('click', () => {
         document.getElementById('settingsBtn')?.click();
@@ -480,7 +480,7 @@ async function loadAssignments() {
       </div>
     `;
     // Initialize Lucide icons only in the assignmentsList container
-    lucide.createIcons({ attrs: assignmentsList });
+    initializeLucide(assignmentsList);
     // Add event listener
     document.querySelector('.open-settings-btn-3')?.addEventListener('click', () => {
       document.getElementById('settingsBtn')?.click();
