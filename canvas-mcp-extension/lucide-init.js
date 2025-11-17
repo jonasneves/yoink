@@ -2,8 +2,41 @@
 function initializeLucide() {
   if (typeof lucide !== 'undefined') {
     console.log('Initializing Lucide icons...');
+    console.log('Available lucide methods:', Object.keys(lucide));
+
     try {
-      lucide.createIcons();
+      // Try the standalone API
+      if (typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      } else {
+        console.log('createIcons not available, trying manual icon creation');
+
+        // Manual icon creation using individual icon functions
+        const iconElements = document.querySelectorAll('[data-lucide]');
+        iconElements.forEach(el => {
+          const iconName = el.getAttribute('data-lucide');
+          // Convert kebab-case to PascalCase (e.g., refresh-cw -> RefreshCw)
+          const pascalName = iconName.split('-').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join('');
+
+          console.log(`Trying to create icon: ${iconName} (${pascalName})`);
+
+          if (lucide[pascalName]) {
+            const svg = lucide[pascalName].toSvg({
+              width: 20,
+              height: 20,
+              stroke: 'white',
+              'stroke-width': 2
+            });
+            el.innerHTML = svg;
+            console.log(`Created icon: ${iconName}`);
+          } else {
+            console.error(`Icon ${pascalName} not found in lucide`);
+          }
+        });
+      }
+
       console.log('Lucide icons initialized successfully');
 
       // Check if icons were actually created
