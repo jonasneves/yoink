@@ -22,10 +22,7 @@ async function initializeDashboard() {
 
   // Auto-refresh if no data is loaded
   if (canvasData.allAssignments.length === 0) {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('loading');
     await refreshCanvasData();
-    btn.classList.remove('loading');
   }
 
   renderDashboard();
