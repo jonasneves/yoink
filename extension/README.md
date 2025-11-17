@@ -4,13 +4,20 @@ Chrome extension component of CanvasFlow - provides the user interface and Canva
 
 ## Architecture
 
-This extension uses Chrome Manifest V3 and consists of:
+This extension uses Chrome Manifest V3 and leverages modern AI capabilities:
 
 - **Background Service Worker** (`background.js`): Manages data sync, alarms, and native messaging
-- **Content Script** (`content.js`): Extracts assignment data from Canvas LMS pages
-- **Sidepanel** (`sidepanel.html/js`): Compact view for quick assignment access
+- **Content Script** (`content.js`): Direct DOM extraction from Canvas (no Canvas API required)
+- **Sidepanel** (`sidepanel.html/js`): Dashboard with assignment overview and AI insights tab
 - **Schedule View** (`schedule.html/js`): Full-page AI-generated weekly schedule
-- **Shared Libraries** (`lib/`): Claude API client, AI schemas, and utilities
+- **Shared Libraries** (`lib/`): Claude API client with structured outputs, AI schemas, and utilities
+
+### Key Technical Features
+
+- **No Canvas API Dependency**: Extracts data directly from DOM, no authentication flow required
+- **Extended Thinking**: Separate reasoning token budget for better AI analysis
+- **Structured Outputs**: Grammar-based JSON validation ensures consistent responses
+- **Adaptive Token Budgets**: Different limits for sidepanel (1500/1024) vs schedule (3000/2000)
 
 ## File Structure
 
@@ -67,13 +74,22 @@ Key test scenarios:
 
 ### Claude API
 
-The extension uses Claude's structured outputs feature for consistent JSON responses:
+The extension leverages Claude's latest capabilities for reliable AI responses:
 
-- **Extended Thinking**: Enabled for better reasoning without affecting output tokens
-- **Adaptive Token Budgets**:
-  - Sidepanel: 1500 max tokens, 1024 thinking budget
-  - Schedule: 3000 max tokens, 2000 thinking budget
+- **Structured Outputs**: Grammar-based JSON validation ensures consistent response format
+  - Sidepanel schema: Priority rankings, urgency scores, actionable recommendations
+  - Schedule schema: 7-day time-blocked plan with strategic advice
+  - No parsing errors - guaranteed valid JSON from the API
+
+- **Extended Thinking**: Separate reasoning budget for higher quality analysis
+  - Sidepanel: 1024 thinking tokens + 1500 output tokens
+  - Schedule: 2000 thinking tokens + 3000 output tokens
+  - Better insights without increasing output token costs
+
 - **Direct HTTP API**: Browser-compatible implementation (SDK not available in extensions)
+  - Custom fetch-based client in `lib/claude-client.js`
+  - Handles thinking blocks and text content extraction
+  - Supports both prompt types with adaptive budgets
 
 ### Canvas LMS
 
