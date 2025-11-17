@@ -3,6 +3,11 @@ function initializeLucide(container = document) {
   if (typeof lucide === 'undefined') return;
 
   try {
+    // Ensure container is a valid element or document
+    if (!container || typeof container.querySelectorAll !== 'function') {
+      container = document;
+    }
+
     const iconElements = container.querySelectorAll('[data-lucide]:not([data-lucide-processed])');
 
     iconElements.forEach(el => {
