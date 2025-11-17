@@ -36,7 +36,6 @@ function initializeLucide() {
       console.log('Lucide icons initialized successfully');
 
       // Check if icons were actually created
-      const iconElements = document.querySelectorAll('[data-lucide]');
       console.log(`Found ${iconElements.length} icon elements`);
       iconElements.forEach(el => {
         console.log(`Icon: ${el.getAttribute('data-lucide')}, has SVG: ${el.querySelector('svg') !== null}`);
