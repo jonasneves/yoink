@@ -185,22 +185,21 @@ function renderAssignments() {
 
   // Sort differently based on filter
   if (currentFilter === 'all') {
-    // For 'all' view: Smart sorting by priority
-    // Priority: 1) Due today (not submitted), 2) Upcoming this week, 3) Overdue, 4) Future, 5) Completed, 6) No due date
+    // For 'all' view: Urgency-based sorting by priority
+    // Priority: 1) Overdue (not submitted), 2) Due today, 3) Upcoming, 4) Submitted/completed, 5) No due date
     filteredAssignments.sort((a, b) => {
       const aDate = a.dueDate ? new Date(a.dueDate) : null;
       const bDate = b.dueDate ? new Date(b.dueDate) : null;
 
-      // Helper to categorize assignments
+      // Helper to categorize assignments by urgency
       const getPriority = (assignment, date) => {
-        if (!date) return 6; // No due date = lowest priority
-        if (assignment.submitted) return 5; // Completed
+        if (!date) return 5; // No due date = lowest priority
+        if (assignment.submission?.submitted) return 4; // Submitted/completed
 
-        const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        if (date >= todayStart && date < todayEnd) return 1; // Due today
-        if (date >= todayEnd && date <= weekFromNow) return 2; // Upcoming this week
-        if (date < now) return 3; // Overdue
-        return 4; // Future
+        // Unsubmitted assignments sorted by urgency
+        if (date < now) return 1; // Overdue = MOST URGENT
+        if (date >= todayStart && date < todayEnd) return 2; // Due today
+        return 3; // Upcoming (future)
       };
 
       const aPriority = getPriority(a, aDate);
@@ -375,17 +374,17 @@ async function loadAssignments() {
 
       // Filter to assignments within time range
       const assignmentsWithDates = allAssignments.filter(a => {
-        if (!a.dueDate || a.submitted) return false;
+        if (!a.dueDate || a.submission?.submitted) return false;
         const dueDate = new Date(a.dueDate);
         return dueDate >= timeRangeStart && dueDate <= timeRangeEnd;
       });
 
-      const overdueCount = assignmentsWithDates.filter(a => new Date(a.dueDate) < now).length;
+      const overdueCount = assignmentsWithDates.filter(a => new Date(a.dueDate) < now && !a.submission?.submitted).length;
       const dueTodayCount = assignmentsWithDates.filter(a => {
         const dueDate = new Date(a.dueDate);
-        return dueDate >= todayStart && dueDate < todayEnd;
+        return dueDate >= todayStart && dueDate < todayEnd && !a.submission?.submitted;
       }).length;
-      const upcomingCount = assignmentsWithDates.filter(a => new Date(a.dueDate) >= todayEnd).length;
+      const upcomingCount = assignmentsWithDates.filter(a => new Date(a.dueDate) >= todayEnd && !a.submission?.submitted).length;
 
       // Update summary cards
       document.getElementById('overdueCount').textContent = overdueCount;
