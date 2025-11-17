@@ -36,21 +36,18 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
     properties: {
       priority_tasks: {
         type: "array",
-        description: "Top priority assignments",
+        description: "Top priority assignments (1-8 items)",
         minItems: 1,
-        maxItems: 8,
         items: {
           type: "object",
           properties: {
             task: {
               type: "string",
-              description: "Assignment name and recommended action",
-              maxLength: 150
+              description: "Assignment name and action (max 150 chars)"
             },
             reason: {
               type: "string",
-              description: "Why this task is prioritized",
-              maxLength: 200
+              description: "Why prioritized (max 200 chars)"
             },
             urgency_score: {
               type: "integer",
@@ -60,7 +57,7 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
             },
             estimated_hours: {
               type: "number",
-              description: "Estimated hours needed (0.5-8)",
+              description: "Estimated hours needed",
               minimum: 0.5,
               maximum: 8
             }
@@ -75,8 +72,7 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
         properties: {
           overall: {
             type: "string",
-            description: "One sentence workload summary",
-            maxLength: 200
+            description: "One sentence summary (max 200 chars)"
           },
           total_hours_needed: {
             type: "number",
@@ -91,12 +87,10 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
           },
           recommendations: {
             type: "array",
-            description: "Workload management recommendations",
+            description: "Recommendations (2-5 items, max 150 chars each)",
             minItems: 2,
-            maxItems: 5,
             items: {
-              type: "string",
-              maxLength: 150
+              type: "string"
             }
           }
         },
@@ -105,12 +99,10 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
       },
       study_tips: {
         type: "array",
-        description: "Study tips for current assignments",
+        description: "Study tips (3-5 items, max 150 chars each)",
         minItems: 3,
-        maxItems: 5,
         items: {
-          type: "string",
-          maxLength: 150
+          type: "string"
         }
       }
     },
