@@ -1069,17 +1069,51 @@
       <!-- Claude Desktop Setup Instructions -->
       <div style="background: #F9FAFB; border-radius: 8px; border: 1px solid #E5E7EB; overflow: hidden;">
         <div class="setup-header" id="setupToggle" style="padding: 12px 14px; background: #F9FAFB;">
-          <span style="font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Claude Desktop Setup Instructions</span>
+          <span style="font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px;">Setup Instructions</span>
           <span class="chevron">▶</span>
         </div>
         <div class="setup-content" id="setupContent" style="padding: 14px; background: white;">
-          <ol style="margin: 0; padding-left: 20px;">
-            <li style="margin-bottom: 6px;">Open Claude Desktop → Settings → Extensions</li>
-            <li style="margin-bottom: 6px;">Click "Install Unpacked Extension"</li>
-            <li style="margin-bottom: 6px;">Select folder: <code>canvas-mcp-native</code></li>
-            <li style="margin-bottom: 6px;">Click the refresh button below to sync Canvas data</li>
-            <li style="margin-bottom: 0;">Ask Claude: "What are my Canvas courses?"</li>
-          </ol>
+          <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+            <div style="font-weight: 600; margin-bottom: 10px; color: #111827;">Step 1: Download Native Host</div>
+            <div style="margin-bottom: 12px; padding: 10px; background: #F3F4F6; border-radius: 6px; font-family: monospace; font-size: 11px; overflow-x: auto;">
+              <a href="https://github.com/jonasneves/canvasflow/releases/download/latest/canvasflow-native-host.zip" target="_blank" style="color: #00539B; text-decoration: none;">Download canvasflow-native-host.zip</a>
+            </div>
+
+            <div style="font-weight: 600; margin-bottom: 10px; color: #111827;">Step 2: Install</div>
+            <ul style="margin: 0 0 12px 0; padding-left: 20px;">
+              <li style="margin-bottom: 4px;">Extract the ZIP file</li>
+              <li style="margin-bottom: 4px;"><strong>macOS/Linux:</strong> Run <code>./install.sh</code></li>
+              <li style="margin-bottom: 4px;"><strong>Windows:</strong> Run <code>install.bat</code></li>
+              <li style="margin-bottom: 4px;">Enter your CanvasFlow extension ID when prompted</li>
+            </ul>
+
+            <div style="font-weight: 600; margin-bottom: 10px; color: #111827;">Step 3: Get Extension ID</div>
+            <ul style="margin: 0 0 12px 0; padding-left: 20px;">
+              <li style="margin-bottom: 4px;">Go to <code>chrome://extensions/</code></li>
+              <li style="margin-bottom: 4px;">Enable "Developer mode"</li>
+              <li style="margin-bottom: 4px;">Copy the CanvasFlow extension ID</li>
+            </ul>
+
+            <div style="font-weight: 600; margin-bottom: 10px; color: #111827;">Step 4: Claude Desktop Config</div>
+            <div style="margin-bottom: 8px;">Add to Claude Desktop MCP settings:</div>
+            <div style="margin-bottom: 12px; padding: 10px; background: #F3F4F6; border-radius: 6px; font-family: monospace; font-size: 11px;">
+              <strong>macOS/Linux:</strong> ~/.config/claude/mcp.json<br>
+              <strong>Windows:</strong> %APPDATA%\Claude\mcp.json
+            </div>
+
+            <div style="font-weight: 600; margin-bottom: 10px; color: #111827;">Step 5: Sync and Test</div>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li style="margin-bottom: 4px;">Click "Refresh Canvas Data" below</li>
+              <li style="margin-bottom: 4px;">Restart Chrome and Claude Desktop</li>
+              <li style="margin-bottom: 0;">Ask Claude: "What are my Canvas courses?"</li>
+            </ul>
+
+            <div style="margin-top: 12px; padding: 10px; background: #EFF6FF; border-left: 3px solid #00539B; border-radius: 4px;">
+              <div style="font-size: 11px; color: #1E40AF;">
+                <strong>Note:</strong> The installer will guide you through both Chrome extension ID and Claude Desktop configuration. Just follow the prompts!
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
