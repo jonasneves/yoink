@@ -1149,10 +1149,6 @@ function getLucideIconPaths(iconName) {
     'activity': '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
     'target': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
-    'alert-circle': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
-    'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-    'info': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
-    'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
     'chevron-right': '<polyline points="9 18 15 12 9 6"/>'
   };
   return icons[iconName] || '';
@@ -1164,13 +1160,6 @@ function formatStructuredInsights(insights) {
     high: '#EA580C',
     medium: '#FBBF24',
     low: '#059669'
-  };
-
-  const urgencyIcons = {
-    critical: 'alert-circle',
-    high: 'alert-triangle',
-    medium: 'info',
-    low: 'check-circle'
   };
 
   const urgencyLabels = {
@@ -1201,7 +1190,7 @@ function formatStructuredInsights(insights) {
           <strong style="color: #111827; font-size: 13px; flex: 1;">${escapeHtml(task.task)}</strong>
           <div style="display: flex; gap: 6px; margin-left: 8px; flex-shrink: 0;">
             <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
-              ${createLucideIcon(urgencyIcons[task.urgency], 12, urgencyColors[task.urgency])}
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: ${urgencyColors[task.urgency]}; flex-shrink: 0;"></span>
               ${urgencyLabels[task.urgency]}
             </span>
             <span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${task.estimated_hours}h</span>
@@ -1214,7 +1203,7 @@ function formatStructuredInsights(insights) {
 
   const studyTipsHtml = insights.study_tips.map(tip => {
     return `<div style="margin: 6px 0; font-size: 13px; display: flex; gap: 8px; align-items: start;">
-      ${createLucideIcon('lightbulb', 14, '#00539B')}
+      <span style="margin-top: 2px;">•</span>
       <span>${escapeHtml(tip)}</span>
     </div>`;
   }).join('');

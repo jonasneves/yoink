@@ -792,10 +792,6 @@ function getLucideIconPaths(iconName) {
     'activity': '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
     'target': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
-    'alert-circle': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
-    'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-    'info': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
-    'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
     'chevron-right': '<polyline points="9 18 15 12 9 6"/>',
     'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
     'layers': '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>'
@@ -810,13 +806,6 @@ function formatStructuredInsights(insights) {
     high: '#E89923',
     medium: '#E89923',
     low: '#339898'
-  };
-
-  const urgencyIcons = {
-    critical: 'alert-circle',
-    high: 'alert-triangle',
-    medium: 'info',
-    low: 'check-circle'
   };
 
   const urgencyLabels = {
@@ -855,8 +844,8 @@ function formatStructuredInsights(insights) {
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
           <strong style="color: #111827; font-size: 14px; flex: 1;">${escapeHtml(task.task)}</strong>
           <div style="display: flex; align-items: center; gap: 8px; margin-left: 12px; flex-shrink: 0;">
-            <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
-              ${createLucideIcon(urgencyIcons[task.urgency], 14, urgencyColors[task.urgency])}
+            <span style="background: ${urgencyColors[task.urgency]}15; color: ${urgencyColors[task.urgency]}; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 6px;">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: ${urgencyColors[task.urgency]}; flex-shrink: 0;"></span>
               ${urgencyLabels[task.urgency]}
             </span>
             <span style="background: #F3F4F6; color: #374151; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${task.estimated_hours}h</span>
@@ -923,7 +912,7 @@ function formatStructuredInsights(insights) {
   const studyTipsHtml = insights.study_tips.map(tip => {
     return `
       <div style="margin: 10px 0; font-size: 14px; color: #374151; display: flex; align-items: start; gap: 10px;">
-        ${createLucideIcon('check-circle', 16, '#00539B')}
+        <span style="margin-top: 2px;">•</span>
         <span style="flex: 1;">${escapeHtml(tip)}</span>
       </div>
     `;
