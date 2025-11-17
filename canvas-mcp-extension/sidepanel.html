@@ -934,9 +934,6 @@
       <button class="btn-icon" id="openDashboardBtn" title="Open weekly schedule">
         <i data-lucide="calendar"></i>
       </button>
-      <button class="btn-icon" id="headerRefreshBtn" title="Refresh data">
-        <i data-lucide="refresh-cw"></i>
-      </button>
       <button class="btn-icon" id="settingsBtn" title="Settings">
         <i data-lucide="settings"></i>
       </button>
@@ -1003,6 +1000,13 @@
 
   <!-- MCP Server Tab (Status Only) -->
   <div class="tab-content" id="settings">
+    <div style="margin-bottom: 16px;">
+      <button class="primary" id="refreshDataBtn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+        <span>Refresh Canvas Data</span>
+      </button>
+    </div>
+
     <div class="status-section">
       <div class="section-label">Status</div>
       <div class="status-grid">

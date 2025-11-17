@@ -47,14 +47,6 @@ async function updateInsightsButtonText() {
 
 // Event Listeners
 function setupEventListeners() {
-  // Refresh button
-  document.getElementById('refreshBtn').addEventListener('click', async () => {
-    const btn = document.getElementById('refreshBtn');
-    btn.classList.add('loading');
-    await refreshCanvasData();
-    btn.classList.remove('loading');
-  });
-
   // Generate insights button
   document.getElementById('generateInsightsBtn').addEventListener('click', generateAIInsights);
 }

@@ -487,15 +487,18 @@ settingsModal.addEventListener('click', (e) => {
   }
 });
 
-// Header Refresh Button
-document.getElementById('headerRefreshBtn').addEventListener('click', async () => {
-  const button = document.getElementById('headerRefreshBtn');
-  const svg = button.querySelector('svg');
+// Refresh Data Button (in MCP Server tab)
+document.getElementById('refreshDataBtn').addEventListener('click', async () => {
+  const button = document.getElementById('refreshDataBtn');
+  const icon = button.querySelector('i');
+  const buttonText = button.querySelector('span');
+  const originalText = buttonText.textContent;
 
-  // Add spinning animation
-  if (svg) {
-    svg.style.animation = 'spin 1s linear infinite';
+  // Add spinning animation and update text
+  if (icon) {
+    icon.style.animation = 'spin 1s linear infinite';
   }
+  buttonText.textContent = 'Refreshing...';
   button.disabled = true;
 
   try {
@@ -506,12 +509,20 @@ document.getElementById('headerRefreshBtn').addEventListener('click', async () =
     if (response && response.success) {
       updateStatus();
       loadAssignments(); // Reload assignments after refresh
+      buttonText.textContent = 'Refreshed!';
+      setTimeout(() => {
+        buttonText.textContent = originalText;
+      }, 2000);
     }
   } catch (error) {
     console.error('Error refreshing data:', error);
+    buttonText.textContent = 'Failed to refresh';
+    setTimeout(() => {
+      buttonText.textContent = originalText;
+    }, 2000);
   } finally {
-    if (svg) {
-      svg.style.animation = '';
+    if (icon) {
+      icon.style.animation = '';
     }
     button.disabled = false;
   }
