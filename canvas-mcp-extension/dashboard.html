@@ -15,8 +15,8 @@
         <div style="display: flex; align-items: center; gap: 12px;">
           <img src="icon-48.png" alt="CanvasFlow" style="width: 32px; height: 32px;">
           <div>
-            <h1 class="header-title">CanvasFlow</h1>
-            <p class="header-subtitle">AI-powered assignment insights and analytics</p>
+            <h1 class="header-title">CanvasFlow AI Dashboard</h1>
+            <p class="header-subtitle">Weekly Battle Plan powered by Claude</p>
           </div>
         </div>
       </div>
@@ -45,66 +45,10 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <!-- Summary Cards -->
-    <section class="summary-section">
-      <div class="summary-card">
-        <div class="summary-icon total">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-        </div>
-        <div class="summary-content">
-          <div class="summary-label">Total Assignments</div>
-          <div class="summary-value" id="totalAssignments">0</div>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <div class="summary-icon upcoming">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
-        <div class="summary-content">
-          <div class="summary-label">Due This Week</div>
-          <div class="summary-value" id="upcomingAssignments">0</div>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <div class="summary-icon overdue">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div class="summary-content">
-          <div class="summary-label">Overdue</div>
-          <div class="summary-value" id="overdueAssignments">0</div>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <div class="summary-icon completed">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-        </div>
-        <div class="summary-content">
-          <div class="summary-label">Completed</div>
-          <div class="summary-value" id="completedAssignments">0</div>
-        </div>
-      </div>
-    </section>
-
     <!-- AI Insights Section -->
     <section class="insights-section" id="insightsSection">
       <div class="section-header">
-        <h2 class="section-title">AI Insights with Claude</h2>
+        <h2 class="section-title">Weekly Battle Plan</h2>
         <button class="btn-secondary" id="generateInsightsBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -119,25 +63,6 @@
           </svg>
           <p>Click "Show Question Suggestions" to see example questions you can ask Claude</p>
           <p class="insights-placeholder-note">Claude Desktop has full access to your Canvas data via MCP</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Assignments Section -->
-    <section class="assignments-section">
-      <div class="section-header">
-        <h2 class="section-title">Assignments</h2>
-        <div class="assignment-filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="upcoming">Upcoming</button>
-          <button class="filter-btn" data-filter="overdue">Overdue</button>
-          <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
-      </div>
-      <div class="assignments-list" id="assignmentsList">
-        <div class="assignments-loading">
-          <div class="spinner"></div>
-          <p>Loading assignments...</p>
         </div>
       </div>
     </section>

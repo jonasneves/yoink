@@ -6,7 +6,6 @@ let canvasData = {
   upcomingEvents: []
 };
 
-let currentFilter = 'all';
 let autoRefreshInterval = null;
 let assignmentTimeRange = { weeksBefore: 2, weeksAfter: 2 }; // Default 2 weeks before and after
 
@@ -71,14 +70,6 @@ function setupEventListeners() {
 
   // Generate insights button
   document.getElementById('generateInsightsBtn').addEventListener('click', generateAIInsights);
-
-  // Assignment filters
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const filter = e.target.dataset.filter;
-      setFilter(filter);
-    });
-  });
 }
 
 // Load Canvas data from background script
@@ -159,258 +150,7 @@ function updateStatus(response) {
 
 // Render dashboard
 function renderDashboard() {
-  renderSummaryCards();
-  renderAssignments();
-}
-
-// Render summary cards
-function renderSummaryCards() {
-  const assignments = canvasData.allAssignments || [];
-  const now = new Date();
-  const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  // Calculate time range boundaries
-  const timeRangeStart = new Date(now.getTime() - assignmentTimeRange.weeksBefore * 7 * 24 * 60 * 60 * 1000);
-  const timeRangeEnd = new Date(now.getTime() + assignmentTimeRange.weeksAfter * 7 * 24 * 60 * 60 * 1000);
-
-  // Filter to assignments within time range
-  const timeFilteredAssignments = assignments.filter(a => {
-    if (!a.dueDate) return false;
-    const dueDate = new Date(a.dueDate);
-    return dueDate >= timeRangeStart && dueDate <= timeRangeEnd;
-  });
-
-  // Calculate stats
-  const total = timeFilteredAssignments.length;
-
-  const upcoming = timeFilteredAssignments.filter(a => {
-    const dueDate = new Date(a.dueDate);
-    return dueDate >= now && dueDate <= weekFromNow && !a.submission?.submitted;
-  }).length;
-
-  const overdue = timeFilteredAssignments.filter(a => {
-    const dueDate = new Date(a.dueDate);
-    return dueDate < now && !a.submission?.submitted;
-  }).length;
-
-  const completed = timeFilteredAssignments.filter(a => {
-    return a.submission?.submitted || a.submission?.workflowState === 'graded';
-  }).length;
-
-  // Update DOM with animation
-  animateValue('totalAssignments', 0, total, 800);
-  animateValue('upcomingAssignments', 0, upcoming, 800);
-  animateValue('overdueAssignments', 0, overdue, 800);
-  animateValue('completedAssignments', 0, completed, 800);
-
-  // Make cards clickable
-  setupSummaryCardClicks();
-}
-
-// Animate number counting
-function animateValue(id, start, end, duration) {
-  const element = document.getElementById(id);
-  const range = end - start;
-  const increment = range / (duration / 16);
-  let current = start;
-
-  const timer = setInterval(() => {
-    current += increment;
-    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-      current = end;
-      clearInterval(timer);
-    }
-    element.textContent = Math.round(current);
-  }, 16);
-}
-
-// Setup click handlers for summary cards
-function setupSummaryCardClicks() {
-  const summaryCards = document.querySelectorAll('.summary-card');
-
-  summaryCards[0].onclick = () => setFilter('all'); // Total
-  summaryCards[1].onclick = () => setFilter('upcoming'); // Upcoming
-  summaryCards[2].onclick = () => setFilter('overdue'); // Overdue
-  summaryCards[3].onclick = () => setFilter('completed'); // Completed
-
-  // Add cursor pointer style
-  summaryCards.forEach(card => {
-    card.style.cursor = 'pointer';
-  });
-}
-
-// Render assignments
-function renderAssignments() {
-  const assignmentsList = document.getElementById('assignmentsList');
-  const assignments = filterAssignments(canvasData.allAssignments || []);
-
-  if (assignments.length === 0) {
-    assignmentsList.innerHTML = `
-      <div class="assignments-empty">
-        <p>No assignments found</p>
-      </div>
-    `;
-    return;
-  }
-
-  // Sort assignments by due date (earliest first, null dates last)
-  const sorted = assignments.sort((a, b) => {
-    if (!a.dueDate && !b.dueDate) return 0;
-    if (!a.dueDate) return 1;
-    if (!b.dueDate) return -1;
-    return new Date(a.dueDate) - new Date(b.dueDate);
-  });
-
-  assignmentsList.innerHTML = sorted.map(assignment => {
-    const status = getAssignmentStatus(assignment);
-    const dueText = formatDueDate(assignment.dueDate);
-    const badges = getAssignmentBadges(assignment);
-    const canvasUrl = assignment.htmlUrl || assignment.html_url || '';
-
-    return `
-      <div class="assignment-item">
-        <div class="assignment-status ${status}"></div>
-        <div class="assignment-info">
-          <div class="assignment-course">${escapeHtml(assignment.courseName || 'Unknown Course')}</div>
-          <div class="assignment-name-row">
-            <div class="assignment-name">${escapeHtml(assignment.name)}</div>
-            ${canvasUrl ? `<a href="${escapeHtml(canvasUrl)}" target="_blank" rel="noopener noreferrer" class="canvas-link" title="Open in Canvas">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-            </a>` : ''}
-          </div>
-          <div class="assignment-meta">
-            ${dueText ? `<div class="assignment-due ${status === 'overdue' ? 'overdue' : status === 'upcoming' ? 'soon' : ''}">${dueText}</div>` : '<div class="assignment-due">No due date</div>'}
-            ${assignment.pointsPossible ? `<div class="assignment-meta-item">${assignment.pointsPossible} pts</div>` : ''}
-          </div>
-        </div>
-        ${badges}
-      </div>
-    `;
-  }).join('');
-}
-
-// Filter assignments based on current filter
-function filterAssignments(assignments) {
-  const now = new Date();
-  const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  // Calculate time range boundaries
-  const timeRangeStart = new Date(now.getTime() - assignmentTimeRange.weeksBefore * 7 * 24 * 60 * 60 * 1000);
-  const timeRangeEnd = new Date(now.getTime() + assignmentTimeRange.weeksAfter * 7 * 24 * 60 * 60 * 1000);
-
-  // Apply time range filter first
-  const timeFilteredAssignments = assignments.filter(a => {
-    if (!a.dueDate) return false;
-    const dueDate = new Date(a.dueDate);
-    return dueDate >= timeRangeStart && dueDate <= timeRangeEnd;
-  });
-
-  switch (currentFilter) {
-    case 'upcoming':
-      return timeFilteredAssignments.filter(a => {
-        const dueDate = new Date(a.dueDate);
-        return dueDate >= now && dueDate <= weekFromNow && !a.submission?.submitted;
-      });
-
-    case 'overdue':
-      return timeFilteredAssignments.filter(a => {
-        const dueDate = new Date(a.dueDate);
-        return dueDate < now && !a.submission?.submitted;
-      });
-
-    case 'completed':
-      return timeFilteredAssignments.filter(a =>
-        a.submission?.submitted || a.submission?.workflowState === 'graded'
-      );
-
-    case 'all':
-    default:
-      return [...timeFilteredAssignments, ...assignments.filter(a => !a.dueDate)];
-  }
-}
-
-// Set filter
-function setFilter(filter) {
-  currentFilter = filter;
-
-  // Update active button
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === filter);
-  });
-
-  renderAssignments();
-}
-
-// Get assignment status
-function getAssignmentStatus(assignment) {
-  if (!assignment.dueDate) return 'none';
-
-  const now = new Date();
-  const dueDate = new Date(assignment.dueDate);
-  const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  if (assignment.submission?.submitted || assignment.submission?.workflowState === 'graded') {
-    return 'completed';
-  }
-
-  if (dueDate < now) {
-    return 'overdue';
-  }
-
-  if (dueDate >= now && dueDate <= weekFromNow) {
-    return 'upcoming';
-  }
-
-  return 'none';
-}
-
-// Format due date
-function formatDueDate(dueDate) {
-  if (!dueDate) return null;
-
-  const date = new Date(dueDate);
-  const now = new Date();
-  const diffTime = date - now;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 0) {
-    return `Due ${date.toLocaleDateString()}`;
-  } else if (diffDays === 0) {
-    return `Due today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-  } else if (diffDays === 1) {
-    return `Due tomorrow at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-  } else if (diffDays <= 7) {
-    return `Due in ${diffDays} days`;
-  } else {
-    return `Due ${date.toLocaleDateString()}`;
-  }
-}
-
-// Get assignment badges
-function getAssignmentBadges(assignment) {
-  const badges = [];
-
-  if (assignment.submission?.submitted) {
-    if (assignment.submission.late) {
-      badges.push('<span class="assignment-badge late">Submitted Late</span>');
-    } else {
-      badges.push('<span class="assignment-badge submitted">Submitted</span>');
-    }
-  }
-
-  if (assignment.submission?.workflowState === 'graded') {
-    badges.push('<span class="assignment-badge completed">Graded</span>');
-  }
-
-  if (assignment.submission?.missing) {
-    badges.push('<span class="assignment-badge missing">Missing</span>');
-  }
-
-  return badges.join('');
+  // Dashboard now focuses only on Weekly Battle Plan - no summary cards or assignments list
 }
 
 // Escape HTML
@@ -981,8 +721,8 @@ function formatStructuredInsights(insights) {
     </div>
 
     <!-- Priority Tasks -->
-    <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827; display: flex; align-items: center; gap: 8px;">
-      ${createLucideIcon('target', 18, '#111827')}
+    <h4 style="margin: 24px 0 12px 0; color: #C84E00; font-size: 16px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+      ${createLucideIcon('target', 18, '#C84E00')}
       Priority Tasks
     </h4>
     <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
@@ -999,8 +739,8 @@ function formatStructuredInsights(insights) {
     </div>
 
     <!-- Study Tips -->
-    <h4 style="margin: 24px 0 12px 0; font-size: 16px; color: #111827; display: flex; align-items: center; gap: 8px;">
-      ${createLucideIcon('lightbulb', 18, '#111827')}
+    <h4 style="margin: 24px 0 12px 0; color: #339898; font-size: 16px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+      ${createLucideIcon('lightbulb', 18, '#339898')}
       Strategic Study Tips
     </h4>
     <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
