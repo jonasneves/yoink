@@ -936,6 +936,18 @@ async function initialize() {
   // Load saved insights
   await loadSavedInsights();
 
+  // Check if we need to open settings (from dashboard)
+  const settingsFlag = await chrome.storage.local.get(['openSettingsOnLoad']);
+  if (settingsFlag.openSettingsOnLoad) {
+    // Clear the flag
+    await chrome.storage.local.remove('openSettingsOnLoad');
+    // Open settings modal
+    const settingsModal = document.getElementById('settingsModal');
+    if (settingsModal) {
+      settingsModal.classList.add('show');
+    }
+  }
+
   // Trigger initial refresh on extension open
   await refreshCanvasData();
 }
@@ -948,7 +960,7 @@ async function updateInsightsButtonText() {
   if (result.claudeApiKey) {
     btnText.textContent = 'Generate AI Insights';
   } else {
-    btnText.textContent = 'Show Question Suggestions';
+    btnText.textContent = 'Configure API Key';
   }
 }
 
@@ -957,7 +969,59 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn') || document.getElementById('regenerateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
-  // First, refresh Canvas data to ensure we have the latest assignments
+  // Check if API key is set first
+  const result = await chrome.storage.local.get(['claudeApiKey']);
+
+  if (!result.claudeApiKey) {
+    // Show settings prompt if no API key (no need to refresh data)
+    const settingsPrompt = `
+      <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
+        <h3 style="margin-bottom: 12px; color: #111827;">Claude API Key Required</h3>
+        <p style="margin-bottom: 24px; color: #6B7280; font-size: 14px; max-width: 400px; margin-left: auto; margin-right: auto;">
+          To generate AI-powered insights and study schedules, you need to configure your Claude API key.
+        </p>
+        <button id="openSettingsBtn" style="
+          background: #00539B;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s;
+        ">
+          Open Settings
+        </button>
+        <p style="margin-top: 16px; font-size: 12px; color: #9CA3AF;">
+          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B; text-decoration: underline;">Get one from Anthropic</a>
+        </p>
+      </div>
+    `;
+    insightsContent.innerHTML = settingsPrompt;
+
+    // Add event listeners to the button
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    openSettingsBtn.addEventListener('click', () => {
+      const settingsModal = document.getElementById('settingsModal');
+      settingsModal.classList.add('show');
+    });
+    openSettingsBtn.addEventListener('mouseover', () => {
+      openSettingsBtn.style.background = '#004080';
+    });
+    openSettingsBtn.addEventListener('mouseout', () => {
+      openSettingsBtn.style.background = '#00539B';
+    });
+
+    const timestampEl = document.getElementById('insightsTimestamp');
+    if (timestampEl) {
+      timestampEl.style.display = 'none';
+    }
+
+    return;
+  }
+
+  // Refresh Canvas data to ensure we have the latest assignments
   if (btn) {
     btn.disabled = true;
     btn.classList.add('loading');
@@ -974,57 +1038,6 @@ async function generateAIInsights() {
   } catch (error) {
     console.error('Error refreshing Canvas data:', error);
     // Continue anyway with cached data
-  }
-
-  // Check if API key is set
-  const result = await chrome.storage.local.get(['claudeApiKey']);
-
-  if (!result.claudeApiKey) {
-    // Show MCP guidance if no API key
-    if (btn) {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
-    const assignmentsData = prepareAssignmentsForAI();
-    const mcpGuidance = `
-      <div class="insights-loaded">
-        <h3 style="margin-bottom: 12px;">Ask Claude for AI-Powered Insights</h3>
-        <p style="margin-bottom: 16px; color: #6B7280; font-size: 14px;">Claude Desktop already has access to all your Canvas data via MCP. Open Claude and try asking:</p>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-          <strong style="color: #00539B;">💡 Priority Recommendations</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 13px; color: #374151;">"What assignments should I focus on first based on due dates and importance?"</p>
-        </div>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-          <strong style="color: #00539B;">📊 Workload Analysis</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 13px; color: #374151;">"Analyze my current workload and help me create a study schedule"</p>
-        </div>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 16px;">
-          <strong style="color: #00539B;">🎯 Study Strategy</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 13px; color: #374151;">"What's the best strategy to catch up on my ${assignmentsData.overdue.length} overdue assignments?"</p>
-        </div>
-
-        <p style="font-size: 12px; color: #9CA3AF;">
-          <strong>Tip:</strong> Claude can see all ${assignmentsData.totalAssignments} assignments across your ${assignmentsData.courses.length} courses, including submission status, due dates, and points.
-        </p>
-
-        <div style="margin-top: 16px; padding: 12px; background: #FCF7E5; border-radius: 8px; border-left: 4px solid #E89923;">
-          <p style="margin: 0; font-size: 12px; color: #374151;">💡 <strong>Want insights here?</strong> Add your Claude API key in settings!</p>
-        </div>
-      </div>
-    `;
-    insightsContent.innerHTML = mcpGuidance;
-
-    // Save MCP guidance (so it persists)
-    await chrome.storage.local.set({
-      savedInsights: mcpGuidance,
-      insightsTimestamp: Date.now()
-    });
-    document.getElementById('insightsTimestamp').style.display = 'none';
-
-    return;
   }
 
   // Generate insights with Claude API (data already refreshed above)

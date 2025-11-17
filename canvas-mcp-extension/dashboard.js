@@ -38,7 +38,7 @@ async function updateInsightsButtonText() {
   if (result.claudeApiKey) {
     btnText.textContent = 'Generate Schedule';
   } else {
-    btnText.textContent = 'Show Question Suggestions';
+    btnText.textContent = 'Configure API Key';
   }
 }
 
@@ -232,7 +232,57 @@ async function generateAIInsights() {
   const btn = document.getElementById('generateInsightsBtn');
   const insightsContent = document.getElementById('insightsContent');
 
-  // First, refresh Canvas data to ensure we have the latest assignments
+  // Check if API key is set first
+  const result = await chrome.storage.local.get(['claudeApiKey']);
+
+  if (!result.claudeApiKey) {
+    // Show settings prompt if no API key (no need to refresh data)
+    const settingsPrompt = `
+      <div class="insights-loaded" style="text-align: center; padding: 60px 20px;">
+        <h3 style="margin-bottom: 16px; color: #111827; font-size: 24px;">Claude API Key Required</h3>
+        <p style="margin-bottom: 32px; color: #6B7280; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+          To generate AI-powered weekly schedules and study insights, you need to configure your Claude API key.
+        </p>
+        <button id="openSettingsBtn" style="
+          background: #00539B;
+          color: white;
+          border: none;
+          padding: 14px 28px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s;
+        ">
+          Open Settings
+        </button>
+        <p style="margin-top: 20px; font-size: 14px; color: #9CA3AF;">
+          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B; text-decoration: underline;">Get one from Anthropic</a>
+        </p>
+      </div>
+    `;
+    insightsContent.innerHTML = settingsPrompt;
+
+    // Add event listeners to the button
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    openSettingsBtn.addEventListener('click', async () => {
+      // Store a flag to open settings modal when sidepanel opens
+      await chrome.storage.local.set({ openSettingsOnLoad: true });
+      // Get current window to open sidepanel
+      const currentWindow = await chrome.windows.getCurrent();
+      await chrome.sidePanel.open({ windowId: currentWindow.id });
+    });
+    openSettingsBtn.addEventListener('mouseover', () => {
+      openSettingsBtn.style.background = '#004080';
+    });
+    openSettingsBtn.addEventListener('mouseout', () => {
+      openSettingsBtn.style.background = '#00539B';
+    });
+
+    return;
+  }
+
+  // Refresh Canvas data to ensure we have the latest assignments
   btn.disabled = true;
   btn.classList.add('loading');
   insightsContent.innerHTML = `
@@ -247,51 +297,6 @@ async function generateAIInsights() {
   } catch (error) {
     console.error('Error refreshing Canvas data:', error);
     // Continue anyway with cached data
-  }
-
-  // Check if API key is set
-  const result = await chrome.storage.local.get(['claudeApiKey']);
-
-  if (!result.claudeApiKey) {
-    // Show MCP guidance if no API key
-    btn.classList.remove('loading');
-    btn.disabled = false;
-    const assignmentsData = prepareAssignmentsForAI();
-    const mcpGuidance = `
-      <div class="insights-loaded">
-        <h3>Ask Claude to Create Your Weekly Schedule</h3>
-        <p style="margin-bottom: 16px; color: #6B7280;">Claude Desktop already has access to all your Canvas data via MCP. Open Claude and try asking:</p>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-          <strong style="color: #00539B;">📅 Weekly Schedule</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"Create a day-by-day study schedule for this week based on my assignments"</p>
-        </div>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 12px;">
-          <strong style="color: #00539B;">⏰ Time Blocking</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"Block out study times for each assignment with realistic hour estimates"</p>
-        </div>
-
-        <div style="background: #F9FAFB; padding: 16px; border-radius: 8px; border-left: 4px solid #00539B; margin-bottom: 16px;">
-          <strong style="color: #00539B;">🎯 Daily Focus</strong>
-          <p style="margin: 8px 0 4px 0; font-size: 14px; color: #374151;">"What should I focus on each day this week to stay on top of my ${assignmentsData.upcoming.length} upcoming assignments?"</p>
-        </div>
-
-        <p style="font-size: 13px; color: #9CA3AF;">
-          <strong>Tip:</strong> Claude can see all ${assignmentsData.totalAssignments} assignments across your ${assignmentsData.courses.length} courses and create a personalized schedule based on due dates and workload.
-        </p>
-
-        <div style="margin-top: 16px; padding: 12px; background: #FCF7E5; border-radius: 8px; border-left: 4px solid #E89923;">
-          <p style="margin: 0; font-size: 13px; color: #374151;">💡 <strong>Want automatic scheduling?</strong> Add your Claude API key in settings to generate schedules instantly!</p>
-        </div>
-      </div>
-    `;
-    insightsContent.innerHTML = mcpGuidance;
-
-    // Don't save MCP guidance to storage - it's just a placeholder
-    // updateInsightsTimestamp(null); // Hide timestamp for MCP guidance
-
-    return;
   }
 
   // Generate insights with Claude API (data already refreshed above)
