@@ -28,7 +28,9 @@ extension/
 ├── sidepanel.html/js          Sidepanel interface
 ├── schedule.html/js/css       Weekly schedule view
 ├── manifest.json              Extension configuration
-├── icon.png                   Extension icon
+├── icon-16.png                Extension icon (16x16)
+├── icon-48.png                Extension icon (48x48)
+├── icon-128.png               Extension icon (128x128)
 ├── lib/
 │   ├── claude-client.js       Direct HTTP API client for Claude
 │   ├── ai-schemas-sidepanel.js  JSON schema for insights
