@@ -166,18 +166,18 @@ function renderAssignments() {
 
     if (currentFilter === 'overdue') {
       filteredAssignments = filteredAssignments.filter(a => {
-        return new Date(a.dueDate) < now && !a.submitted;
+        return new Date(a.dueDate) < now && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Overdue assignments:', filteredAssignments.length);
     } else if (currentFilter === 'due-today') {
       filteredAssignments = filteredAssignments.filter(a => {
         const dueDate = new Date(a.dueDate);
-        return dueDate >= todayStart && dueDate < todayEnd && !a.submitted;
+        return dueDate >= todayStart && dueDate < todayEnd && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Due today assignments:', filteredAssignments.length);
     } else if (currentFilter === 'upcoming') {
       filteredAssignments = filteredAssignments.filter(a => {
-        return new Date(a.dueDate) >= todayEnd && !a.submitted;
+        return new Date(a.dueDate) >= todayEnd && !a.submission?.submitted;
       });
       console.log('[renderAssignments] Upcoming assignments:', filteredAssignments.length);
     }
@@ -253,7 +253,7 @@ function renderAssignments() {
 
   // Render assignments
   assignmentsList.innerHTML = filteredAssignments.map(assignment => {
-    const isCompleted = assignment.submitted;
+    const isCompleted = assignment.submission?.submitted;
     const hasDueDate = !!assignment.dueDate;
 
     let isOverdue = false;
@@ -310,10 +310,12 @@ function getAssignmentBadges(assignment) {
   const badges = [];
 
   if (assignment.submission?.submitted) {
+    // Show submitted badge first
+    badges.push('<span class="assignment-badge submitted">Submitted</span>');
+
+    // Add late badge if submission was late
     if (assignment.submission.late) {
       badges.push('<span class="assignment-badge late">Late</span>');
-    } else {
-      badges.push('<span class="assignment-badge submitted">Submitted</span>');
     }
   }
 
@@ -321,7 +323,7 @@ function getAssignmentBadges(assignment) {
     badges.push('<span class="assignment-badge completed">Graded</span>');
   }
 
-  if (assignment.submission?.missing) {
+  if (assignment.submission?.missing && !assignment.submission?.submitted) {
     badges.push('<span class="assignment-badge missing">Missing</span>');
   }
 
