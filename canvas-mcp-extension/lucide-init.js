@@ -20,14 +20,32 @@ function initializeLucide() {
         console.log(`Trying to create icon: ${iconName} (${pascalName})`);
 
         if (lucide[pascalName]) {
-          const svg = lucide[pascalName].toSvg({
-            width: 20,
-            height: 20,
-            stroke: 'white',
-            'stroke-width': 2
-          });
-          el.innerHTML = svg;
-          console.log(`Created icon: ${iconName}`);
+          console.log(`Icon ${pascalName} type:`, typeof lucide[pascalName]);
+          console.log(`Icon ${pascalName} methods:`, Object.keys(lucide[pascalName]));
+          console.log(`Icon ${pascalName} value:`, lucide[pascalName]);
+
+          // Try different ways to create the icon
+          let svg = null;
+
+          // Method 1: Check if it's the icon data object
+          if (typeof lucide[pascalName] === 'string') {
+            svg = lucide[pascalName];
+          }
+          // Method 2: Check if it's an array [tag, attrs, children]
+          else if (Array.isArray(lucide[pascalName])) {
+            console.log('Icon is an array:', lucide[pascalName]);
+          }
+          // Method 3: Use createElement if available
+          else if (lucide.createElement) {
+            svg = lucide.createElement(lucide[pascalName]);
+          }
+
+          if (svg) {
+            el.innerHTML = svg;
+            console.log(`Created icon: ${iconName}`);
+          } else {
+            console.error(`Could not create icon: ${iconName}`);
+          }
         } else {
           console.error(`Icon ${pascalName} not found in lucide`);
         }
