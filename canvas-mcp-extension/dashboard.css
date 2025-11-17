@@ -167,7 +167,7 @@ body {
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px;
+  padding: 48px 40px;
 }
 
 /* Summary Cards */
@@ -270,19 +270,19 @@ body {
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
+  padding: 40px;
+  margin-bottom: 32px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 .section-title {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   color: #111827;
 }
@@ -290,8 +290,8 @@ body {
 /* Buttons */
 .btn-primary,
 .btn-secondary {
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 12px 20px;
+  font-size: 15px;
   font-weight: 500;
   border: none;
   border-radius: 8px;
@@ -340,38 +340,38 @@ body {
 
 .insights-placeholder {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 32px;
   color: #9CA3AF;
 }
 
 .insights-placeholder svg {
-  margin: 0 auto 16px;
+  margin: 0 auto 24px;
   opacity: 0.3;
 }
 
 .insights-placeholder p {
-  font-size: 15px;
-  margin-bottom: 8px;
+  font-size: 17px;
+  margin-bottom: 12px;
 }
 
 .insights-placeholder-note {
-  font-size: 13px;
+  font-size: 15px;
   color: #D1D5DB;
 }
 
 .insights-loaded {
-  padding: 20px;
+  padding: 32px;
   background: #F9FAFB;
-  border-radius: 8px;
+  border-radius: 12px;
   line-height: 1.8;
 }
 
 .insights-loaded h3 {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 12px;
-  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-top: 32px;
 }
 
 .insights-loaded h3:first-child {
