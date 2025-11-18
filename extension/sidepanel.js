@@ -666,8 +666,7 @@ async function autoDetectCanvasUrl(showMessages = true) {
         try {
           const url = new URL(tab.url);
           const baseUrl = `${url.protocol}//${url.host}`;
-          // Exclude canvas.instructure.com (demo instance)
-          if (!detectedUrls.includes(baseUrl) && !baseUrl.includes('canvas.instructure.com')) {
+          if (!detectedUrls.includes(baseUrl)) {
             detectedUrls.push(baseUrl);
           }
         } catch (e) {

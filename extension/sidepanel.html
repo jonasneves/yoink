@@ -196,11 +196,12 @@
 
     /* Configuration Banner */
     .config-banner {
-      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-      border-bottom: 1px solid #BFDBFE;
+      background: #FAFAFA;
+      border-bottom: 1px solid #E5E7EB;
       padding: 16px 20px;
       flex-shrink: 0;
       animation: slideDown 0.3s ease-out;
+      border-left: 4px solid #00539B;
     }
 
     .config-banner-content {
@@ -211,22 +212,21 @@
     }
 
     .config-banner-icon {
-      width: 40px;
-      height: 40px;
-      background: white;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #00539B 0%, #0577B1 100%);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 2px 4px rgba(0, 83, 155, 0.1);
     }
 
     .config-banner-icon i {
-      width: 20px;
-      height: 20px;
-      color: #00539B;
-      stroke: #00539B;
+      width: 18px;
+      height: 18px;
+      color: white;
+      stroke: white;
     }
 
     .config-banner-text {
@@ -237,14 +237,13 @@
     .config-banner-title {
       font-size: 14px;
       font-weight: 600;
-      color: #1E40AF;
+      color: #111827;
       margin-bottom: 2px;
     }
 
     .config-banner-message {
       font-size: 12px;
-      color: #1E40AF;
-      opacity: 0.8;
+      color: #6B7280;
     }
 
     .config-banner-btn {
@@ -264,7 +263,7 @@
     .config-banner-btn:hover {
       background: #012169;
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 83, 155, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 83, 155, 0.3);
     }
 
     .config-banner-close {
@@ -278,12 +277,13 @@
       align-items: center;
       justify-content: center;
       transition: all 0.15s ease;
-      color: #1E40AF;
+      color: #6B7280;
       flex-shrink: 0;
     }
 
     .config-banner-close:hover {
-      background: white;
+      background: #E5E7EB;
+      color: #374151;
     }
 
     .config-banner-close i {
