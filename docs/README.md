@@ -1,10 +1,13 @@
 # CanvasFlow Documentation
 
-This directory contains all guidance and preparation documentation for the CanvasFlow project. **These files are for development use only and can be safely deleted after Chrome Web Store submission.**
+This directory contains guidance and preparation documentation for the CanvasFlow project, plus the GitHub Pages landing page.
 
 ## What's in This Directory
 
-All guidance documents for preparing and publishing CanvasFlow:
+**Published Website:**
+- `index.html` - GitHub Pages landing page (keep this - it's your project website!)
+
+**Guidance Documents (can delete after Chrome Web Store submission):**
 
 ### Chrome Web Store Preparation
 - `READINESS.md` - Chrome Web Store compliance checklist
@@ -39,4 +42,14 @@ The following files remain in the project root (do NOT delete):
 
 ## After Publishing
 
-Once the extension is published to Chrome Web Store, you can safely delete this entire `docs/` directory. All essential documentation will remain in the project root.
+Once the extension is published to Chrome Web Store, you can delete the guidance documents:
+
+```bash
+# Keep index.html for GitHub Pages
+cd docs
+rm -f READINESS.md CHECKLIST.md ASSETS_GUIDE.html DONATION_GUIDE.md \
+      PRIVACY_POLICY_URL.md ATTRIBUTION_GUIDE.md AUTOMATION_COMPLETE.md \
+      RELEASE_PROCESS.md README.md
+```
+
+Or simply delete individual guidance files as needed. **Keep `index.html`** - it's your GitHub Pages website!
