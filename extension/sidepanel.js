@@ -588,9 +588,13 @@ document.querySelectorAll('.summary-card').forEach(card => {
 });
 
 // Listen for storage changes to update Canvas URL
-chrome.storage.onChanged.addListener((changes, namespace) => {
+chrome.storage.onChanged.addListener(async (changes, namespace) => {
   if (namespace === 'local' && changes.canvasUrl) {
     updateCanvasUrl();
+
+    // When Canvas URL changes, explicitly trigger a data refresh
+    // This ensures we wait for the background script to complete fetching
+    await refreshCanvasData();
   }
 });
 
