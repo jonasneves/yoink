@@ -592,12 +592,9 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
   if (namespace === 'local' && changes.canvasUrl) {
     updateCanvasUrl();
 
-    // Wait for background script to finish refreshing data, then reload assignments
-    // Background script auto-refreshes when URL changes
-    setTimeout(async () => {
-      await loadAssignments();
-      updateStatus();
-    }, 3000);
+    // When Canvas URL changes, explicitly trigger a data refresh
+    // This ensures we wait for the background script to complete fetching
+    await refreshCanvasData();
   }
 });
 
