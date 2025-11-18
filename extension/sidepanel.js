@@ -42,7 +42,7 @@ async function updateCanvasUrl() {
     if (canvasUrlInput) {
       canvasUrlInput.value = canvasUrl;
       if (!canvasUrl) {
-        canvasUrlInput.placeholder = 'https://canvas.instructure.com';
+        canvasUrlInput.placeholder = 'https://canvas.university.edu';
       }
     }
   } catch (error) {
