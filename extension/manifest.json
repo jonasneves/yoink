@@ -3,6 +3,7 @@
   "name": "CanvasFlow",
   "version": "1.0.0",
   "description": "Smart Canvas companion with AI insights, assignment tracking, and weekly schedule generation for better studying.",
+  "homepage_url": "https://github.com/jonasneves/canvasflow",
   "permissions": [
     "storage",
     "activeTab",
