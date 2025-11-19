@@ -111,6 +111,36 @@ function updateSectionHeader() {
 }
 
 // Render assignments based on current filter
+// Calculate Impact Score for priority-based sorting
+function calculateImpactScore(assignment) {
+  const now = new Date();
+  const due = new Date(assignment.dueDate);
+  const points = assignment.pointsPossible || 10; // Default to 10 if null
+
+  // Hours until due (minimum 1 to avoid division by zero)
+  const hoursUntilDue = Math.max(1, (due - now) / (1000 * 60 * 60));
+
+  // Time urgency factor (exponential decay for closer deadlines)
+  let timeMultiplier;
+  if (hoursUntilDue <= 0) {
+    timeMultiplier = 20; // Overdue = highest priority
+  } else if (hoursUntilDue <= 24) {
+    timeMultiplier = 10; // Due today
+  } else if (hoursUntilDue <= 48) {
+    timeMultiplier = 5;  // Due tomorrow
+  } else if (hoursUntilDue <= 168) {
+    timeMultiplier = 2;  // Due this week
+  } else {
+    timeMultiplier = 1;  // Due later
+  }
+
+  // Raw score: points weighted by urgency, divided by days remaining
+  const rawScore = (points * timeMultiplier) / (hoursUntilDue / 24);
+
+  // Normalize to 0-100 using logarithmic scaling
+  return Math.min(100, Math.log10(rawScore + 1) * 30);
+}
+
 function renderAssignments() {
   updateSectionHeader();
   const assignmentsList = document.getElementById('assignmentsList');
@@ -193,34 +223,23 @@ function renderAssignments() {
 
   // Sort differently based on filter
   if (currentFilter === 'all') {
-    // For 'all' view: Urgency-based sorting by priority
-    // Priority: 1) Overdue (not submitted), 2) Due today, 3) Upcoming, 4) Submitted/completed, 5) No due date
+    // For 'all' view: Impact Score sorting (points × urgency / time)
     filteredAssignments.sort((a, b) => {
-      const aDate = a.dueDate ? new Date(a.dueDate) : null;
-      const bDate = b.dueDate ? new Date(b.dueDate) : null;
+      const aSubmitted = a.submission?.submitted || false;
+      const bSubmitted = b.submission?.submitted || false;
 
-      // Helper to categorize assignments by urgency
-      const getPriority = (assignment, date) => {
-        if (!date) return 5; // No due date = lowest priority
-        if (assignment.submission?.submitted) return 4; // Submitted/completed
+      // Submitted items go to bottom
+      if (aSubmitted !== bSubmitted) return aSubmitted ? 1 : -1;
 
-        // Unsubmitted assignments sorted by urgency
-        if (date < now) return 1; // Overdue = MOST URGENT
-        if (date >= todayStart && date < todayEnd) return 2; // Due today
-        return 3; // Upcoming (future)
-      };
+      // No due date items go to bottom (before submitted)
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
 
-      const aPriority = getPriority(a, aDate);
-      const bPriority = getPriority(b, bDate);
-
-      // Sort by priority first
-      if (aPriority !== bPriority) return aPriority - bPriority;
-
-      // Within same priority, sort by due date
-      if (!aDate && !bDate) return 0;
-      if (!aDate) return 1;
-      if (!bDate) return -1;
-      return aDate - bDate;
+      // Sort unsubmitted items by Impact Score (descending - higher score first)
+      const aScore = calculateImpactScore(a);
+      const bScore = calculateImpactScore(b);
+      return bScore - aScore;
     });
 
     // Show more items in 'all' mode (50 instead of 20)
