@@ -295,6 +295,14 @@ function renderAssignments() {
     const badges = getAssignmentBadges(assignment);
     const gradeDisplay = getGradeDisplay(assignment);
 
+    // Get AI-generated tags for this assignment
+    const aiTags = getTagsForAssignment(assignment.id);
+    const aiChipsHtml = aiTags.length > 0 ? `
+      <div class="ai-chips">
+        ${aiTags.map(tag => `<span class="ai-chip">${escapeHtml(tag)}</span>`).join('')}
+      </div>
+    ` : '';
+
     return `
       <a href="${escapeHtml(assignmentUrl)}" target="_blank" class="${cardClass}">
         <div class="assignment-info">
@@ -303,6 +311,7 @@ function renderAssignments() {
             <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
             ${assignment.pointsPossible ? `<span>${assignment.pointsPossible} pts</span>` : ''}
           </div>
+          ${aiChipsHtml}
           <div class="${dueDateClass}">Due: ${dueDateText}</div>
         </div>
         ${badges || gradeDisplay ? `<div class="assignment-badges">${badges}${gradeDisplay}</div>` : ''}
@@ -984,6 +993,10 @@ async function initialize() {
   // Update AI insights button text
   await updateInsightsButtonText();
 
+  // Load AI metadata (tags) from storage
+  const metadataResult = await chrome.storage.local.get(['ai_metadata']);
+  window.currentAIMetadata = metadataResult.ai_metadata || {};
+
   // Load saved insights
   await loadSavedInsights();
 
@@ -1131,11 +1144,16 @@ async function generateAIInsights() {
       initializeLucide();
     }
 
-    // Save insights and timestamp to storage
+    // Save insights, timestamp, and AI metadata to storage
+    const aiMetadata = saveAIMetadata(insights);
     await chrome.storage.local.set({
       savedInsights: formattedInsights,
-      insightsTimestamp: timestamp
+      insightsTimestamp: timestamp,
+      ai_metadata: aiMetadata
     });
+
+    // Store in global state for immediate access
+    window.currentAIMetadata = aiMetadata;
 
   } catch (error) {
     const errorHtml = `
@@ -1202,6 +1220,28 @@ function prepareAssignmentsForAI() {
     })),
     completed: assignments.filter(a => a.submission?.submitted || a.submission?.workflowState === 'graded').length
   };
+}
+
+// Save AI-generated metadata (tags) for each assignment
+function saveAIMetadata(insights) {
+  const metadata = {};
+  if (insights && insights.priority_tasks) {
+    insights.priority_tasks.forEach(task => {
+      if (task.assignment_id && task.ui_tags) {
+        metadata[task.assignment_id] = {
+          tags: task.ui_tags,
+          urgency: task.urgency_score,
+          estimatedHours: task.estimated_hours
+        };
+      }
+    });
+  }
+  return metadata;
+}
+
+// Get AI-generated tags for a specific assignment
+function getTagsForAssignment(assignmentId) {
+  return window.currentAIMetadata?.[assignmentId]?.tags || [];
 }
 
 // Phase 4: Use shared Claude client to reduce code duplication
