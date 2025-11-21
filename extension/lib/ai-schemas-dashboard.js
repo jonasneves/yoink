@@ -14,9 +14,12 @@ window.AISchemas = window.AISchemas || {};
  */
 window.AISchemas.DASHBOARD_SCHEDULE_SCHEMA = {
   type: "json_schema",
-  schema: {
-    type: "object",
-    properties: {
+  json_schema: {
+    name: "dashboard_schedule",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
       priority_tasks: {
         type: "array",
         description: "Top priority assignments (1-8 items)",
@@ -135,6 +138,7 @@ window.AISchemas.DASHBOARD_SCHEDULE_SCHEMA = {
     },
     required: ["priority_tasks", "workload_assessment", "weekly_plan", "study_tips"],
     additionalProperties: false
+    }
   }
 };
 

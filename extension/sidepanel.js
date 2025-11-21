@@ -279,38 +279,25 @@ function renderAssignments() {
     return;
   }
 
-
+  // If no assignments at all, show a friendly "no assignments" message instead of configuration error
+  // The configuration error is only shown in loadAssignments() when response.success is false
   if (allAssignments.length === 0) {
     assignmentsList.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        <div class="empty-state-text">Canvas URL Not Configured</div>
-        <div style="font-size: 13px; margin-top: 12px; line-height: 1.6; color: #6B7280; max-width: 320px;">
-          <p style="margin: 0 0 12px 0;">To load your assignments:</p>
-          <ol style="margin: 0; padding-left: 20px; text-align: left;">
-            <li style="margin-bottom: 8px;">Open Settings (gear icon above)</li>
-            <li style="margin-bottom: 8px;"><strong>Go to a Canvas page</strong> and click "Auto-Detect"</li>
-            <li style="margin-bottom: 0;">Or manually enter your Canvas URL</li>
-          </ol>
+        <div class="empty-state-text">No assignments found</div>
+        <div style="font-size: 13px; margin-top: 12px; color: #6B7280;">
+          Either you have no assignments or they're all completed. Great job!
         </div>
-        <button class="primary open-settings-btn" style="margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px;">
-          <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
-          <span>Open Settings</span>
-        </button>
       </div>
     `;
     // Initialize Lucide icons only in the assignmentsList container
     initializeLucide(assignmentsList);
-    // Add event listener
-    document.querySelector('.open-settings-btn')?.addEventListener('click', () => {
-      document.getElementById('settingsBtn')?.click();
-    });
     return;
   }
 
@@ -579,9 +566,6 @@ async function loadAssignments() {
 
       // Render assignments with current filter
       renderAssignments();
-
-      // Render Today's Priorities section (Phase 3.1)
-      renderTodaySection();
 
     } else {
       assignmentsList.innerHTML = `
@@ -1877,70 +1861,6 @@ async function updateScheduleButtonText() {
 // Generate Schedule Button
 document.getElementById('generateScheduleBtn').addEventListener('click', generateAISchedule);
 
-// Render Today's Priorities
-function renderTodaySection() {
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-  // Get assignments due today or overdue
-  const todayAssignments = assignmentsData.filter(a => {
-    if (!a.dueDate || a.submission?.submitted) return false;
-    const dueDate = new Date(a.dueDate);
-    return dueDate <= todayEnd; // Include overdue and due today
-  });
-
-  // Calculate impact scores and sort
-  const scored = todayAssignments.map(a => ({
-    ...a,
-    impactScore: calculateImpactScore(a, now)
-  })).sort((a, b) => b.impactScore - a.impactScore);
-
-  // Take top 3
-  const topPriorities = scored.slice(0, 3);
-
-  const todaySection = document.getElementById('todaySection');
-  const todayContent = document.getElementById('todayContent');
-
-  if (topPriorities.length === 0) {
-    todaySection.style.display = 'none';
-    return;
-  }
-
-  todaySection.style.display = 'block';
-
-  todayContent.innerHTML = topPriorities.map((a, idx) => {
-    const dueDate = new Date(a.dueDate);
-    const isOverdue = dueDate < now;
-    const priorityColors = ['#EF4444', '#F59E0B', '#10B981'];
-    const priorityLabels = ['URGENT', 'HIGH', 'MEDIUM'];
-
-    return `
-      <div style="background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; border-left: 4px solid ${priorityColors[idx]}; cursor: pointer; transition: all 0.2s;"
-           onclick="window.open('${escapeHtml(a.url)}', '_blank')"
-           onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-           onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
-        <div style="display: flex; align-items: start; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
-          <span style="font-weight: 600; font-size: 13px; color: #111827; flex: 1;">${escapeHtml(a.name)}</span>
-          <span style="background: ${priorityColors[idx]}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap;">${priorityLabels[idx]}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6B7280;">
-          <span>${escapeHtml(a.courseName)}</span>
-          <span>•</span>
-          <span style="color: ${isOverdue ? '#EF4444' : '#374151'}; font-weight: 500;">
-            ${isOverdue ? 'Overdue' : formatDueDate(dueDate)}
-          </span>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Re-initialize lucide icons
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-}
-
 // Load saved schedule from storage
 async function loadSavedSchedule() {
   try {
@@ -2020,7 +1940,7 @@ async function generateAISchedule() {
 
   try {
     // Refresh Canvas data first
-    await refreshData();
+    await refreshCanvasData();
 
     scheduleContent.innerHTML = `
       <div class="insights-loading">
@@ -2236,14 +2156,14 @@ function setupTaskCardClickListeners() {
 
 // Helper function to find assignment URL by fuzzy matching name with scoring
 function findAssignmentUrl(assignmentName) {
-  if (!assignmentsData || assignmentsData.length === 0) {
+  if (!allAssignments || allAssignments.length === 0) {
     return null;
   }
 
   const cleanName = assignmentName.toLowerCase().trim();
 
   // Calculate match score for each assignment
-  const scored = assignmentsData
+  const scored = allAssignments
     .filter(a => a.name && a.url)
     .map(assignment => {
       const aName = assignment.name.toLowerCase().trim();
