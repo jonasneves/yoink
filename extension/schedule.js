@@ -268,7 +268,7 @@ async function generateAIInsights() {
           To generate AI-powered weekly schedules and study insights, you need to configure your Claude API key.
         </p>
         <button id="openSettingsBtn" style="
-          background: #00539B;
+          background: #5f9ea0;
           color: white;
           border: none;
           padding: 14px 28px;
@@ -281,7 +281,7 @@ async function generateAIInsights() {
           Open Settings
         </button>
         <p style="margin-top: 20px; font-size: 14px; color: #9CA3AF;">
-          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B; text-decoration: underline;">Get one from Anthropic</a>
+          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #5f9ea0; text-decoration: underline;">Get one from Anthropic</a>
         </p>
       </div>
     `;
@@ -300,7 +300,7 @@ async function generateAIInsights() {
       openSettingsBtn.style.background = '#004080';
     });
     openSettingsBtn.addEventListener('mouseout', () => {
-      openSettingsBtn.style.background = '#00539B';
+      openSettingsBtn.style.background = '#5f9ea0';
     });
 
     return;
@@ -484,10 +484,10 @@ function formatStructuredInsights(insights) {
       const timeBlock = window.AIMappers.formatTimeBlock(task.start_hour, task.duration_hours);
 
       return `
-        <div style="padding: 16px; background: white; border-left: 4px solid #00539B; border-radius: 6px; margin-bottom: 12px;">
+        <div style="padding: 16px; background: white; border-left: 4px solid #5f9ea0; border-radius: 6px; margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
             <strong style="color: #111827; font-size: 15px; flex: 1;">${escapeHtml(task.assignment)}</strong>
-            <span style="background: #E2E6ED; color: #00539B; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
+            <span style="background: #E2E6ED; color: #5f9ea0; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
           </div>
           <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
             ${createLucideIcon('lightbulb', 14, '#6B7280')}

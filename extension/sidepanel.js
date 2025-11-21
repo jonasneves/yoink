@@ -97,7 +97,7 @@ function updateSectionHeader() {
     'upcoming': {
       text: 'Upcoming',
       icon: `<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>`,
-      color: '#00539B'
+      color: '#5f9ea0'
     }
   };
 
@@ -1181,7 +1181,7 @@ async function generateAIInsights() {
           To generate AI-powered insights and study schedules, you need to configure your Claude API key.
         </p>
         <button id="openSettingsBtn" style="
-          background: #00539B;
+          background: #5f9ea0;
           color: white;
           border: none;
           padding: 12px 24px;
@@ -1194,7 +1194,7 @@ async function generateAIInsights() {
           Open Settings
         </button>
         <p style="margin-top: 16px; font-size: 12px; color: #9CA3AF;">
-          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B; text-decoration: underline;">Get one from Anthropic</a>
+          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #5f9ea0; text-decoration: underline;">Get one from Anthropic</a>
         </p>
       </div>
     `;
@@ -1210,7 +1210,7 @@ async function generateAIInsights() {
       openSettingsBtn.style.background = '#004080';
     });
     openSettingsBtn.addEventListener('mouseout', () => {
-      openSettingsBtn.style.background = '#00539B';
+      openSettingsBtn.style.background = '#5f9ea0';
     });
 
     const timestampEl = document.getElementById('insightsTimestamp');
@@ -1457,7 +1457,7 @@ function formatStructuredInsights(insights) {
 
   return `
     <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-      ${createLucideIcon('layers', 24, '#00539B')}
+      ${createLucideIcon('layers', 24, '#5f9ea0')}
       Weekly Battle Plan
     </h3>
 
@@ -1465,7 +1465,7 @@ function formatStructuredInsights(insights) {
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
       <div style="background: white; border-radius: 8px; padding: 14px; border: 1px solid #E5E7EB;">
         <div style="font-size: 11px; color: #6B7280; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">Total Hours</div>
-        <div style="font-size: 26px; font-weight: 700; color: #00539B;">${insights.workload_assessment.total_hours_needed}h</div>
+        <div style="font-size: 26px; font-weight: 700; color: #5f9ea0;">${insights.workload_assessment.total_hours_needed}h</div>
       </div>
       <div style="background: white; border-radius: 8px; padding: 14px; border: 1px solid #E5E7EB;">
         <div style="font-size: 11px; color: #6B7280; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">Intensity</div>
@@ -1478,7 +1478,7 @@ function formatStructuredInsights(insights) {
     </div>
 
     <!-- Workload Assessment -->
-    <div style="background: linear-gradient(135deg, #00539B 0%, #005587 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 83, 155, 0.2);">
+    <div style="background: linear-gradient(135deg, #5f9ea0 0%, #4a7a7c 100%); padding: 20px; border-radius: 12px; color: white; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 83, 155, 0.2);">
       <h4 style="margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 8px;">
         ${createLucideIcon('activity', 20, 'currentColor')}
         Workload Overview
