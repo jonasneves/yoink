@@ -50,55 +50,18 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.header-right {
-  display: flex;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
-}
-
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-}
-
-.btn-icon:hover {
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-1px);
-}
-
-.btn-icon:active {
-  transform: scale(0.95);
-}
-
-.btn-icon.loading svg {
-  animation: spin 1s linear infinite;
-}
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* Generate Schedule Button in Header */
+/* Generate Schedule Button */
 .btn-generate {
   padding: 12px 24px;
   font-size: 15px;
   font-weight: 600;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  background: #5f9ea0;
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -107,13 +70,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  backdrop-filter: blur(8px);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-generate:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
+  background: #4a7a7c;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
