@@ -31,9 +31,12 @@ window.AISchemas.INTENSITY_LEVELS = {
  */
 window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
   type: "json_schema",
-  schema: {
-    type: "object",
-    properties: {
+  json_schema: {
+    name: "sidepanel_insights",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
       priority_tasks: {
         type: "array",
         description: "Top priority assignments (provide 1-8 items)",
@@ -107,6 +110,7 @@ window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA = {
     },
     required: ["priority_tasks", "workload_assessment", "study_tips"],
     additionalProperties: false
+    }
   }
 };
 
