@@ -1512,9 +1512,9 @@ async function generateAIInsights() {
     // Show settings prompt if no API key (no need to refresh data)
     const settingsPrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
-        <h3 style="margin-bottom: 12px; color: #111827;">Claude API Key Required</h3>
+        <h3 style="margin-bottom: 12px; color: #111827;">GitHub Token Required</h3>
         <p style="margin-bottom: 24px; color: #6B7280; font-size: 14px; max-width: 400px; margin-left: auto; margin-right: auto;">
-          To generate AI-powered insights and study schedules, you need to configure your Claude API key.
+          To generate AI-powered insights and study schedules, you need to configure your GitHub token.
         </p>
         <button id="openSettingsBtn" style="
           background: #1e3a5f;
@@ -1530,7 +1530,7 @@ async function generateAIInsights() {
           Open Settings
         </button>
         <p style="margin-top: 16px; font-size: 12px; color: #9CA3AF;">
-          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #1e3a5f; text-decoration: underline;">Get one from Anthropic</a>
+          Don't have a token? <a href="https://github.com/settings/tokens" target="_blank" style="color: #1e3a5f; text-decoration: underline;">Get one from GitHub</a>
         </p>
       </div>
     `;
@@ -1579,7 +1579,7 @@ async function generateAIInsights() {
   insightsContent.innerHTML = `
     <div class="insights-loading">
       <div class="spinner"></div>
-      <p>Analyzing your assignments with Claude AI...</p>
+      <p>Analyzing your assignments with AI...</p>
     </div>
   `;
 
@@ -1957,9 +1957,9 @@ async function generateAISchedule() {
     // Show settings prompt if no API key
     const settingsPrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
-        <h3 style="margin-bottom: 12px; color: #111827;">Claude API Key Required</h3>
+        <h3 style="margin-bottom: 12px; color: #111827;">GitHub Token Required</h3>
         <p style="margin-bottom: 24px; color: #6B7280; font-size: 14px;">
-          To generate AI-powered schedules, configure your Claude API key in Settings.
+          To generate AI-powered schedules, configure your GitHub token in Settings.
         </p>
         <button class="btn-primary" id="openSettingsFromSchedule" style="padding: 10px 20px; font-size: 14px;">
           Open Settings
@@ -1995,7 +1995,7 @@ async function generateAISchedule() {
     scheduleContent.innerHTML = `
       <div class="insights-loading">
         <div class="spinner"></div>
-        <p>Creating your weekly schedule with Claude AI...</p>
+        <p>Creating your weekly schedule with AI...</p>
       </div>
     `;
 

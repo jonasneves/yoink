@@ -1,41 +1,67 @@
 /**
  * AI Router for Yoink Extension
  *
- * Provides model selection and auto-fallback routing for Claude API calls.
- * Similar to the pattern in example-models-area-extension but adapted for Anthropic API.
+ * Provides model selection and auto-fallback routing for GitHub Models API calls.
+ * Supports multiple AI providers through GitHub's unified inference API.
  */
 
 // Create global namespace
 window.AIRouter = window.AIRouter || {};
 
 /**
- * Available Claude models with their capabilities
+ * GitHub Models API configuration
+ */
+window.AIRouter.API_URL = 'https://models.github.ai/inference/chat/completions';
+
+/**
+ * Available models from GitHub Models
  * Priority: lower number = higher priority (tried first in auto mode)
  */
 window.AIRouter.MODELS = [
   {
-    id: 'claude-sonnet-4-5-20250514',
-    name: 'Claude Sonnet 4.5',
-    description: 'Best balance of speed and intelligence',
+    id: 'gpt-4o',
+    name: 'GPT-4o',
+    publisher: 'OpenAI',
+    description: 'Most capable OpenAI model',
     priority: 1,
     tier: 'high',
-    maxOutputTokens: 8192
+    maxOutputTokens: 4096
   },
   {
-    id: 'claude-sonnet-4-20250514',
-    name: 'Claude Sonnet 4',
-    description: 'Strong performance, very reliable',
-    priority: 2,
-    tier: 'high',
-    maxOutputTokens: 8192
-  },
-  {
-    id: 'claude-haiku-3-5-20241022',
-    name: 'Claude Haiku 3.5',
+    id: 'gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    publisher: 'OpenAI',
     description: 'Fast and cost-effective',
-    priority: 3,
+    priority: 2,
     tier: 'low',
-    maxOutputTokens: 8192
+    maxOutputTokens: 4096
+  },
+  {
+    id: 'Meta-Llama-3.1-405B-Instruct',
+    name: 'Llama 3.1 405B',
+    publisher: 'Meta',
+    description: 'Largest open-source model',
+    priority: 3,
+    tier: 'high',
+    maxOutputTokens: 4096
+  },
+  {
+    id: 'Meta-Llama-3.1-70B-Instruct',
+    name: 'Llama 3.1 70B',
+    publisher: 'Meta',
+    description: 'Strong open-source model',
+    priority: 4,
+    tier: 'high',
+    maxOutputTokens: 4096
+  },
+  {
+    id: 'Mistral-large-2407',
+    name: 'Mistral Large',
+    publisher: 'Mistral AI',
+    description: 'Powerful Mistral model',
+    priority: 5,
+    tier: 'high',
+    maxOutputTokens: 4096
   }
 ];
 
@@ -44,7 +70,7 @@ window.AIRouter.MODELS = [
  */
 window.AIRouter.DEFAULT_CONFIG = {
   selectionMode: 'auto', // 'auto' or 'manual'
-  selectedModelId: 'claude-sonnet-4-5-20250514',
+  selectedModelId: 'gpt-4o',
   enableFallback: true
 };
 
