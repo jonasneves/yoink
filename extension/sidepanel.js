@@ -279,38 +279,25 @@ function renderAssignments() {
     return;
   }
 
-
+  // If no assignments at all, show a friendly "no assignments" message instead of configuration error
+  // The configuration error is only shown in loadAssignments() when response.success is false
   if (allAssignments.length === 0) {
     assignmentsList.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        <div class="empty-state-text">Canvas URL Not Configured</div>
-        <div style="font-size: 13px; margin-top: 12px; line-height: 1.6; color: #6B7280; max-width: 320px;">
-          <p style="margin: 0 0 12px 0;">To load your assignments:</p>
-          <ol style="margin: 0; padding-left: 20px; text-align: left;">
-            <li style="margin-bottom: 8px;">Open Settings (gear icon above)</li>
-            <li style="margin-bottom: 8px;"><strong>Go to a Canvas page</strong> and click "Auto-Detect"</li>
-            <li style="margin-bottom: 0;">Or manually enter your Canvas URL</li>
-          </ol>
+        <div class="empty-state-text">No assignments found</div>
+        <div style="font-size: 13px; margin-top: 12px; color: #6B7280;">
+          Either you have no assignments or they're all completed. Great job!
         </div>
-        <button class="primary open-settings-btn" style="margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px;">
-          <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
-          <span>Open Settings</span>
-        </button>
       </div>
     `;
     // Initialize Lucide icons only in the assignmentsList container
     initializeLucide(assignmentsList);
-    // Add event listener
-    document.querySelector('.open-settings-btn')?.addEventListener('click', () => {
-      document.getElementById('settingsBtn')?.click();
-    });
     return;
   }
 
