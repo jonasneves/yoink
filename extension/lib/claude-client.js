@@ -22,9 +22,6 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
   // Adaptive max_tokens: sidepanel needs less, dashboard needs more
   const maxTokens = promptType === 'dashboard' ? 3000 : 1500;
 
-  // Adaptive thinking budget: must be >= 1024 and < max_tokens
-  const thinkingBudget = promptType === 'dashboard' ? 2000 : 1024;
-
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -36,10 +33,6 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
       max_tokens: maxTokens,
-      thinking: {
-        type: "enabled",
-        budget_tokens: thinkingBudget
-      },
       messages: [{
         role: 'user',
         content: prompt + '\n\nYou must respond with valid JSON only. Do not include any markdown formatting, explanations, or text outside the JSON structure.'
@@ -64,7 +57,7 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
   const data = await response.json();
 
   // With tool-based structured outputs, find the tool_use block
-  // Response structure: { content: [{ type: "thinking", thinking: "..." }, { type: "tool_use", input: {...} }] }
+  // Response structure: { content: [{ type: "tool_use", input: {...} }] }
   const toolUseBlock = data.content.find(block => block.type === 'tool_use');
 
   if (!toolUseBlock || !toolUseBlock.input) {
