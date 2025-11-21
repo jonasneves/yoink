@@ -543,8 +543,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Send a test notification
     chrome.notifications.create({
       type: 'basic',
-      iconUrl: 'icon-128.png',
-      title: 'CanvasFlow Test Notification',
+      iconUrl: 'icon-48.png',
+      title: 'Yoink Test Notification',
       message: 'Notifications are working! You will receive deadline reminders based on your settings.',
       priority: 1,
       requireInteraction: false
@@ -1260,16 +1260,16 @@ async function showDailySummary() {
   if (parts.length === 0) {
     chrome.notifications.create({
       type: 'basic',
-      iconUrl: 'icon-128.png',
-      title: 'CanvasFlow Daily Summary',
+      iconUrl: 'icon-48.png',
+      title: 'Yoink Daily Summary',
       message: 'No urgent assignments. Great job staying on top of your work!',
       priority: 1
     });
   } else {
     chrome.notifications.create({
       type: 'basic',
-      iconUrl: 'icon-128.png',
-      title: 'CanvasFlow Daily Summary',
+      iconUrl: 'icon-48.png',
+      title: 'Yoink Daily Summary',
       message: `You have: ${parts.join(', ')}`,
       priority: 2
     });
