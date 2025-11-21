@@ -180,17 +180,17 @@ function renderFocusMode(now, todayStart, todayEnd, timeRangeStart, timeRangeEnd
           </svg>
         </div>
         <div class="empty-state-text">No priority assignments</div>
-        <p style="font-size: 13px; color: #6B7280; margin-top: 8px;">You're all caught up! 🎉</p>
+        <p style="font-size: 13px; color: #6B7280; margin-top: 8px;">You're all caught up</p>
       </div>
     `;
     return;
   }
 
-  // Render top 3 with simplified, bigger UI
+  // Render top 3 with consistent styling
   assignmentsList.innerHTML = `
-    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2c4f7c 100%); color: white; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
-      <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">🎯 Focus Mode</div>
-      <div style="font-size: 12px; opacity: 0.9;">Your top 3 priorities right now</div>
+    <div class="focus-mode-header">
+      <div class="focus-mode-title">Focus Mode</div>
+      <div class="focus-mode-subtitle">Your top 3 priorities</div>
     </div>
     ${focusAssignments.map((assignment, index) => {
       const dueDate = new Date(assignment.dueDate);
@@ -204,58 +204,48 @@ function renderFocusMode(now, todayStart, todayEnd, timeRangeStart, timeRangeEnd
         minute: '2-digit'
       });
 
-      const priorityLabel = index === 0 ? '🔴 HIGH PRIORITY' : index === 1 ? '🟡 PRIORITY' : '🟢 FOCUS';
+      const priorityConfig = [
+        { label: 'PRIORITY 1', color: '#DC2626', bgColor: '#FEE2E2' },
+        { label: 'PRIORITY 2', color: '#D97706', bgColor: '#FEF3C7' },
+        { label: 'PRIORITY 3', color: '#1e3a5f', bgColor: '#DBEAFE' }
+      ][index];
+
       const assignmentUrl = assignment.url || '#';
+      const badges = getAssignmentBadges(assignment);
+      const gradeDisplay = getGradeDisplay(assignment);
+
+      // Get AI-generated tags for this assignment
+      const aiTags = getTagsForAssignment(assignment.id);
+      const aiChipsHtml = aiTags.length > 0 ? `
+        <div class="ai-chips">
+          ${aiTags.map(tag => `<span class="ai-chip">${escapeHtml(tag)}</span>`).join('')}
+        </div>
+      ` : '';
 
       return `
-        <div style="margin-bottom: 16px;">
-          <div style="font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-            ${priorityLabel}
+        <div class="focus-mode-card">
+          <div class="focus-mode-badge" style="background: ${priorityConfig.bgColor}; color: ${priorityConfig.color};">
+            ${priorityConfig.label}
           </div>
-          <a href="${escapeHtml(assignmentUrl)}" target="_blank" style="
-            display: block;
-            padding: 20px;
-            background: white;
-            border: 2px solid ${isOverdue ? '#E63946' : isDueToday ? '#F77F00' : '#1e3a5f'};
-            border-radius: 12px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.15)';" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.08)';">
-            <div style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 12px; line-height: 1.3;">
-              ${escapeHtml(assignment.name || 'Untitled Assignment')}
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-              <div style="font-size: 14px; color: #6B7280; font-weight: 500;">
-                ${escapeHtml(assignment.courseName || 'Unknown Course')}
+          <a href="${escapeHtml(assignmentUrl)}" target="_blank" class="assignment-card ${isOverdue ? 'overdue' : ''}">
+            <div class="assignment-info">
+              <div class="assignment-title">${escapeHtml(assignment.name || 'Untitled Assignment')}</div>
+              <div class="assignment-meta">
+                <span>${escapeHtml(assignment.courseName || 'Unknown Course')}</span>
+                ${assignment.pointsPossible ? `<span>${assignment.pointsPossible} pts</span>` : ''}
               </div>
-              <div style="font-size: 14px; font-weight: 600; color: ${isOverdue ? '#E63946' : isDueToday ? '#F77F00' : '#374151'};">
+              ${aiChipsHtml}
+              <div class="assignment-due-date ${isOverdue ? 'overdue' : isDueToday ? 'due-today' : 'upcoming'}">
                 Due: ${dueDateText}
               </div>
             </div>
-            ${assignment.pointsPossible ? `
-              <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;">
-                <span style="font-size: 13px; color: #6B7280;">Worth</span>
-                <span style="font-size: 16px; font-weight: 700; color: #1e3a5f; margin-left: 8px;">${assignment.pointsPossible} points</span>
-              </div>
-            ` : ''}
+            ${badges || gradeDisplay ? `<div class="assignment-badges">${badges}${gradeDisplay}</div>` : ''}
           </a>
         </div>
       `;
     }).join('')}
     <div style="text-align: center; margin-top: 24px;">
-      <button id="exitFocusMode" style="
-        background: transparent;
-        border: 1px solid #E5E7EB;
-        color: #6B7280;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      " onmouseover="this.style.background='#F3F4F6'; this.style.borderColor='#D1D5DB';" onmouseout="this.style.background='transparent'; this.style.borderColor='#E5E7EB';">
+      <button class="secondary small" id="exitFocusMode">
         Show All Assignments
       </button>
     </div>
