@@ -42,3 +42,28 @@
   --color-old-blue: #00539B;
   --color-old-blue-dark: #012169;
 }
+
+/* Universal Loading Animation - Text Wave Effect */
+.btn-generate.loading span,
+.btn-primary.loading span {
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.5) 20%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.5) 80%,
+    rgba(255, 255, 255, 0.4) 100%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textWave 2.5s ease-in-out infinite;
+}
+
+@keyframes textWave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
