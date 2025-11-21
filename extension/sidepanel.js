@@ -189,7 +189,12 @@ function renderFocusMode(now, todayStart, todayEnd, timeRangeStart, timeRangeEnd
   // Render top 3 with consistent styling
   assignmentsList.innerHTML = `
     <div class="focus-mode-header">
-      <div class="focus-mode-title">Focus Mode</div>
+      <div class="focus-mode-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+        </svg>
+        Focus Mode
+      </div>
       <div class="focus-mode-subtitle">Your top 3 priorities</div>
     </div>
     ${focusAssignments.map((assignment, index) => {
