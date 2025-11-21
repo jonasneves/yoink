@@ -1,6 +1,6 @@
-# Yoink Distribution Files
+# CanvasFlow Distribution Files
 
-This directory contains packaged versions of Yoink for distribution.
+This directory contains packaged versions of CanvasFlow for distribution.
 
 ## 📦 For Chrome Web Store Submission
 

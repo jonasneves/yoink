@@ -2,7 +2,7 @@
 
 # Default target
 help:
-	@echo "Yoink - Chrome Web Store Release Automation"
+	@echo "CanvasFlow - Chrome Web Store Release Automation"
 	@echo ""
 	@echo "Available commands:"
 	@echo "  make release       - Create release packages (prompts for version)"
@@ -96,7 +96,7 @@ clean:
 
 # Quick start guide
 quickstart:
-	@echo "🚀 Yoink Quick Start"
+	@echo "🚀 CanvasFlow Quick Start"
 	@echo ""
 	@echo "1. Create release packages:"
 	@echo "   make release"

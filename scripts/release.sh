@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Yoink Release Automation Script
+# CanvasFlow Release Automation Script
 # This script automates the release process for Chrome Web Store submission
 
 set -e  # Exit on error
@@ -16,9 +16,9 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo -e "${BLUE}╔════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   Yoink Release Automation Script    ║${NC}"
-echo -e "${BLUE}╚════════════════════════════════════════════╝${NC}"
+echo -e "${BLUE}╔════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║   CanvasFlow Release Automation Script   ║${NC}"
+echo -e "${BLUE}╚════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # Check if we're in the right directory
@@ -157,13 +157,13 @@ echo ""
 # Generate release notes
 echo -e "${BLUE}Generating release notes...${NC}"
 cat > "$OUTPUT_DIR/release-notes-v$NEW_VERSION.md" << EOF
-# Yoink v$NEW_VERSION
+# CanvasFlow v$NEW_VERSION
 
 ## Chrome Extension
 
 ### Features
 
-- ✨ AI-powered insights with Claude using structured outputs
+- ✨ AI-powered insights using GitHub Models with structured outputs
 - 📊 Weekly schedule generation with time-blocked tasks
 - 📝 Direct Canvas data extraction (no API key required)
 - 🔌 MCP server integration for Claude Desktop
