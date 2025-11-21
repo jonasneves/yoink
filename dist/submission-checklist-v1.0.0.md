@@ -15,9 +15,7 @@
 ### Required Assets
 
 - [ ] Small promotional tile (440×280 pixels)
-  - Tool: `scripts/promo-tile-generator.html`
 - [ ] Screenshots (1280×800 pixels, 3-5 recommended)
-  - Guide: `scripts/generate-screenshots.js`
   - [ ] Screenshot #1: Assignment Dashboard
   - [ ] Screenshot #2: AI Insights Panel
   - [ ] Screenshot #3: Weekly Schedule
@@ -27,7 +25,6 @@
 ### Optional Assets
 
 - [ ] Marquee promotional tile (1400×560 pixels)
-  - Tool: `scripts/promo-tile-generator.html`
 - [ ] Demo video (optional but recommended)
 
 ### Testing

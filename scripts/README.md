@@ -35,61 +35,6 @@ All files are created in the `dist/` directory:
 - `release-notes-vX.X.X.md` - Release documentation
 - `submission-checklist-vX.X.X.md` - Pre-submission checklist
 
-### 📸 Screenshot Generator
-
-**`generate-screenshots.js`** - Screenshot capture automation
-
-Generates guides and helpers for capturing Chrome Web Store screenshots.
-
-```bash
-node scripts/generate-screenshots.js
-```
-
-**What it creates:**
-- `screenshots/SCREENSHOT_GUIDE.md` - Detailed capture instructions
-- `screenshots/README.md` - Screenshots directory documentation
-- `screenshots/checklist.html` - Interactive checklist
-
-**Screenshot Requirements:**
-- Resolution: 1280 × 800 pixels (or 640 × 400)
-- Format: PNG or JPEG
-- Quantity: Minimum 1, recommended 3-5
-- File size: Under 5MB each
-
-**Required Screenshots:**
-1. Assignment Dashboard (sidepanel view)
-2. AI Insights Panel (with generated insights)
-3. Weekly Schedule (full-page view)
-4. Settings Configuration (modal view)
-5. In-Context View (Canvas + CanvasFlow together)
-
-### 🎨 Promotional Tile Generator
-
-**`promo-tile-generator.html`** - Visual asset creator
-
-Browser-based tool for creating promotional tiles.
-
-```bash
-# Open in browser
-open scripts/promo-tile-generator.html
-# or
-firefox scripts/promo-tile-generator.html
-```
-
-**Features:**
-- Generate small promo tile (440×280 pixels)
-- Generate marquee promo tile (1400×560 pixels)
-- Customizable headline and tagline
-- Editable features list
-- Real-time preview
-- One-click PNG download
-
-**Tips:**
-- Use CanvasFlow brand colors (#00539B, #DC2626)
-- Keep text minimal and readable
-- Consider adding mockups in external editor
-- Verify file size (under 1MB for small, 2MB for marquee)
-
 ## 🔄 GitHub Actions Workflow
 
 **`.github/workflows/build-extension.yml`** - Automated builds
@@ -125,24 +70,7 @@ git push origin v1.0.0
 
 This creates all packages and checklists in `dist/`
 
-### Step 2: Create Promotional Assets
-
-```bash
-# Open tile generator
-open scripts/promo-tile-generator.html
-
-# Generate screenshot guide
-node scripts/generate-screenshots.js
-```
-
-### Step 3: Capture Screenshots
-
-1. Load extension in Chrome (`chrome://extensions/`)
-2. Set viewport to 1280×800 (DevTools → Responsive mode)
-3. Follow guide in `screenshots/SCREENSHOT_GUIDE.md`
-4. Save screenshots in `screenshots/` directory
-
-### Step 4: Review Checklist
+### Step 2: Review Checklist
 
 ```bash
 # Open submission checklist
@@ -151,7 +79,7 @@ cat dist/submission-checklist-v1.0.0.md
 
 Check off all items before submission.
 
-### Step 5: Submit to Chrome Web Store
+### Step 3: Submit to Chrome Web Store
 
 1. Go to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 2. Click "New Item"
@@ -207,14 +135,11 @@ du -sh scripts/*.png
 | ZIP packaging | `release.sh` | ✅ Yes | dist/*.zip |
 | Release notes | `release.sh` | ✅ Yes | dist/*.md |
 | Submission checklist | `release.sh` | ✅ Yes | dist/*.md |
-| Promotional tiles | `promo-tile-generator.html` | 🟡 Semi | PNG files |
-| Screenshots | `generate-screenshots.js` | 🟡 Guide | screenshots/*.png |
 | GitHub releases | `.github/workflows/` | ✅ Yes | GitHub Releases |
 | Chrome Web Store upload | Manual | ❌ No | - |
 
 **Legend:**
 - ✅ Fully automated
-- 🟡 Semi-automated (tools provided)
 - ❌ Manual process required
 
 ## 🔍 Quality Checks
@@ -252,15 +177,6 @@ sudo apt-get install jq
 
 # Windows (Git Bash)
 # Download from: https://stedolan.github.io/jq/
-```
-
-### Screenshot Generator Errors
-
-Ensure Node.js is installed:
-
-```bash
-node --version  # Should be v14 or higher
-npm --version
 ```
 
 ### Workflow Not Running

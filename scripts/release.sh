@@ -207,8 +207,8 @@ Use \`canvasflow-extension-v$NEW_VERSION.zip\` directly in the Developer Dashboa
 ## What's Next?
 
 1. Upload to Chrome Web Store
-2. Create promotional assets (see CHROME_WEB_STORE_ASSETS_GUIDE.html)
-3. Capture screenshots (see scripts/generate-screenshots.js)
+2. Create promotional assets
+3. Capture screenshots
 4. Submit for review
 
 EOF
@@ -236,9 +236,7 @@ cat > "$OUTPUT_DIR/submission-checklist-v$NEW_VERSION.md" << EOF
 ### Required Assets
 
 - [ ] Small promotional tile (440×280 pixels)
-  - Tool: \`scripts/promo-tile-generator.html\`
 - [ ] Screenshots (1280×800 pixels, 3-5 recommended)
-  - Guide: \`scripts/generate-screenshots.js\`
   - [ ] Screenshot #1: Assignment Dashboard
   - [ ] Screenshot #2: AI Insights Panel
   - [ ] Screenshot #3: Weekly Schedule
@@ -248,7 +246,6 @@ cat > "$OUTPUT_DIR/submission-checklist-v$NEW_VERSION.md" << EOF
 ### Optional Assets
 
 - [ ] Marquee promotional tile (1400×560 pixels)
-  - Tool: \`scripts/promo-tile-generator.html\`
 - [ ] Demo video (optional but recommended)
 
 ### Testing
@@ -348,10 +345,9 @@ echo -e "  📄 release-notes-v$NEW_VERSION.md"
 echo -e "  📋 submission-checklist-v$NEW_VERSION.md"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo -e "  1. Open ${BLUE}scripts/promo-tile-generator.html${NC} to create promotional tiles"
-echo -e "  2. Run ${BLUE}node scripts/generate-screenshots.js${NC} for screenshot guide"
-echo -e "  3. Review ${BLUE}dist/submission-checklist-v$NEW_VERSION.md${NC}"
-echo -e "  4. Upload to Chrome Web Store Developer Dashboard"
+echo -e "  1. Review ${BLUE}dist/submission-checklist-v$NEW_VERSION.md${NC}"
+echo -e "  2. Create promotional assets and screenshots"
+echo -e "  3. Upload to Chrome Web Store Developer Dashboard"
 echo ""
 echo -e "${GREEN}🎉 Ready for Chrome Web Store submission!${NC}"
 echo ""
