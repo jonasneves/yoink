@@ -567,9 +567,6 @@ async function loadAssignments() {
       // Render assignments with current filter
       renderAssignments();
 
-      // Render Today's Priorities section (Phase 3.1)
-      renderTodaySection();
-
     } else {
       assignmentsList.innerHTML = `
         <div class="empty-state">
@@ -1863,70 +1860,6 @@ async function updateScheduleButtonText() {
 
 // Generate Schedule Button
 document.getElementById('generateScheduleBtn').addEventListener('click', generateAISchedule);
-
-// Render Today's Priorities
-function renderTodaySection() {
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-  // Get assignments due today or overdue
-  const todayAssignments = allAssignments.filter(a => {
-    if (!a.dueDate || a.submission?.submitted) return false;
-    const dueDate = new Date(a.dueDate);
-    return dueDate <= todayEnd; // Include overdue and due today
-  });
-
-  // Calculate impact scores and sort
-  const scored = todayAssignments.map(a => ({
-    ...a,
-    impactScore: calculateImpactScore(a, now)
-  })).sort((a, b) => b.impactScore - a.impactScore);
-
-  // Take top 3
-  const topPriorities = scored.slice(0, 3);
-
-  const todaySection = document.getElementById('todaySection');
-  const todayContent = document.getElementById('todayContent');
-
-  if (topPriorities.length === 0) {
-    todaySection.style.display = 'none';
-    return;
-  }
-
-  todaySection.style.display = 'block';
-
-  todayContent.innerHTML = topPriorities.map((a, idx) => {
-    const dueDate = new Date(a.dueDate);
-    const isOverdue = dueDate < now;
-    const priorityColors = ['#EF4444', '#F59E0B', '#10B981'];
-    const priorityLabels = ['URGENT', 'HIGH', 'MEDIUM'];
-
-    return `
-      <div style="background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; border-left: 4px solid ${priorityColors[idx]}; cursor: pointer; transition: all 0.2s;"
-           onclick="window.open('${escapeHtml(a.url)}', '_blank')"
-           onmouseover="this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
-           onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none'">
-        <div style="display: flex; align-items: start; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
-          <span style="font-weight: 600; font-size: 13px; color: #111827; flex: 1;">${escapeHtml(a.name)}</span>
-          <span style="background: ${priorityColors[idx]}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap;">${priorityLabels[idx]}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6B7280;">
-          <span>${escapeHtml(a.courseName)}</span>
-          <span>•</span>
-          <span style="color: ${isOverdue ? '#EF4444' : '#374151'}; font-weight: 500;">
-            ${isOverdue ? 'Overdue' : formatDueDate(dueDate)}
-          </span>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Re-initialize lucide icons
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-}
 
 // Load saved schedule from storage
 async function loadSavedSchedule() {
