@@ -232,6 +232,7 @@ async function loadSavedInsights() {
 
       // Setup event listeners AFTER HTML is inserted into DOM
       setupDayToggleListeners();
+      setupTaskCardClickListeners();
 
       // Update timestamp if available
       if (result.dashboardInsightsTimestamp) {
@@ -334,6 +335,7 @@ async function generateAIInsights() {
 
     // Setup event listeners AFTER HTML is inserted into DOM
     setupDayToggleListeners();
+    setupTaskCardClickListeners();
 
     // Save insights and timestamp to storage (dashboard-specific)
     const timestamp = Date.now();
@@ -436,6 +438,18 @@ function getLucideIconPaths(iconName) {
   return icons[iconName] || '';
 }
 
+// Setup task card click listeners (must be called AFTER HTML is in DOM)
+function setupTaskCardClickListeners() {
+  document.querySelectorAll('.schedule-task-card.clickable').forEach(card => {
+    card.addEventListener('click', function() {
+      const url = this.dataset.url;
+      if (url) {
+        window.open(url, '_blank');
+      }
+    });
+  });
+}
+
 // Setup day toggle event listeners (must be called AFTER HTML is in DOM)
 function setupDayToggleListeners() {
   document.querySelectorAll('.day-plan-toggle').forEach(btn => {
@@ -513,17 +527,16 @@ function formatStructuredInsights(insights) {
 
       // Find assignment URL for clickable link
       const assignmentUrl = findAssignmentUrl(task.assignment);
-      const cardStyle = `padding: 16px; background: white; border-left: 4px solid #5f9ea0; border-radius: 6px; margin-bottom: 12px; ${assignmentUrl ? 'cursor: pointer; transition: all 0.2s ease;' : ''}`;
-      const hoverAttr = assignmentUrl ? 'onmouseover="this.style.transform=\'translateX(4px)\'; this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.transform=\'translateX(0)\'; this.style.boxShadow=\'none\';"' : '';
-      const clickAttr = assignmentUrl ? `onclick="window.open('${assignmentUrl}', '_blank')"` : '';
+      const clickableClass = assignmentUrl ? ' clickable' : '';
+      const dataUrlAttr = assignmentUrl ? ` data-url="${escapeHtml(assignmentUrl)}"` : '';
 
       return `
-        <div style="${cardStyle}" ${hoverAttr} ${clickAttr}>
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <strong style="color: #111827; font-size: 15px; flex: 1; ${assignmentUrl ? 'text-decoration: underline; text-decoration-color: rgba(95, 158, 160, 0.3);' : ''}">${escapeHtml(task.assignment)}</strong>
-            <span style="background: #E2E6ED; color: #5f9ea0; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
+        <div class="schedule-task-card${clickableClass}"${dataUrlAttr}>
+          <div class="task-header">
+            <strong class="task-title">${escapeHtml(task.assignment)}</strong>
+            <span class="task-time-badge">${timeBlock}</span>
           </div>
-          <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
+          <p class="task-notes">
             ${createLucideIcon('lightbulb', 14, '#6B7280')}
             <span>${escapeHtml(task.notes)}</span>
           </p>
