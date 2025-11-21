@@ -2,9 +2,9 @@
 
 This directory contains automation scripts for building, packaging, and releasing the CanvasFlow extension to the Chrome Web Store.
 
-## 📋 Available Scripts
+## Available Scripts
 
-### 🚀 Release Script
+### Release Script
 
 **`release.sh`** - Complete release automation
 
@@ -19,14 +19,14 @@ Creates production-ready packages for Chrome Web Store submission.
 ```
 
 **What it does:**
-- ✅ Validates extension structure and files
-- ✅ Checks CSP compliance (no inline event handlers)
-- ✅ Checks for eval() usage
-- ✅ Updates version in manifest.json
-- ✅ Creates Chrome Web Store ZIP package
-- ✅ Creates native host ZIP package
-- ✅ Generates release notes
-- ✅ Creates submission checklist
+- Validates extension structure and files
+- Checks CSP compliance (no inline event handlers)
+- Checks for eval() usage
+- Updates version in manifest.json
+- Creates Chrome Web Store ZIP package
+- Creates native host ZIP package
+- Generates release notes
+- Creates submission checklist
 
 **Output:**
 All files are created in the `dist/` directory:
@@ -35,7 +35,7 @@ All files are created in the `dist/` directory:
 - `release-notes-vX.X.X.md` - Release documentation
 - `submission-checklist-vX.X.X.md` - Pre-submission checklist
 
-## 🔄 GitHub Actions Workflow
+## GitHub Actions Workflow
 
 **`.github/workflows/build-extension.yml`** - Automated builds
 
@@ -59,7 +59,7 @@ git push origin v1.0.0
 - Release notes (auto-generated)
 - Build summary
 
-## 📦 Complete Release Process
+## Complete Release Process
 
 ### Step 1: Prepare Release
 
@@ -88,7 +88,7 @@ Check off all items before submission.
 5. Fill in store listing details
 6. Submit for review
 
-## 🛠️ Development Tools
+## Development Tools
 
 ### Verify Extension Structure
 
@@ -127,42 +127,38 @@ du -sh screenshots/*.png
 du -sh scripts/*.png
 ```
 
-## 📊 Automation Summary
+## Automation Summary
 
 | Task | Tool | Automated? | Output |
 |------|------|------------|--------|
-| Version bumping | `release.sh` | ✅ Yes | manifest.json |
-| ZIP packaging | `release.sh` | ✅ Yes | dist/*.zip |
-| Release notes | `release.sh` | ✅ Yes | dist/*.md |
-| Submission checklist | `release.sh` | ✅ Yes | dist/*.md |
-| GitHub releases | `.github/workflows/` | ✅ Yes | GitHub Releases |
-| Chrome Web Store upload | Manual | ❌ No | - |
+| Version bumping | `release.sh` | Yes | manifest.json |
+| ZIP packaging | `release.sh` | Yes | dist/*.zip |
+| Release notes | `release.sh` | Yes | dist/*.md |
+| Submission checklist | `release.sh` | Yes | dist/*.md |
+| GitHub releases | `.github/workflows/` | Yes | GitHub Releases |
+| Chrome Web Store upload | Manual | No | - |
 
-**Legend:**
-- ✅ Fully automated
-- ❌ Manual process required
-
-## 🔍 Quality Checks
+## Quality Checks
 
 All automated scripts include these quality checks:
 
-- ✅ Manifest V3 compliance
-- ✅ CSP compliance (no inline event handlers)
-- ✅ No eval() or dangerous code patterns
-- ✅ Required files present
-- ✅ Icons properly sized
-- ✅ Privacy policy accessible
-- ✅ Permissions minimized
-- ✅ File size limits
+- Manifest V3 compliance
+- CSP compliance (no inline event handlers)
+- No eval() or dangerous code patterns
+- Required files present
+- Icons properly sized
+- Privacy policy accessible
+- Permissions minimized
+- File size limits
 
-## 📝 Notes
+## Notes
 
 - **Privacy Policy URL:** https://github.com/jonasneves/canvasflow/blob/main/PRIVACY.md
 - **Homepage URL:** https://github.com/jonasneves/canvasflow
 - **Developer Dashboard:** https://chrome.google.com/webstore/devconsole
 - **Review Time:** Typically 1-3 days
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Script Fails: "jq: command not found"
 
@@ -192,7 +188,7 @@ Check for node_modules or unnecessary files:
 unzip -l dist/canvasflow-extension-*.zip | grep node_modules
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Chrome Web Store Documentation](https://developer.chrome.com/docs/webstore/)
 - [Manifest V3 Guide](https://developer.chrome.com/docs/extensions/mv3/intro/)

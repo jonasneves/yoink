@@ -2,7 +2,7 @@
 
 This directory contains packaged versions of CanvasFlow for distribution.
 
-## 📦 For Chrome Web Store Submission
+## For Chrome Web Store Submission
 
 ### Option 1: Use GitHub Release (Recommended)
 When a GitHub Release is created, download the `canvasflow-extension-vX.X.X.zip` file directly from the release assets. This zip is correctly formatted and ready to upload to the Chrome Web Store.
@@ -36,7 +36,7 @@ Archive:  your-extension.zip
     ...
 ```
 
-## 🚀 Quick Start for Local Development
+## Quick Start for Local Development
 
 To create a properly formatted zip locally:
 
@@ -66,14 +66,14 @@ Or use the release script:
 ./scripts/release.sh
 ```
 
-## 📋 Files in This Directory
+## Files in This Directory
 
 - `canvasflow-extension-vX.X.X.zip` - Chrome extension package (ready for Chrome Web Store)
 - `canvasflow-native-host-vX.X.X.zip` - Native messaging host (optional, for MCP integration)
 - `release-notes-vX.X.X.md` - Release notes for the version
 - `submission-checklist-vX.X.X.md` - Checklist for Chrome Web Store submission
 
-## ❓ Troubleshooting
+## Troubleshooting
 
 ### "No manifest found in package" error
 
@@ -91,7 +91,7 @@ This error occurs when manifest.json is not at the root of the zip. Common cause
 4. Create a new zip file from the selected files
 5. Verify with `unzip -l yourfile.zip` that manifest.json appears at the root
 
-## 📞 Support
+## Support
 
 For more information, see:
 - [Chrome Web Store Readiness](../docs/READINESS.md)

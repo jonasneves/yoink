@@ -4,13 +4,13 @@
 
 ### Features
 
-- ✨ AI-powered insights using GitHub Models with structured outputs
-- 📊 Weekly schedule generation with time-blocked tasks
-- 📝 Direct Canvas data extraction (no API key required)
-- 🔌 MCP server integration for Claude Desktop
-- 🎨 Modern, intuitive UI with color-coded assignments
-- 🔒 Privacy-first: all data stored locally
-- ⚡ Manifest V3 compliant
+- AI-powered insights using GitHub Models with structured outputs
+- Weekly schedule generation with time-blocked tasks
+- Direct Canvas data extraction (no API key required)
+- MCP server integration for Claude Desktop
+- Modern, intuitive UI with color-coded assignments
+- Privacy-first: all data stored locally
+- Manifest V3 compliant
 
 ### Installation
 

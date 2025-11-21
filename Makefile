@@ -16,7 +16,7 @@ help:
 
 # Create release packages
 release:
-	@echo "🚀 Creating release packages..."
+	@echo "Creating release packages..."
 	@if [ -n "$(VERSION)" ]; then \
 		./scripts/release.sh $(VERSION); \
 	else \
@@ -28,7 +28,7 @@ package: release
 
 # Test extension structure
 test:
-	@echo "🔍 Verifying extension structure..."
+	@echo "Verifying extension structure..."
 	@echo ""
 	@echo "Checking manifest..."
 	@if [ -f extension/manifest.json ]; then \
@@ -65,18 +65,18 @@ test:
 		echo "✓ No eval() usage"; \
 	fi
 	@echo ""
-	@echo "✅ All checks passed!"
+	@echo "All checks passed!"
 
 # Clean build artifacts
 clean:
-	@echo "🧹 Cleaning build artifacts..."
+	@echo "Cleaning build artifacts..."
 	@rm -rf dist/
 	@rm -rf screenshots/*.png
 	@echo "✓ Cleaned dist/ and screenshots/"
 
 # Quick start guide
 quickstart:
-	@echo "🚀 CanvasFlow Quick Start"
+	@echo "CanvasFlow Quick Start"
 	@echo ""
 	@echo "1. Create release packages:"
 	@echo "   make release"

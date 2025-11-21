@@ -163,13 +163,13 @@ cat > "$OUTPUT_DIR/release-notes-v$NEW_VERSION.md" << EOF
 
 ### Features
 
-- ✨ AI-powered insights using GitHub Models with structured outputs
-- 📊 Weekly schedule generation with time-blocked tasks
-- 📝 Direct Canvas data extraction (no API key required)
-- 🔌 MCP server integration for Claude Desktop
-- 🎨 Modern, intuitive UI with color-coded assignments
-- 🔒 Privacy-first: all data stored locally
-- ⚡ Manifest V3 compliant
+- AI-powered insights using GitHub Models with structured outputs
+- Weekly schedule generation with time-blocked tasks
+- Direct Canvas data extraction (no API key required)
+- MCP server integration for Claude Desktop
+- Modern, intuitive UI with color-coded assignments
+- Privacy-first: all data stored locally
+- Manifest V3 compliant
 
 ### Installation
 
@@ -221,7 +221,7 @@ echo -e "${BLUE}Generating submission checklist...${NC}"
 cat > "$OUTPUT_DIR/submission-checklist-v$NEW_VERSION.md" << EOF
 # Chrome Web Store Submission Checklist - v$NEW_VERSION
 
-## ✅ Completed
+## Completed
 
 - [x] Extension package created (\`canvasflow-extension-v$NEW_VERSION.zip\`)
 - [x] Manifest V3 compliant
@@ -231,7 +231,7 @@ cat > "$OUTPUT_DIR/submission-checklist-v$NEW_VERSION.md" << EOF
 - [x] Homepage URL set in manifest
 - [x] Permissions minimized and justified
 
-## 📋 Before Submission
+## Before Submission
 
 ### Required Assets
 
@@ -265,7 +265,7 @@ cat > "$OUTPUT_DIR/submission-checklist-v$NEW_VERSION.md" << EOF
 - [ ] Category set: Productivity
 - [ ] Language set: English
 
-## 📝 Store Listing Copy
+## Store Listing Copy
 
 ### Short Description (from manifest)
 \`\`\`
@@ -286,7 +286,7 @@ https://github.com/jonasneves/canvasflow/blob/main/PRIVACY.md
 https://github.com/jonasneves/canvasflow
 \`\`\`
 
-## 🚀 Submission Steps
+## Submission Steps
 
 1. **Create Developer Account**
    - Go to: https://chrome.google.com/webstore/devconsole
@@ -314,7 +314,7 @@ https://github.com/jonasneves/canvasflow
    - Submit for publication
    - Wait 1-3 days for review
 
-## 📞 Support
+## Support
 
 If you encounter issues during submission:
 - Review: \`CHROME_WEB_STORE_READINESS.md\`
@@ -339,19 +339,19 @@ echo -e "${BLUE}Version:${NC} $NEW_VERSION"
 echo -e "${BLUE}Output Directory:${NC} $OUTPUT_DIR"
 echo ""
 echo -e "${YELLOW}Files created:${NC}"
-echo -e "  📦 canvasflow-extension-v$NEW_VERSION.zip"
-echo -e "  📦 canvasflow-native-host-v$NEW_VERSION.zip"
-echo -e "  📄 release-notes-v$NEW_VERSION.md"
-echo -e "  📋 submission-checklist-v$NEW_VERSION.md"
+echo -e "  - canvasflow-extension-v$NEW_VERSION.zip"
+echo -e "  - canvasflow-native-host-v$NEW_VERSION.zip"
+echo -e "  - release-notes-v$NEW_VERSION.md"
+echo -e "  - submission-checklist-v$NEW_VERSION.md"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
 echo -e "  1. Review ${BLUE}dist/submission-checklist-v$NEW_VERSION.md${NC}"
 echo -e "  2. Create promotional assets and screenshots"
 echo -e "  3. Upload to Chrome Web Store Developer Dashboard"
 echo ""
-echo -e "${GREEN}🎉 Ready for Chrome Web Store submission!${NC}"
+echo -e "${GREEN}Ready for Chrome Web Store submission!${NC}"
 echo ""
-echo -e "${YELLOW}⚠️  Important:${NC}"
+echo -e "${YELLOW}Important:${NC}"
 echo -e "  If downloading from GitHub Actions artifacts, you'll need to:"
 echo -e "  1. Extract the downloaded artifact zip"
 echo -e "  2. Re-zip the extension folder contents"
