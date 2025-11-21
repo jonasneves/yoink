@@ -464,6 +464,43 @@ function setupDayToggleListeners() {
   });
 }
 
+// Helper function to find assignment URL by fuzzy matching name
+function findAssignmentUrl(assignmentName) {
+  if (!canvasData.allAssignments || canvasData.allAssignments.length === 0) {
+    return null;
+  }
+
+  const cleanName = assignmentName.toLowerCase().trim();
+
+  // First try exact match
+  let match = canvasData.allAssignments.find(a =>
+    a.name && a.name.toLowerCase().trim() === cleanName
+  );
+
+  // If no exact match, try partial match (assignment name contains the search term or vice versa)
+  if (!match) {
+    match = canvasData.allAssignments.find(a => {
+      if (!a.name) return false;
+      const aName = a.name.toLowerCase().trim();
+      return aName.includes(cleanName) || cleanName.includes(aName);
+    });
+  }
+
+  // If still no match, try word-based matching (any significant word matches)
+  if (!match) {
+    const cleanWords = cleanName.split(/\s+/).filter(w => w.length > 3); // Skip short words
+    if (cleanWords.length > 0) {
+      match = canvasData.allAssignments.find(a => {
+        if (!a.name) return false;
+        const aName = a.name.toLowerCase().trim();
+        return cleanWords.some(word => aName.includes(word));
+      });
+    }
+  }
+
+  return match ? match.url : null;
+}
+
 // Format structured insights for display (Dashboard focuses ONLY on weekly schedule)
 function formatStructuredInsights(insights) {
   // Phase 3: Removed hardcoded color maps - using mappers instead
@@ -474,10 +511,16 @@ function formatStructuredInsights(insights) {
       // Phase 3: Format time blocks from structured start_hour + duration_hours
       const timeBlock = window.AIMappers.formatTimeBlock(task.start_hour, task.duration_hours);
 
+      // Find assignment URL for clickable link
+      const assignmentUrl = findAssignmentUrl(task.assignment);
+      const cardStyle = `padding: 16px; background: white; border-left: 4px solid #5f9ea0; border-radius: 6px; margin-bottom: 12px; ${assignmentUrl ? 'cursor: pointer; transition: all 0.2s ease;' : ''}`;
+      const hoverAttr = assignmentUrl ? 'onmouseover="this.style.transform=\'translateX(4px)\'; this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.transform=\'translateX(0)\'; this.style.boxShadow=\'none\';"' : '';
+      const clickAttr = assignmentUrl ? `onclick="window.open('${assignmentUrl}', '_blank')"` : '';
+
       return `
-        <div style="padding: 16px; background: white; border-left: 4px solid #5f9ea0; border-radius: 6px; margin-bottom: 12px;">
+        <div style="${cardStyle}" ${hoverAttr} ${clickAttr}>
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <strong style="color: #111827; font-size: 15px; flex: 1;">${escapeHtml(task.assignment)}</strong>
+            <strong style="color: #111827; font-size: 15px; flex: 1; ${assignmentUrl ? 'text-decoration: underline; text-decoration-color: rgba(95, 158, 160, 0.3);' : ''}">${escapeHtml(task.assignment)}</strong>
             <span style="background: #E2E6ED; color: #5f9ea0; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
           </div>
           <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
