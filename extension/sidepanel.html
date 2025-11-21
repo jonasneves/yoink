@@ -1170,9 +1170,13 @@
       color: #93C5FD;
     }
 
-    /* Loading Animation Override - ensure it applies after other styles */
-    .btn-primary.loading span,
-    .btn-generate.loading span {
+    /* Loading Animation - Robust Implementation */
+    button.btn-primary.loading > span,
+    button.btn-generate.loading > span,
+    button#generateInsightsBtn.loading > span,
+    button#regenerateInsightsBtn.loading > span,
+    .btn-primary.loading > span,
+    .btn-generate.loading > span {
       background: linear-gradient(90deg,
         rgba(255, 255, 255, 0.4) 0%,
         rgba(255, 255, 255, 0.5) 20%,
@@ -1187,12 +1191,8 @@
     }
 
     @keyframes textWave {
-      0% {
-        background-position: 200% 0;
-      }
-      100% {
-        background-position: -200% 0;
-      }
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
   </style>
 </head>
