@@ -376,7 +376,7 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: textWave 2.5s ease-in-out infinite;
+  animation: textWave 2.5s linear infinite;
 }
 
 @keyframes textWave {
