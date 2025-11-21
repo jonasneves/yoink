@@ -1,16 +1,16 @@
-# Yoink v1.0.0
+# CanvasFlow v1.0.0
 
 ## Chrome Extension
 
 ### Features
 
-- ✨ AI-powered insights with Claude using structured outputs
-- 📊 Weekly schedule generation with time-blocked tasks
-- 📝 Direct Canvas data extraction (no API key required)
-- 🔌 MCP server integration for Claude Desktop
-- 🎨 Modern, intuitive UI with color-coded assignments
-- 🔒 Privacy-first: all data stored locally
-- ⚡ Manifest V3 compliant
+- AI-powered insights using GitHub Models with structured outputs
+- Weekly schedule generation with time-blocked tasks
+- Direct Canvas data extraction (no API key required)
+- MCP server integration for Claude Desktop
+- Modern, intuitive UI with color-coded assignments
+- Privacy-first: all data stored locally
+- Manifest V3 compliant
 
 ### Installation
 
@@ -48,7 +48,7 @@ Use `canvasflow-extension-v1.0.0.zip` directly in the Developer Dashboard
 ## What's Next?
 
 1. Upload to Chrome Web Store
-2. Create promotional assets (see CHROME_WEB_STORE_ASSETS_GUIDE.html)
-3. Capture screenshots (see scripts/generate-screenshots.js)
+2. Create promotional assets
+3. Capture screenshots
 4. Submit for review
 

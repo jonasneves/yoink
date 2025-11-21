@@ -103,12 +103,12 @@ jobs:
         id: release_notes
         run: |
           cat > release-notes.md << 'EOF'
-          ## Yoink v${{ steps.version.outputs.version }}
+          ## CanvasFlow v${{ steps.version.outputs.version }}
 
           ### Chrome Extension
 
           **What's New:**
-          - AI-powered insights with Claude using structured outputs
+          - AI-powered insights using GitHub Models with structured outputs
           - Weekly schedule generation
           - Direct Canvas data extraction (no API key required)
           - MCP server integration for Claude Desktop

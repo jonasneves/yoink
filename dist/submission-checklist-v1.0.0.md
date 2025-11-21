@@ -1,6 +1,6 @@
 # Chrome Web Store Submission Checklist - v1.0.0
 
-## ✅ Completed
+## Completed
 
 - [x] Extension package created (`canvasflow-extension-v1.0.0.zip`)
 - [x] Manifest V3 compliant
@@ -10,14 +10,12 @@
 - [x] Homepage URL set in manifest
 - [x] Permissions minimized and justified
 
-## 📋 Before Submission
+## Before Submission
 
 ### Required Assets
 
 - [ ] Small promotional tile (440×280 pixels)
-  - Tool: `scripts/promo-tile-generator.html`
 - [ ] Screenshots (1280×800 pixels, 3-5 recommended)
-  - Guide: `scripts/generate-screenshots.js`
   - [ ] Screenshot #1: Assignment Dashboard
   - [ ] Screenshot #2: AI Insights Panel
   - [ ] Screenshot #3: Weekly Schedule
@@ -27,7 +25,6 @@
 ### Optional Assets
 
 - [ ] Marquee promotional tile (1400×560 pixels)
-  - Tool: `scripts/promo-tile-generator.html`
 - [ ] Demo video (optional but recommended)
 
 ### Testing
@@ -47,7 +44,7 @@
 - [ ] Category set: Productivity
 - [ ] Language set: English
 
-## 📝 Store Listing Copy
+## Store Listing Copy
 
 ### Short Description (from manifest)
 ```
@@ -68,7 +65,7 @@ https://github.com/jonasneves/canvasflow/blob/main/PRIVACY.md
 https://github.com/jonasneves/canvasflow
 ```
 
-## 🚀 Submission Steps
+## Submission Steps
 
 1. **Create Developer Account**
    - Go to: https://chrome.google.com/webstore/devconsole
@@ -96,7 +93,7 @@ https://github.com/jonasneves/canvasflow
    - Submit for publication
    - Wait 1-3 days for review
 
-## 📞 Support
+## Support
 
 If you encounter issues during submission:
 - Review: `CHROME_WEB_STORE_READINESS.md`

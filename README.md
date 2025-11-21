@@ -1,20 +1,18 @@
-# Yoink
+# CanvasFlow
 
 [![GitHub release](https://img.shields.io/badge/release-nightly-blue)](https://github.com/jonasneves/canvasflow/releases/tag/nightly)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/jonasneves/canvasflow)](https://github.com/jonasneves/canvasflow/issues)
 [![GitHub stars](https://img.shields.io/github/stars/jonasneves/canvasflow)](https://github.com/jonasneves/canvasflow/stargazers)
 
-**Yoink that A+**
+**Stay in the flow - master your deadlines!**
 
-**Don't let deadlines yoink you - you yoink them!**
-
-Yoink is a Chrome extension that enhances your Canvas LMS experience with AI-powered insights and intelligent schedule planning.
+CanvasFlow is a Chrome extension that enhances your Canvas LMS experience with AI-powered insights and intelligent schedule planning.
 
 ## Features
 
 - **Direct Canvas Integration**: View assignments instantly - no Canvas API key or authentication required
-- **AI-Powered Insights**: Claude AI analyzes your workload and provides strategic recommendations
+- **AI-Powered Insights**: AI analyzes your workload and provides strategic recommendations via GitHub Models
 - **Structured Outputs**: Consistent, reliable AI responses using tool-based approach
 - **Weekly Schedule Generation**: AI-generated 7-day study plans optimized for your deadlines and workload
 - **Browser-Based MCP Server**: Embedded MCP server for Canvas LMS lets you talk to your coursework data through Claude Desktop - no separate server installation needed
@@ -37,29 +35,29 @@ canvasflow/
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" in the top-right corner
 4. Click "Load unpacked" and select the `extension/` directory
-5. The Yoink icon will appear in your extensions toolbar
+5. The CanvasFlow icon will appear in your extensions toolbar
 
 ### Configuration
 
-1. Click the Yoink icon while on any Canvas LMS page
+1. Click the CanvasFlow icon while on any Canvas LMS page
 2. Open Settings (gear icon in the sidepanel)
-3. Enter your Claude API key (required for AI features)
+3. Enter your GitHub token with Models access (required for AI features)
 4. Adjust assignment time range and auto-refresh settings as needed
 
-### Claude API Key
+### GitHub Token
 
-To use AI-powered insights and schedule generation, you need an Anthropic Claude API key:
+To use AI-powered insights and schedule generation, you need a GitHub token with Models access:
 
-1. Visit https://console.anthropic.com/
-2. Create an account or sign in
-3. Generate an API key from the dashboard
-4. Enter the key in Yoink Settings
+1. Visit https://github.com/settings/tokens
+2. Create a new token with appropriate permissions
+3. Enable GitHub Models access
+4. Enter the token in CanvasFlow Settings
 
 ## Usage
 
 ### Dashboard View
 
-Click the Yoink icon to open the sidepanel while browsing Canvas:
+Click the CanvasFlow icon to open the sidepanel while browsing Canvas:
 
 - **Assignment Overview**: Direct data extraction from Canvas (no API required)
 - **Smart Filters**: Filter by time range, course, or completion status
@@ -67,7 +65,7 @@ Click the Yoink icon to open the sidepanel while browsing Canvas:
 
 ### AI Insights Tab
 
-Generate intelligent analysis powered by Claude AI:
+Generate intelligent analysis powered by GitHub Models AI:
 
 - **Structured Outputs**: Guaranteed consistent JSON responses with priority rankings
 - **Actionable Recommendations**: Strategic advice for tackling your workload
@@ -92,11 +90,11 @@ Connect Claude Desktop to your Canvas data:
 
 ## Privacy
 
-Yoink processes your Canvas data locally in your browser and only sends assignment information to Claude AI when you explicitly request AI insights or schedule generation. Your Claude API key is stored locally in Chrome's secure storage.
+CanvasFlow processes your Canvas data locally in your browser and only sends assignment information to GitHub Models AI when you explicitly request AI insights or schedule generation. Your GitHub token is stored locally in Chrome's secure storage.
 
-- No data is collected or sent to external servers (except Claude AI when requested)
+- No data is collected or sent to external servers (except GitHub Models AI when requested)
 - Canvas data remains in your browser's local storage
-- API key is stored securely using Chrome's storage API
+- Token is stored securely using Chrome's storage API
 
 ## Contributing
 
