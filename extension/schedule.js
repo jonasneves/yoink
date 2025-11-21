@@ -184,17 +184,8 @@ function setupAutoRefresh(enabled) {
 
 // Update insights timestamp display
 function updateInsightsTimestamp(timestamp) {
-  // Find or create timestamp element
-  let timestampEl = document.getElementById('dashboardInsightsTimestamp');
-  if (!timestampEl) {
-    timestampEl = document.createElement('div');
-    timestampEl.id = 'dashboardInsightsTimestamp';
-    timestampEl.style.cssText = 'font-size: 12px; color: #9CA3AF; font-weight: 500; display: flex; align-items: center; gap: 6px;';
-    const headerCard = document.querySelector('.section-header-card');
-    if (headerCard) {
-      headerCard.appendChild(timestampEl);
-    }
-  }
+  const timestampEl = document.getElementById('dashboardInsightsTimestamp');
+  if (!timestampEl) return;
 
   if (timestamp) {
     const now = Date.now();
@@ -215,13 +206,13 @@ function updateInsightsTimestamp(timestamp) {
     }
 
     timestampEl.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.7;">
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
       <span>Updated ${timeAgo}</span>
     `;
-    timestampEl.style.display = 'flex';
+    timestampEl.style.cssText = 'font-size: 11px; color: #9CA3AF; font-weight: 500; display: flex; align-items: center; gap: 4px; margin-top: 4px;';
   } else {
     timestampEl.style.display = 'none';
   }
@@ -241,6 +232,7 @@ async function loadSavedInsights() {
 
       // Setup event listeners AFTER HTML is inserted into DOM
       setupDayToggleListeners();
+      setupTaskCardClickListeners();
 
       // Update timestamp if available
       if (result.dashboardInsightsTimestamp) {
@@ -268,7 +260,7 @@ async function generateAIInsights() {
           To generate AI-powered weekly schedules and study insights, you need to configure your Claude API key.
         </p>
         <button id="openSettingsBtn" style="
-          background: #00539B;
+          background: #5f9ea0;
           color: white;
           border: none;
           padding: 14px 28px;
@@ -281,7 +273,7 @@ async function generateAIInsights() {
           Open Settings
         </button>
         <p style="margin-top: 20px; font-size: 14px; color: #9CA3AF;">
-          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #00539B; text-decoration: underline;">Get one from Anthropic</a>
+          Don't have an API key? <a href="https://console.anthropic.com/" target="_blank" style="color: #5f9ea0; text-decoration: underline;">Get one from Anthropic</a>
         </p>
       </div>
     `;
@@ -300,7 +292,7 @@ async function generateAIInsights() {
       openSettingsBtn.style.background = '#004080';
     });
     openSettingsBtn.addEventListener('mouseout', () => {
-      openSettingsBtn.style.background = '#00539B';
+      openSettingsBtn.style.background = '#5f9ea0';
     });
 
     return;
@@ -343,6 +335,7 @@ async function generateAIInsights() {
 
     // Setup event listeners AFTER HTML is inserted into DOM
     setupDayToggleListeners();
+    setupTaskCardClickListeners();
 
     // Save insights and timestamp to storage (dashboard-specific)
     const timestamp = Date.now();
@@ -445,6 +438,18 @@ function getLucideIconPaths(iconName) {
   return icons[iconName] || '';
 }
 
+// Setup task card click listeners (must be called AFTER HTML is in DOM)
+function setupTaskCardClickListeners() {
+  document.querySelectorAll('.schedule-task-card.clickable').forEach(card => {
+    card.addEventListener('click', function() {
+      const url = this.dataset.url;
+      if (url) {
+        window.open(url, '_blank');
+      }
+    });
+  });
+}
+
 // Setup day toggle event listeners (must be called AFTER HTML is in DOM)
 function setupDayToggleListeners() {
   document.querySelectorAll('.day-plan-toggle').forEach(btn => {
@@ -473,6 +478,61 @@ function setupDayToggleListeners() {
   });
 }
 
+// Helper function to find assignment URL by fuzzy matching name with scoring
+function findAssignmentUrl(assignmentName) {
+  if (!canvasData.allAssignments || canvasData.allAssignments.length === 0) {
+    return null;
+  }
+
+  const cleanName = assignmentName.toLowerCase().trim();
+
+  // Calculate match score for each assignment
+  const scored = canvasData.allAssignments
+    .filter(a => a.name && a.url)
+    .map(assignment => {
+      const aName = assignment.name.toLowerCase().trim();
+      let score = 0;
+
+      // Exact match = 100 points
+      if (aName === cleanName) {
+        score = 100;
+      }
+      // One contains the other = 80 points
+      else if (aName.includes(cleanName) || cleanName.includes(aName)) {
+        score = 80;
+      }
+      // Word-based matching with high threshold
+      else {
+        const aiWords = cleanName.split(/\s+/).filter(w => w.length > 3);
+        const assignmentWords = aName.split(/\s+/).filter(w => w.length > 3);
+
+        if (aiWords.length > 0 && assignmentWords.length > 0) {
+          // Count how many AI words appear in the assignment name
+          const matchingWords = aiWords.filter(word =>
+            assignmentWords.some(aWord => aWord.includes(word) || word.includes(aWord))
+          );
+
+          // Require at least 70% of words to match for medium confidence
+          const matchRatio = matchingWords.length / aiWords.length;
+          if (matchRatio >= 0.7) {
+            score = matchRatio * 60; // Max 60 points for word matching
+          }
+        }
+      }
+
+      return { assignment, score };
+    })
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  // Only return if we have a confident match (score >= 70)
+  if (scored.length > 0 && scored[0].score >= 70) {
+    return scored[0].assignment.url;
+  }
+
+  return null;
+}
+
 // Format structured insights for display (Dashboard focuses ONLY on weekly schedule)
 function formatStructuredInsights(insights) {
   // Phase 3: Removed hardcoded color maps - using mappers instead
@@ -483,13 +543,18 @@ function formatStructuredInsights(insights) {
       // Phase 3: Format time blocks from structured start_hour + duration_hours
       const timeBlock = window.AIMappers.formatTimeBlock(task.start_hour, task.duration_hours);
 
+      // Find assignment URL for clickable link
+      const assignmentUrl = findAssignmentUrl(task.assignment);
+      const clickableClass = assignmentUrl ? ' clickable' : '';
+      const dataUrlAttr = assignmentUrl ? ` data-url="${escapeHtml(assignmentUrl)}"` : '';
+
       return `
-        <div style="padding: 16px; background: white; border-left: 4px solid #00539B; border-radius: 6px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <strong style="color: #111827; font-size: 15px; flex: 1;">${escapeHtml(task.assignment)}</strong>
-            <span style="background: #E2E6ED; color: #00539B; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; margin-left: 12px;">${timeBlock}</span>
+        <div class="schedule-task-card${clickableClass}"${dataUrlAttr}>
+          <div class="task-header">
+            <strong class="task-title">${escapeHtml(task.assignment)}</strong>
+            <span class="task-time-badge">${timeBlock}</span>
           </div>
-          <p style="margin: 0; color: #6B7280; font-size: 14px; font-style: italic; display: flex; align-items: start; gap: 8px;">
+          <p class="task-notes">
             ${createLucideIcon('lightbulb', 14, '#6B7280')}
             <span>${escapeHtml(task.notes)}</span>
           </p>
