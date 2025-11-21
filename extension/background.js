@@ -546,9 +546,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       iconUrl: 'icon-128.png',
       title: 'CanvasFlow Test Notification',
       message: 'Notifications are working! You will receive deadline reminders based on your settings.',
-      priority: 1
+      priority: 1,
+      requireInteraction: false
+    }, (notificationId) => {
+      if (chrome.runtime.lastError) {
+        console.error('Notification error:', chrome.runtime.lastError);
+        sendResponse({ success: false, error: chrome.runtime.lastError.message });
+      } else {
+        console.log('Test notification created:', notificationId);
+        sendResponse({ success: true, notificationId });
+      }
     });
-    sendResponse({ success: true });
     return true;
   }
 

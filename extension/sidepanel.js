@@ -993,8 +993,16 @@ document.getElementById('notificationsEnabled').addEventListener('change', async
 });
 
 // Test notification button
-document.getElementById('testNotification').addEventListener('click', () => {
-  chrome.runtime.sendMessage({ type: 'TEST_NOTIFICATION' });
+document.getElementById('testNotification').addEventListener('click', async () => {
+  // Request notification permission first
+  const permission = await Notification.requestPermission();
+
+  if (permission === 'granted') {
+    chrome.runtime.sendMessage({ type: 'TEST_NOTIFICATION' });
+    showToast('Test notification sent! Check your system notifications.');
+  } else {
+    showToast('Notification permission denied. Please enable notifications in your browser settings.');
+  }
 });
 
 document.getElementById('notificationFrequency').addEventListener('change', async (e) => {
