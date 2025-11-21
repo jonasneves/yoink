@@ -1884,7 +1884,7 @@ function renderTodaySection() {
   const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
   // Get assignments due today or overdue
-  const todayAssignments = assignmentsData.filter(a => {
+  const todayAssignments = allAssignments.filter(a => {
     if (!a.dueDate || a.submission?.submitted) return false;
     const dueDate = new Date(a.dueDate);
     return dueDate <= todayEnd; // Include overdue and due today
@@ -2020,7 +2020,7 @@ async function generateAISchedule() {
 
   try {
     // Refresh Canvas data first
-    await refreshData();
+    await refreshCanvasData();
 
     scheduleContent.innerHTML = `
       <div class="insights-loading">
@@ -2236,14 +2236,14 @@ function setupTaskCardClickListeners() {
 
 // Helper function to find assignment URL by fuzzy matching name with scoring
 function findAssignmentUrl(assignmentName) {
-  if (!assignmentsData || assignmentsData.length === 0) {
+  if (!allAssignments || allAssignments.length === 0) {
     return null;
   }
 
   const cleanName = assignmentName.toLowerCase().trim();
 
   // Calculate match score for each assignment
-  const scored = assignmentsData
+  const scored = allAssignments
     .filter(a => a.name && a.url)
     .map(assignment => {
       const aName = assignment.name.toLowerCase().trim();
