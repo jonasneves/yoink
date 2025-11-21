@@ -383,12 +383,6 @@ body {
   transform: translateX(4px);
 }
 
-.schedule-task-card.clickable .task-title {
-  text-decoration: underline;
-  text-decoration-color: rgba(95, 158, 160, 0.3);
-  text-decoration-thickness: 2px;
-}
-
 .task-header {
   display: flex;
   justify-content: space-between;
