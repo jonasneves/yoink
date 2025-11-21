@@ -478,7 +478,7 @@ function setupDayToggleListeners() {
   });
 }
 
-// Helper function to find assignment URL by fuzzy matching name
+// Helper function to find assignment URL by fuzzy matching name with scoring
 function findAssignmentUrl(assignmentName) {
   if (!canvasData.allAssignments || canvasData.allAssignments.length === 0) {
     return null;
@@ -486,33 +486,51 @@ function findAssignmentUrl(assignmentName) {
 
   const cleanName = assignmentName.toLowerCase().trim();
 
-  // First try exact match
-  let match = canvasData.allAssignments.find(a =>
-    a.name && a.name.toLowerCase().trim() === cleanName
-  );
+  // Calculate match score for each assignment
+  const scored = canvasData.allAssignments
+    .filter(a => a.name && a.url)
+    .map(assignment => {
+      const aName = assignment.name.toLowerCase().trim();
+      let score = 0;
 
-  // If no exact match, try partial match (assignment name contains the search term or vice versa)
-  if (!match) {
-    match = canvasData.allAssignments.find(a => {
-      if (!a.name) return false;
-      const aName = a.name.toLowerCase().trim();
-      return aName.includes(cleanName) || cleanName.includes(aName);
-    });
+      // Exact match = 100 points
+      if (aName === cleanName) {
+        score = 100;
+      }
+      // One contains the other = 80 points
+      else if (aName.includes(cleanName) || cleanName.includes(aName)) {
+        score = 80;
+      }
+      // Word-based matching with high threshold
+      else {
+        const aiWords = cleanName.split(/\s+/).filter(w => w.length > 3);
+        const assignmentWords = aName.split(/\s+/).filter(w => w.length > 3);
+
+        if (aiWords.length > 0 && assignmentWords.length > 0) {
+          // Count how many AI words appear in the assignment name
+          const matchingWords = aiWords.filter(word =>
+            assignmentWords.some(aWord => aWord.includes(word) || word.includes(aWord))
+          );
+
+          // Require at least 70% of words to match for medium confidence
+          const matchRatio = matchingWords.length / aiWords.length;
+          if (matchRatio >= 0.7) {
+            score = matchRatio * 60; // Max 60 points for word matching
+          }
+        }
+      }
+
+      return { assignment, score };
+    })
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  // Only return if we have a confident match (score >= 70)
+  if (scored.length > 0 && scored[0].score >= 70) {
+    return scored[0].assignment.url;
   }
 
-  // If still no match, try word-based matching (any significant word matches)
-  if (!match) {
-    const cleanWords = cleanName.split(/\s+/).filter(w => w.length > 3); // Skip short words
-    if (cleanWords.length > 0) {
-      match = canvasData.allAssignments.find(a => {
-        if (!a.name) return false;
-        const aName = a.name.toLowerCase().trim();
-        return cleanWords.some(word => aName.includes(word));
-      });
-    }
-  }
-
-  return match ? match.url : null;
+  return null;
 }
 
 // Format structured insights for display (Dashboard focuses ONLY on weekly schedule)
