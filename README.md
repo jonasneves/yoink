@@ -14,8 +14,8 @@ Yoink is a Chrome extension that enhances your Canvas LMS experience with AI-pow
 ## Features
 
 - **Direct Canvas Integration**: View assignments instantly - no Canvas API key or authentication required
-- **AI-Powered Insights**: Claude AI with Extended Thinking analyzes your workload and provides strategic recommendations
-- **Structured Outputs**: Consistent, reliable AI responses using Claude's latest structured output capabilities
+- **AI-Powered Insights**: Claude AI analyzes your workload and provides strategic recommendations
+- **Structured Outputs**: Consistent, reliable AI responses using tool-based approach
 - **Weekly Schedule Generation**: AI-generated 7-day study plans optimized for your deadlines and workload
 - **Browser-Based MCP Server**: Embedded MCP server for Canvas LMS lets you talk to your coursework data through Claude Desktop - no separate server installation needed
 - **Smart Filtering**: Filter assignments by time range, course, and completion status
@@ -69,10 +69,10 @@ Click the Yoink icon to open the sidepanel while browsing Canvas:
 
 Generate intelligent analysis powered by Claude AI:
 
-- **Extended Thinking**: Claude uses separate reasoning budget for deeper analysis
 - **Structured Outputs**: Guaranteed consistent JSON responses with priority rankings
 - **Actionable Recommendations**: Strategic advice for tackling your workload
 - **Priority Detection**: Automatic urgency scoring based on deadlines and workload
+- **Tool-Based Approach**: Forced tool calling ensures reliable JSON structure
 
 ### Weekly Schedule
 
