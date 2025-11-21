@@ -408,14 +408,21 @@ function prepareAssignmentsForAI() {
   };
 }
 
-// Phase 4: Use shared Claude client to reduce code duplication
+// Phase 4: Use shared Claude client with AI Router for model selection and fallback
 async function callClaudeWithStructuredOutput(apiKey, assignmentsData) {
-  return await window.ClaudeClient.callClaude(
+  const result = await window.ClaudeClient.callClaudeWithRouter(
     apiKey,
     assignmentsData,
     window.AISchemas.DASHBOARD_SCHEDULE_SCHEMA,
     'dashboard'
   );
+
+  // Store model info for display
+  window.lastAIModelUsed = result.model;
+  window.lastAIDuration = result.duration;
+  window.lastAIFailures = result.failures;
+
+  return result.data;
 }
 
 // Helper function to create Lucide icon SVG

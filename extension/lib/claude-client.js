@@ -9,14 +9,15 @@
 window.ClaudeClient = window.ClaudeClient || {};
 
 /**
- * Call Claude API with structured outputs
+ * Call Claude API with structured outputs (direct call with specific model)
  * @param {string} apiKey - Anthropic API key
  * @param {Object} assignmentsData - Prepared assignment data
  * @param {Object} schema - JSON schema for structured output
  * @param {string} promptType - Type of prompt ('sidepanel' or 'dashboard')
+ * @param {string} modelId - Model ID to use (defaults to claude-sonnet-4-5-20250514)
  * @returns {Promise<Object>} Parsed JSON response
  */
-window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema, promptType = 'sidepanel') {
+window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema, promptType = 'sidepanel', modelId = 'claude-sonnet-4-5-20250514') {
   const prompt = buildPrompt(assignmentsData, promptType);
 
   // Adaptive max_tokens: sidepanel needs less, dashboard needs more
@@ -31,7 +32,7 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
+      model: modelId,
       max_tokens: maxTokens,
       messages: [{
         role: 'user',
@@ -50,8 +51,10 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || `API error: ${response.status}`);
+    const errorData = await response.json();
+    const error = new Error(errorData.error?.message || `API error: ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   const data = await response.json();
@@ -66,6 +69,29 @@ window.ClaudeClient.callClaude = async function(apiKey, assignmentsData, schema,
 
   // Tool input is already a structured object, return it directly
   return toolUseBlock.input;
+};
+
+/**
+ * Call Claude API with AI Router (auto-fallback and model selection)
+ * @param {string} apiKey - Anthropic API key
+ * @param {Object} assignmentsData - Prepared assignment data
+ * @param {Object} schema - JSON schema for structured output
+ * @param {string} promptType - Type of prompt ('sidepanel' or 'dashboard')
+ * @returns {Promise<Object>} Result object with data, model info, and metadata
+ */
+window.ClaudeClient.callClaudeWithRouter = async function(apiKey, assignmentsData, schema, promptType = 'sidepanel') {
+  // Use the AI Router for model selection and fallback
+  const result = await window.AIRouter.executeWithFallback(async (modelId) => {
+    return await window.ClaudeClient.callClaude(apiKey, assignmentsData, schema, promptType, modelId);
+  });
+
+  if (!result.success) {
+    const error = new Error(result.error || 'AI Router: All models failed');
+    error.failures = result.failures;
+    throw error;
+  }
+
+  return result;
 };
 
 /**

@@ -672,6 +672,16 @@ settingsBtn.addEventListener('click', async () => {
   // Load time range settings
   document.getElementById('assignmentWeeksBefore').value = result.assignmentWeeksBefore || 0;
   document.getElementById('assignmentWeeksAfter').value = result.assignmentWeeksAfter || 2;
+
+  // Load AI router settings
+  const aiConfig = await window.AIRouter.getConfig();
+  document.getElementById('aiModeAuto').checked = aiConfig.selectionMode === 'auto';
+  document.getElementById('aiModeManual').checked = aiConfig.selectionMode === 'manual';
+  document.getElementById('aiModelSelect').value = aiConfig.selectedModelId;
+  document.getElementById('aiEnableFallback').checked = aiConfig.enableFallback;
+
+  // Update fallback toggle visibility based on mode
+  updateAIFallbackVisibility();
 });
 
 closeSettingsModal.addEventListener('click', () => {
@@ -1150,6 +1160,39 @@ document.getElementById('claudeApiKey').addEventListener('change', async (e) => 
   } catch (error) {
   }
 });
+
+// AI Router settings
+function updateAIFallbackVisibility() {
+  const isAutoMode = document.getElementById('aiModeAuto').checked;
+  const fallbackToggle = document.getElementById('aiFallbackToggle');
+  if (fallbackToggle) {
+    fallbackToggle.style.display = isAutoMode ? 'flex' : 'none';
+  }
+}
+
+// Save AI router config when settings change
+async function saveAIRouterConfig() {
+  const config = {
+    selectionMode: document.getElementById('aiModeAuto').checked ? 'auto' : 'manual',
+    selectedModelId: document.getElementById('aiModelSelect').value,
+    enableFallback: document.getElementById('aiEnableFallback').checked
+  };
+  await window.AIRouter.saveConfig(config);
+}
+
+// AI selection mode change
+document.querySelectorAll('input[name="aiSelectionMode"]').forEach(radio => {
+  radio.addEventListener('change', async () => {
+    updateAIFallbackVisibility();
+    await saveAIRouterConfig();
+  });
+});
+
+// AI model select change
+document.getElementById('aiModelSelect').addEventListener('change', saveAIRouterConfig);
+
+// AI fallback toggle change
+document.getElementById('aiEnableFallback').addEventListener('change', saveAIRouterConfig);
 
 // Load time range settings
 async function loadTimeRangeSettings() {
@@ -1673,14 +1716,21 @@ function getTagsForAssignment(assignmentId) {
   return window.currentAIMetadata?.[assignmentId]?.tags || [];
 }
 
-// Phase 4: Use shared Claude client to reduce code duplication
+// Phase 4: Use shared Claude client with AI Router for model selection and fallback
 async function callClaudeWithStructuredOutput(apiKey, assignmentsData) {
-  return await window.ClaudeClient.callClaude(
+  const result = await window.ClaudeClient.callClaudeWithRouter(
     apiKey,
     assignmentsData,
     window.AISchemas.SIDEPANEL_INSIGHTS_SCHEMA,
     'sidepanel'
   );
+
+  // Store model info for display
+  window.lastAIModelUsed = result.model;
+  window.lastAIDuration = result.duration;
+  window.lastAIFailures = result.failures;
+
+  return result.data;
 }
 
 // Helper function to create Lucide icon SVG
@@ -1952,13 +2002,20 @@ async function generateAISchedule() {
     // Prepare assignments data
     const assignmentsForAI = prepareAssignmentsForAI();
 
-    // Call Claude API with DASHBOARD_SCHEDULE_SCHEMA
-    const schedule = await window.ClaudeClient.callClaude(
+    // Call Claude API with DASHBOARD_SCHEDULE_SCHEMA using AI Router
+    const routerResult = await window.ClaudeClient.callClaudeWithRouter(
       result.claudeApiKey,
       assignmentsForAI,
       window.AISchemas.DASHBOARD_SCHEDULE_SCHEMA,
       'dashboard'
     );
+
+    // Store model info for display
+    window.lastAIModelUsed = routerResult.model;
+    window.lastAIDuration = routerResult.duration;
+    window.lastAIFailures = routerResult.failures;
+
+    const schedule = routerResult.data;
 
     // Format schedule for display (reuse formatStructuredInsights from schedule.js)
     const formattedSchedule = formatScheduleForDisplay(schedule);

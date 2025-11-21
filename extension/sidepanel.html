@@ -286,6 +286,44 @@
           </p>
         </div>
 
+        <!-- AI Model Selection Card -->
+        <div class="settings-card">
+          <div class="settings-card-title">AI Model</div>
+          <p style="font-size: 12px; color: #6B7280; margin: 0 0 12px 0;">
+            Choose which Claude model to use for generating insights
+          </p>
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; color: #374151; display: block; margin-bottom: 6px;">Selection Mode</label>
+            <div style="display: flex; gap: 12px;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="aiSelectionMode" value="auto" id="aiModeAuto" checked>
+                <span style="font-size: 13px; color: #374151;">Auto (with fallback)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="aiSelectionMode" value="manual" id="aiModeManual">
+                <span style="font-size: 13px; color: #374151;">Manual</span>
+              </label>
+            </div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; color: #374151; display: block; margin-bottom: 6px;">Model</label>
+            <select id="aiModelSelect" style="width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px; background: white; cursor: pointer;">
+              <option value="claude-sonnet-4-5-20250514">Claude Sonnet 4.5 (Recommended)</option>
+              <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+              <option value="claude-haiku-3-5-20241022">Claude Haiku 3.5 (Fast)</option>
+            </select>
+          </div>
+          <div id="aiFallbackToggle" style="display: flex; align-items: center; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;">
+              <input type="checkbox" id="aiEnableFallback" checked style="cursor: pointer;">
+              <span style="font-size: 13px; color: #374151;">Enable automatic fallback on errors</span>
+            </label>
+          </div>
+          <p style="font-size: 11px; color: #6B7280; margin-top: 8px;">
+            In auto mode, if a model fails, the system will try the next available model.
+          </p>
+        </div>
+
         <!-- Time Range Card -->
         <div class="settings-card">
           <div class="settings-card-title">Assignment Time Range</div>
@@ -372,6 +410,7 @@
   <script src="lib/ai-schemas-sidepanel.js"></script>
   <script src="lib/ai-schemas-dashboard.js"></script>
   <script src="lib/ai-mappers.js"></script>
+  <script src="lib/ai-router.js"></script>
   <script src="lib/claude-client.js"></script>
   <script src="sidepanel.js"></script>
 </body>
