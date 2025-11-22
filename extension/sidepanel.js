@@ -1467,7 +1467,9 @@ async function initialize() {
 async function updateInsightsButtonText() {
   const hasToken = await window.AIRouter.hasToken();
   const btnText = document.getElementById('generateInsightsBtnText');
-  btnText.textContent = 'Generate AI Insights';
+  if (btnText) {
+    btnText.textContent = 'Generate AI Insights';
+  }
 }
 
 async function generateAIInsights() {
