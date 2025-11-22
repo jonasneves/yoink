@@ -1,8 +1,8 @@
 /**
  * AI Router for CanvasFlow Extension
  *
- * Provides model selection and auto-fallback routing for GitHub Models API calls.
- * Supports multiple AI providers through GitHub's unified inference API.
+ * Provides model selection and auto-fallback routing for AI API calls.
+ * Supports multiple AI providers through a unified inference API.
  */
 
 // Create global namespace
@@ -44,12 +44,12 @@ window.AIRouter.hasToken = async function() {
 };
 
 /**
- * GitHub Models API configuration
+ * AI API configuration
  */
 window.AIRouter.API_URL = 'https://models.github.ai/inference/chat/completions';
 
 /**
- * Available models from GitHub Models
+ * Available AI models
  * Priority: lower number = higher priority (tried first in auto mode)
  */
 window.AIRouter.MODELS = [

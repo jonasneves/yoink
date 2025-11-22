@@ -10,7 +10,7 @@ This extension uses Chrome Manifest V3 and leverages modern AI capabilities:
 - **Content Script** (`content.js`): Direct DOM extraction from Canvas (no Canvas API required)
 - **Sidepanel** (`sidepanel.html/js`): Dashboard with assignment overview and AI insights tab
 - **Schedule View** (`schedule.html/js`): Full-page AI-generated weekly schedule
-- **Shared Libraries** (`lib/`): GitHub Models API client with AI router, schemas, and utilities
+- **Shared Libraries** (`lib/`): AI API client with router, schemas, and utilities
 
 ### Key Technical Features
 
@@ -31,7 +31,7 @@ extension/
 ├── icon-48.png                Extension icon (48x48)
 ├── icon-128.png               Extension icon (128x128)
 ├── lib/
-│   ├── claude-client.js       GitHub Models API client with router
+│   ├── claude-client.js       AI API client with router
 │   ├── ai-router.js           Model selection and auto-fallback
 │   ├── ai-schemas-sidepanel.js  JSON schema for insights
 │   ├── ai-schemas-dashboard.js  JSON schema for schedule
@@ -48,7 +48,7 @@ extension/
 
 - Chrome browser (version 88+)
 - Text editor or IDE
-- GitHub token with Models access for AI features
+- API token for AI features
 
 ### Local Development
 
@@ -74,9 +74,9 @@ Key test scenarios:
 
 ## API Integration
 
-### GitHub Models API
+### AI API
 
-The extension uses GitHub Models API for AI-powered insights with auto-fallback:
+The extension uses AI services for AI-powered insights with auto-fallback:
 
 - **Multiple Model Support**: Choose from various AI models
   - GPT-4o (OpenAI) - Most capable
@@ -107,7 +107,7 @@ No direct Canvas API calls are made - all data comes from the DOM.
 
 User settings stored in `chrome.storage.local`:
 
-- `githubToken`: GitHub token with Models access
+- `githubToken`: API token for AI services
 - `assignmentWeeksBefore`: Weeks before current date (default: 1)
 - `assignmentWeeksAfter`: Weeks after current date (default: 1)
 - `autoRefresh`: Auto-refresh interval in minutes (default: off)
