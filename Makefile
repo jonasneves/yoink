@@ -1,12 +1,12 @@
-.PHONY: help release release-mini package minify clean test install-deps
+.PHONY: help release release-dev package minify clean test install-deps
 
 # Default target
 help:
 	@echo "CanvasFlow - Chrome Web Store Release Automation"
 	@echo ""
 	@echo "Available commands:"
-	@echo "  make release       - Create release packages (prompts for version)"
-	@echo "  make release-mini  - Create minified release packages"
+	@echo "  make release       - Create minified release packages (default)"
+	@echo "  make release-dev   - Create unminified release (for debugging)"
 	@echo "  make minify        - Minify JavaScript files only"
 	@echo "  make package       - Same as release"
 	@echo "  make test          - Verify extension structure"
@@ -14,10 +14,9 @@ help:
 	@echo "  make install-deps  - Install Node.js dependencies"
 	@echo ""
 	@echo "Examples:"
-	@echo "  make release           # Creates release with current version"
-	@echo "  make release-mini      # Creates minified release"
-	@echo "  VERSION=1.0.1 make release  # Creates release with specific version"
-	@echo "  VERSION=1.0.1 make release-mini  # Creates minified release with specific version"
+	@echo "  make release           # Creates minified release with current version"
+	@echo "  make release-dev       # Creates unminified release for debugging"
+	@echo "  VERSION=1.0.1 make release  # Creates minified release with specific version"
 
 # Create release packages
 release:
@@ -31,13 +30,13 @@ release:
 # Alias for release
 package: release
 
-# Create minified release packages
-release-mini:
-	@echo "Creating minified release packages..."
+# Create unminified release packages (for debugging)
+release-dev:
+	@echo "Creating unminified release packages..."
 	@if [ -n "$(VERSION)" ]; then \
-		./scripts/release.sh --minify $(VERSION); \
+		./scripts/release.sh --no-minify $(VERSION); \
 	else \
-		./scripts/release.sh --minify; \
+		./scripts/release.sh --no-minify; \
 	fi
 
 # Minify JavaScript files only (without creating release)

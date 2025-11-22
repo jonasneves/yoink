@@ -17,13 +17,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Parse arguments
-MINIFY=false
+MINIFY=true
 VERSION_ARG=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --minify|-m)
-            MINIFY=true
+        --no-minify)
+            MINIFY=false
             shift
             ;;
         *)
