@@ -1211,7 +1211,7 @@ function updateInsightsTimestamp(timestamp) {
   </div>`;
 }
 
-// Load saved insights from storage
+// Load saved insights from storage or auto-generate
 async function loadSavedInsights() {
   try {
     const result = await chrome.storage.local.get(['savedInsights', 'insightsTimestamp']);
@@ -1242,6 +1242,12 @@ async function loadSavedInsights() {
       // Initialize Lucide icons for the buttons
       if (typeof initializeLucide === 'function') {
         initializeLucide();
+      }
+    } else {
+      // No saved insights - auto-generate if token is available
+      const hasToken = await window.AIRouter.hasToken();
+      if (hasToken) {
+        generateAIInsights();
       }
     }
   } catch (error) {
@@ -1492,25 +1498,11 @@ async function generateAIInsights() {
     return;
   }
 
-  // Refresh Canvas data to ensure we have the latest assignments
+  // Show loading state
   if (btn) {
     btn.disabled = true;
     btn.classList.add('loading');
   }
-  insightsContent.innerHTML = `
-    <div class="insights-loading">
-      <div class="spinner"></div>
-      <p>Refreshing Canvas data...</p>
-    </div>
-  `;
-
-  try {
-    await refreshCanvasData();
-  } catch (error) {
-    // Continue anyway with cached data
-  }
-
-  // Generate insights with AI (data already refreshed above)
   insightsContent.innerHTML = `
     <div class="insights-loading">
       <div class="spinner"></div>
