@@ -1732,33 +1732,32 @@ async function loadSavedSchedule() {
         </div>
       `;
 
-      // Setup event listeners
-      setupDayToggleListeners();
-      setupTaskCardClickListeners();
-
-      // Add regenerate button
+      // Add footer with timestamp if available
       if (result.dashboardInsightsTimestamp) {
         const footerHtml = createInsightsFooter(result.dashboardInsightsTimestamp, 'schedule');
         scheduleContent.innerHTML += footerHtml;
+      }
 
-        // Re-attach listeners for regenerate button
-        const regenerateBtn = document.getElementById('regenerateScheduleBtn');
-        if (regenerateBtn) {
-          regenerateBtn.addEventListener('click', generateAISchedule);
-        }
+      // Setup event listeners AFTER all HTML is in place (innerHTML += destroys previous listeners)
+      setupDayToggleListeners();
+      setupTaskCardClickListeners();
 
-        // Attach listener for full page button
-        const fullPageBtn = document.getElementById('openFullPageSchedule');
-        if (fullPageBtn) {
-          fullPageBtn.addEventListener('click', () => {
-            chrome.tabs.create({ url: chrome.runtime.getURL('schedule.html') });
-          });
-        }
+      // Attach listeners for footer buttons
+      const regenerateBtn = document.getElementById('regenerateScheduleBtn');
+      if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', generateAISchedule);
+      }
 
-        // Reinitialize Lucide icons for dynamically added elements
-        if (typeof initializeLucide === 'function') {
-          initializeLucide();
-        }
+      const fullPageBtn = document.getElementById('openFullPageSchedule');
+      if (fullPageBtn) {
+        fullPageBtn.addEventListener('click', () => {
+          chrome.tabs.create({ url: chrome.runtime.getURL('schedule.html') });
+        });
+      }
+
+      // Reinitialize Lucide icons for dynamically added elements
+      if (typeof initializeLucide === 'function') {
+        initializeLucide();
       }
     } else {
       // No saved schedule - auto-generate if token is available
@@ -1846,10 +1845,6 @@ async function generateAISchedule() {
       </div>
     `;
 
-    // Setup event listeners
-    setupDayToggleListeners();
-    setupTaskCardClickListeners();
-
     // Save schedule to storage (same keys as schedule.html for unified data)
     const timestamp = Date.now();
     await chrome.storage.local.set({
@@ -1861,13 +1856,16 @@ async function generateAISchedule() {
     const footerHtml = createInsightsFooter(timestamp, 'schedule');
     scheduleContent.innerHTML += footerHtml;
 
-    // Re-attach listeners
+    // Setup event listeners AFTER all HTML is in place (innerHTML += destroys previous listeners)
+    setupDayToggleListeners();
+    setupTaskCardClickListeners();
+
+    // Attach listeners for footer buttons
     const regenerateBtn = document.getElementById('regenerateScheduleBtn');
     if (regenerateBtn) {
       regenerateBtn.addEventListener('click', generateAISchedule);
     }
 
-    // Attach listener for full page button
     const fullPageBtn = document.getElementById('openFullPageSchedule');
     if (fullPageBtn) {
       fullPageBtn.addEventListener('click', () => {
