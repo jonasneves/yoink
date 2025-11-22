@@ -201,6 +201,8 @@ async function main() {
     const filesToCopy = [
         'manifest.json',
         'sidepanel.html',
+        'sidepanel.css',
+        'colors.css',
         'schedule.html',
         'schedule.css',
         'icon-16.png',
