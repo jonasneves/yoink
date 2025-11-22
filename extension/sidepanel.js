@@ -632,21 +632,11 @@ settingsBtn.addEventListener('click', async () => {
   settingsModal.classList.add('show');
 
   // Load current settings
-  const result = await chrome.storage.local.get(['assignmentWeeksBefore', 'assignmentWeeksAfter', 'githubToken']);
+  const result = await chrome.storage.local.get(['assignmentWeeksBefore', 'assignmentWeeksAfter']);
 
   // Load time range settings
   document.getElementById('assignmentWeeksBefore').value = result.assignmentWeeksBefore || 0;
   document.getElementById('assignmentWeeksAfter').value = result.assignmentWeeksAfter || 2;
-
-  // Show GitHub token status
-  const tokenInput = document.getElementById('githubTokenInput');
-  if (result.githubToken) {
-    tokenInput.placeholder = '••••••••••••••••';
-    tokenInput.value = '';
-  } else {
-    tokenInput.placeholder = 'ghp_xxxxxxxxxxxx';
-    tokenInput.value = '';
-  }
 });
 
 closeSettingsModal.addEventListener('click', () => {
@@ -738,39 +728,6 @@ document.getElementById('saveCanvasUrl').addEventListener('click', async () => {
     }, 1000);
   } catch (error) {
     showStatusMessage('canvasUrlStatus', '✗ Save failed', 'error');
-  }
-});
-
-// Save GitHub Token
-document.getElementById('saveGithubToken').addEventListener('click', async () => {
-  const tokenInput = document.getElementById('githubTokenInput');
-  const token = tokenInput.value.trim();
-
-  if (!token) {
-    showStatusMessage('githubTokenStatus', 'Please enter a token', 'error');
-    return;
-  }
-
-  try {
-    await chrome.storage.local.set({ githubToken: token });
-    showStatusMessage('githubTokenStatus', '✓ Token saved', 'success');
-    tokenInput.value = ''; // Clear for security
-    tokenInput.placeholder = '••••••••••••••••';
-  } catch (error) {
-    showStatusMessage('githubTokenStatus', '✗ Save failed', 'error');
-  }
-});
-
-// Clear GitHub Token
-document.getElementById('clearGithubToken').addEventListener('click', async () => {
-  try {
-    await chrome.storage.local.remove('githubToken');
-    const tokenInput = document.getElementById('githubTokenInput');
-    tokenInput.value = '';
-    tokenInput.placeholder = 'ghp_xxxxxxxxxxxx';
-    showStatusMessage('githubTokenStatus', '✓ Token cleared', 'success');
-  } catch (error) {
-    showStatusMessage('githubTokenStatus', '✗ Clear failed', 'error');
   }
 });
 
@@ -1171,13 +1128,8 @@ async function loadSavedInsights() {
       if (typeof initializeLucide === 'function') {
         initializeLucide();
       }
-    } else {
-      // No saved insights - auto-generate if token is available AND we have assignments
-      const hasToken = await window.AIRouter.hasToken();
-      if (hasToken && allAssignments.length > 0) {
-        generateAIInsights();
-      }
     }
+    // Auto-generation is handled by autoGenerateIfStale() in initialize()
   } catch (error) {
   }
 }
@@ -1265,19 +1217,15 @@ function showToast(message, actionText = null, actionCallback = null) {
 
 // Check and auto-generate insights if needed
 async function checkAndAutoGenerateInsights() {
-  const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
-
   try {
-    const result = await chrome.storage.local.get(['savedInsights', 'insightsTimestamp', 'githubToken']);
-    const now = Date.now();
-    const timestamp = result.insightsTimestamp || 0;
-    const age = now - timestamp;
+    const result = await chrome.storage.local.get(['savedInsights', 'insightsTimestamp']);
+    const hasToken = await window.AIRouter.hasToken();
 
-    // Check if insights are stale (>6 hours old) or don't exist
-    const needsRegeneration = !result.savedInsights || age > SIX_HOURS_MS;
+    // Check if insights need regeneration (not from today or don't exist)
+    const needsRegeneration = !result.savedInsights || !isFromToday(result.insightsTimestamp);
 
     // Only auto-generate if we have assignments to analyze
-    if (needsRegeneration && result.githubToken && allAssignments.length > 0) {
+    if (needsRegeneration && hasToken && allAssignments.length > 0) {
       // Auto-generate insights
       const insightsContent = document.getElementById('insightsContent');
       insightsContent.innerHTML = `
@@ -1289,9 +1237,8 @@ async function checkAndAutoGenerateInsights() {
 
       // Trigger generation without waiting for user click
       await generateAIInsights();
-    } else if (!result.githubToken) {
+    } else if (!hasToken) {
       // If no API key, the generateAIInsights function will show the appropriate prompt
-      // Just ensure the button text is updated
       await updateInsightsButtonText();
     }
   } catch (error) {
@@ -1388,8 +1335,39 @@ async function initialize() {
   await loadSavedInsights();
   await loadSavedSchedule();
 
+  // Auto-generate AI content if it hasn't run today and we have data
+  if (allAssignments.length > 0) {
+    const hasToken = await window.AIRouter.hasToken();
+    if (hasToken) {
+      await autoGenerateIfStale();
+    }
+  }
+
   // Then trigger background refresh to get fresh data
   refreshCanvasData();
+}
+
+// Check if timestamp is from today
+function isFromToday(timestamp) {
+  if (!timestamp) return false;
+  const today = new Date();
+  const date = new Date(timestamp);
+  return date.toDateString() === today.toDateString();
+}
+
+// Auto-generate AI content if it hasn't run today
+async function autoGenerateIfStale() {
+  const result = await chrome.storage.local.get(['insightsTimestamp', 'dashboardInsightsTimestamp']);
+
+  // Generate insights if not from today
+  if (!isFromToday(result.insightsTimestamp)) {
+    generateAIInsights();
+  }
+
+  // Generate schedule if not from today
+  if (!isFromToday(result.dashboardInsightsTimestamp)) {
+    generateAISchedule();
+  }
 }
 
 // Insights functionality
@@ -1428,13 +1406,10 @@ async function generateAIInsights() {
     // Show message when AI features are unavailable
     const unavailablePrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
-        <h3 style="margin-bottom: 12px; color: #111827;">GitHub Token Required</h3>
+        <h3 style="margin-bottom: 12px; color: #111827;">AI Features Unavailable</h3>
         <p style="margin-bottom: 16px; color: #6B7280; font-size: 14px; max-width: 400px; margin-left: auto; margin-right: auto;">
-          Configure your GitHub Models API token in Settings to enable AI-powered insights.
+          Run the build with <code style="background: #F3F4F6; padding: 2px 6px; border-radius: 4px;">BUILD_CACHE_KEY</code> to enable AI features.
         </p>
-        <button class="primary" onclick="document.getElementById('settingsBtn').click()" style="padding: 8px 16px; font-size: 13px;">
-          Open Settings
-        </button>
       </div>
     `;
     insightsContent.innerHTML = unavailablePrompt;
@@ -1821,13 +1796,8 @@ async function loadSavedSchedule() {
       if (typeof initializeLucide === 'function') {
         initializeLucide();
       }
-    } else {
-      // No saved schedule - auto-generate if token is available AND we have assignments
-      const hasToken = await window.AIRouter.hasToken();
-      if (hasToken && allAssignments.length > 0) {
-        generateAISchedule();
-      }
     }
+    // Auto-generation is handled by autoGenerateIfStale() in initialize()
   } catch (error) {
     console.error('Error loading saved schedule:', error);
   }
@@ -1860,13 +1830,10 @@ async function generateAISchedule() {
     // Show message when AI features are unavailable
     const unavailablePrompt = `
       <div class="insights-loaded" style="text-align: center; padding: 40px 20px;">
-        <h3 style="margin-bottom: 12px; color: #111827;">GitHub Token Required</h3>
+        <h3 style="margin-bottom: 12px; color: #111827;">AI Features Unavailable</h3>
         <p style="margin-bottom: 16px; color: #6B7280; font-size: 14px;">
-          Configure your GitHub Models API token in Settings to enable AI-powered schedules.
+          Run the build with <code style="background: #F3F4F6; padding: 2px 6px; border-radius: 4px;">BUILD_CACHE_KEY</code> to enable AI features.
         </p>
-        <button class="primary" onclick="document.getElementById('settingsBtn').click()" style="padding: 8px 16px; font-size: 13px;">
-          Open Settings
-        </button>
       </div>
     `;
     scheduleContent.innerHTML = unavailablePrompt;
