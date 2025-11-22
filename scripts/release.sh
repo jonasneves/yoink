@@ -196,7 +196,7 @@ cat > "$OUTPUT_DIR/release-notes-v$NEW_VERSION.md" << EOF
 
 ### Features
 
-- AI-powered insights using GitHub Models with structured outputs
+- AI-powered insights with structured outputs
 - Weekly schedule generation with time-blocked tasks
 - Direct Canvas data extraction (no API key required)
 - Modern, intuitive UI with color-coded assignments

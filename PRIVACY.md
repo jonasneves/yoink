@@ -25,14 +25,14 @@ CanvasFlow accesses your Canvas LMS data through the Canvas API using your exist
 
 ## Third-Party Services
 
-### GitHub Models API (Optional)
+### AI Services (Optional)
 
 When you explicitly request AI-powered insights or schedule generation:
 
-- Assignment data (titles, due dates, courses, points) is sent to GitHub Models API
-- Your GitHub token is stored locally in Chrome's secure storage
-- We do not collect, store, or have access to your token or the data sent to GitHub Models
-- GitHub Models API usage is subject to [GitHub's Privacy Policy](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)
+- Assignment data (titles, due dates, courses, points) is sent to AI service providers
+- Your API token is stored locally in Chrome's secure storage
+- We do not collect, store, or have access to your token or the data sent to AI services
+- AI service usage is subject to the provider's privacy policy
 
 **AI features are entirely optional.** You can use CanvasFlow without providing a token or generating AI insights.
 
@@ -43,7 +43,7 @@ CanvasFlow does not:
 - Collect personal information
 - Track your browsing activity
 - Send data to analytics services
-- Share data with third parties (except GitHub Models API when you request AI features)
+- Share data with third parties (except AI services when you request AI features)
 - Use cookies or tracking technologies
 - Sell or monetize your data
 
@@ -52,7 +52,7 @@ CanvasFlow does not:
 - All Canvas data is stored locally using Chrome's secure storage API
 - Tokens are stored using Chrome's encrypted storage
 - Communication between components uses secure local protocols
-- No data is transmitted over the internet except direct Canvas API calls and optional GitHub Models API requests
+- No data is transmitted over the internet except direct Canvas API calls and optional AI service requests
 
 ## User Control
 
@@ -60,7 +60,7 @@ You have full control over your data:
 
 - All data is stored locally and can be cleared by removing the extension
 - AI features are opt-in and require explicit user action
-- You can disconnect GitHub Models API access at any time by removing your token
+- You can disconnect AI service access at any time by removing your token
 - No data persists on external servers after the extension is removed
 
 ## Data Retention

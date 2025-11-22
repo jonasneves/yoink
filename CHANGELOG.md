@@ -39,7 +39,7 @@ PRIVACY & SECURITY
 
 • All Canvas data stays local in your browser
 • No tracking or analytics collection
-• AI processing via GitHub Models API
+• AI processing via external API
 • Open source on GitHub
 
 REQUIREMENTS
@@ -107,7 +107,7 @@ Required to send deadline reminder notifications for upcoming assignments. Users
 Required to access Canvas LMS pages and extract assignment data. Canvas is hosted on various .edu domains across different institutions.
 
 models.github.ai
-Required for AI-powered features (insights and schedule generation) using GitHub Models API. No user data is sent - only anonymized assignment metadata (titles, due dates, points).
+Required for AI-powered features (insights and schedule generation). No user data is sent - only anonymized assignment metadata (titles, due dates, points).
 ```
 
 ### Data Usage

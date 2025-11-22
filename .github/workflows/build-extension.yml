@@ -109,7 +109,7 @@ jobs:
           ### Chrome Extension
 
           **What's New:**
-          - AI-powered insights using GitHub Models with structured outputs
+          - AI-powered insights with structured outputs
           - Weekly schedule generation
           - Direct Canvas data extraction (no API key required)
 

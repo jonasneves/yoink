@@ -1,7 +1,7 @@
 /**
  * Shared AI Client (Browser Version)
  *
- * Provides shared utilities for calling GitHub Models API with structured outputs.
+ * Provides shared utilities for calling AI API with structured outputs.
  * This consolidates duplicate code between sidepanel.js and dashboard.js.
  */
 
@@ -9,8 +9,8 @@
 window.ClaudeClient = window.ClaudeClient || {};
 
 /**
- * Call GitHub Models API with structured outputs (direct call with specific model)
- * @param {string} apiKey - GitHub token
+ * Call AI API with structured outputs (direct call with specific model)
+ * @param {string} apiKey - API token
  * @param {Object} assignmentsData - Prepared assignment data
  * @param {Object} schema - JSON schema for structured output
  * @param {string} promptType - Type of prompt ('sidepanel' or 'dashboard')
@@ -111,8 +111,8 @@ Important:
 }
 
 /**
- * Call GitHub Models API with AI Router (auto-fallback and model selection)
- * @param {string} apiKey - GitHub token
+ * Call AI API with AI Router (auto-fallback and model selection)
+ * @param {string} apiKey - API token
  * @param {Object} assignmentsData - Prepared assignment data
  * @param {Object} schema - JSON schema for structured output
  * @param {string} promptType - Type of prompt ('sidepanel' or 'dashboard')
