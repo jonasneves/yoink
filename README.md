@@ -3,7 +3,6 @@
 [![GitHub release](https://img.shields.io/badge/release-nightly-blue)](https://github.com/jonasneves/canvasflow/releases/tag/nightly)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/jonasneves/canvasflow)](https://github.com/jonasneves/canvasflow/issues)
-[![GitHub stars](https://img.shields.io/github/stars/jonasneves/canvasflow)](https://github.com/jonasneves/canvasflow/stargazers)
 
 **Stay in the flow - master your deadlines!**
 
