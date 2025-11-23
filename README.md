@@ -24,6 +24,10 @@ canvasflow/
 └── README.md           This file
 ```
 
+## Architecture
+
+![CanvasFlow Architecture](architecture.png)
+
 ## Installation
 
 ### Chrome Extension
